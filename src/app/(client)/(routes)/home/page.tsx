@@ -21,32 +21,32 @@ import Spinner from "@/app/(client)/components/spinner";
 import { importAll, scrollToTop } from "@/app/(client)/lib/utils-script";
 import myAxios from "@/app/(client)/lib/axios.config";
 import "./style.scss";
-import { useUpdateClickCountMutation } from "@/app/admin/redux/features/affiliation/affiliationsApi";
+// import { useUpdateClickCountMutation } from "@/app/admin/redux/features/affiliation/affiliationsApi";
 // import { analyticsEventTracker } from "../app";
 
 const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
   console.log("searchParam", searchParams?.affiliate);
 
-  const [updateClickCount, { isLoading, isSuccess, error }] =
-    useUpdateClickCountMutation();
+  // const [updateClickCount, { isLoading, isSuccess, error }] =
+  //   useUpdateClickCountMutation();
 
-  useEffect(() => {
-    const getClickCount = localStorage.getItem("affiliate");
+  // useEffect(() => {
+  //   const getClickCount = localStorage.getItem("affiliate");
 
-    if (searchParams.affiliate) {
-      if (getClickCount && getClickCount === searchParams.affiliate) {
-      } else {
-        localStorage.setItem("affiliate", searchParams.affiliate);
+  //   if (searchParams.affiliate) {
+  //     if (getClickCount && getClickCount === searchParams.affiliate) {
+  //     } else {
+  //       localStorage.setItem("affiliate", searchParams.affiliate);
 
-        console.log("testes");
-        const fetchUpdateClickCount = async () => {
-          await updateClickCount({ affiliate: searchParams?.affiliate });
-        };
+  //       console.log("testes");
+  //       const fetchUpdateClickCount = async () => {
+  //         await updateClickCount({ affiliate: searchParams?.affiliate });
+  //       };
 
-        fetchUpdateClickCount();
-      }
-    }
-  }, []);
+  //       fetchUpdateClickCount();
+  //     }
+  //   }
+  // }, []);
 
   const HeroImages = importAll(
     require
