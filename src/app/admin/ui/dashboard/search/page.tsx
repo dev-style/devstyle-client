@@ -1,4 +1,6 @@
 "use client";
+/* eslint-disable react/no-unescaped-entities */
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { MdSearch } from "react-icons/md";
