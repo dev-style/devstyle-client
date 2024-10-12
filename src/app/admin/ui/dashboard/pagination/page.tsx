@@ -2,12 +2,13 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 interface PaginationProps {
   count: number;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ count }) => {
+const PaginationContent: React.FC<PaginationProps> = ({ count }) => {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
@@ -57,6 +58,14 @@ const Pagination: React.FC<PaginationProps> = ({ count }) => {
         Next
       </button>
     </div>
+  );
+};
+
+const Pagination: React.FC<PaginationProps> = (props) => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaginationContent {...props} />
+    </Suspense>
   );
 };
 

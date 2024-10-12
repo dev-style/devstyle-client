@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 import { MdSearch } from "react-icons/md";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -10,14 +10,14 @@ type Props = {
   placeholder: string;
 };
 
-const Search = ({ placeholder }: Props) => {
+const SearchContent = ({ placeholder }: Props) => {
   const pathName = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();
 
   const handleSearch = useDebouncedCallback((e) => {
     const params = new URLSearchParams(searchParams);
-    params.set("page", 1);
+    params.set("page", "1");
     console.log("params", params);
 
     if (e.target.value) {
@@ -39,6 +39,14 @@ const Search = ({ placeholder }: Props) => {
         onChange={handleSearch}
       />
     </div>
+  );
+};
+
+const Search = (props: Props) => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchContent {...props} />
+    </Suspense>
   );
 };
 
