@@ -42,8 +42,8 @@ export const menuItems = [
       list: [
 
         {
-          title: "Transactions",
-          path: "/admin/dashboard/transactions",
+          title: "Analytics",
+          path: "/admin/dashboard/analytics",
           icon: <MdAttachMoney />,
         },
         {
@@ -51,16 +51,7 @@ export const menuItems = [
           path: "/admin/dashboard/revenue",
           icon: <MdWork />,
         },
-        {
-          title: "Reports",
-          path: "/admin/dashboard/reports",
-          icon: <MdAnalytics />,
-        },
-        {
-          title: "Teams",
-          path: "/dashboard/teams",
-          icon: <MdPeople />,
-        },
+
       ],
     },
     {

@@ -194,31 +194,7 @@ export const addCollection = async (formData: FormData) => {
   redirect("/admin/dashboard/collections");
 };
 
-export const updateOrderStatus = async (formData: any) => {
-  const { orderId, newStatus } = formData;
-  console.log("valeur a changer", orderId, newStatus);
-  try {
-    await connectToDB();
 
-    const updatedOrder = await OrderModel.findByIdAndUpdate(
-      orderId,
-      { status: newStatus }, // Changed 'newStatus' to 'status' to match the schema
-      { new: true, lean: true } // Added 'lean: true' to return a plain JavaScript object
-    );
-
-    if (!updatedOrder) {
-      throw new Error("Order not found");
-    }
-
-    console.log("Order updated successfully:", updatedOrder);
-  } catch (err) {
-    console.error("Error updating order:", err);
-    throw new Error("Failed to update order!");
-  }
-
-  revalidatePath("/admin/dashboard/orders");
-  redirect("/admin/dashboard/orders");
-};
 
 // Note: This implementation now handles file uploads directly in these server actions,
 // using the uploadToCloudinary function from ./utils.

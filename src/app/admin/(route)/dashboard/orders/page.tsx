@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchOrders } from "@/app/admin/controllers/order";
+import { fetchOrders, updateOrderStatus } from "@/app/admin/controllers/order";
 import Search from "@/app/admin/ui/dashboard/search/page";
 import React, { useState, useEffect } from "react";
 import {
@@ -11,7 +11,6 @@ import {
   MdExpandLess,
 } from "react-icons/md";
 import Pagination from "@/app/admin/ui/dashboard/pagination/page";
-import { updateOrderStatus } from "@/app/admin/lib/action";
 import { ObjectId } from "mongoose";
 
 type Order = {
