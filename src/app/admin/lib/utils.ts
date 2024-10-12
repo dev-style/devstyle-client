@@ -34,35 +34,5 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.CLOUD_SECRET_KEY,
-});
+// 
 
-export const uploadToCloudinary = (
-  file: any,
-  folder: string,
-  optionsOnUpload = {}
-): Promise<{ public_id: string; secure_url: string }> => {
-  return new Promise((resolve, reject) => {
-    cloudinary.v2.uploader.upload(
-      file,
-      {
-        resource_type: "auto",
-        folder: folder,
-        ...optionsOnUpload,
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else if (result) {
-          resolve({
-            public_id: result.public_id,
-            secure_url: result.secure_url,
-          });
-        }
-      }
-    );
-  });
-};

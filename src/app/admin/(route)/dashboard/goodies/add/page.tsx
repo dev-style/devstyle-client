@@ -61,7 +61,7 @@ const ImagePreview = ({
   return (
     <div ref={(node) => ref(drop(node))} className="relative w-24 h-24 m-2">
       <img
-        src={`data:image/jpeg;base64,${imageData}`}
+        src={imageData}
         alt={`Preview ${index}`}
         className="w-full h-full object-cover rounded-lg"
       />
@@ -131,7 +131,7 @@ const AddGoodiePage = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setValue("mainImage", base64String.split(',')[1]);
+        setValue("mainImage", base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -147,7 +147,7 @@ const AddGoodiePage = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        newImages.push(base64String.split(',')[1]);
+        newImages.push(base64String);
         
         if (newImages.length === files.length) {
           setAdditionalImages(prev => [...prev, ...newImages]);
@@ -482,7 +482,7 @@ const AddGoodiePage = () => {
                     >
                       {mainImageFile ? (
                         <img
-                          src={`data:image/jpeg;base64,${mainImageFile}`}
+                          src={mainImageFile}
                           alt="Main preview"
                           className="max-w-full max-h-48 object-contain"
                         />
