@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+
 import Search from "@/app/admin/ui/dashboard/search/page";
 import Link from "next/link";
 import React from "react";

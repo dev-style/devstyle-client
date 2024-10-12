@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react/no-unescaped-entities */
 
 import { fetchOrders, updateOrderStatus } from "@/app/admin/controllers/order";
 import Search from "@/app/admin/ui/dashboard/search/page";
