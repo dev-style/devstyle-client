@@ -3,7 +3,7 @@
 
 import { fetchOrders, updateOrderStatus } from "@/app/admin/controllers/order";
 import Search from "@/app/admin/ui/dashboard/search/page";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   MdCheck,
   MdClose,
@@ -13,6 +13,7 @@ import {
 } from "react-icons/md";
 import Pagination from "@/app/admin/ui/dashboard/pagination/page";
 import { ObjectId } from "mongoose";
+import { useSearchParams } from "next/navigation";
 
 type Order = {
   id: string;
@@ -24,20 +25,17 @@ type Order = {
   goodies: [{ name: string; price: number; quantity: number; total: number }];
 };
 
-const OrdersPage = ({
-  searchParams,
-}: {
-  searchParams: { q?: string; page?: string };
-}) => {
+const OrdersPageContent = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [count, setCount] = useState(0);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const q = searchParams?.q || "";
-        const page = parseInt(searchParams?.page || "1", 10);
+        const q = searchParams?.get("q") || "";
+        const page = parseInt(searchParams?.get("page") || "1", 10);
         const { count, orders: fetchedOrders } = await fetchOrders(q, page);
         console.log("orders", orders);
         const formattedOrders: Order[] = fetchedOrders.map((order) => ({
@@ -69,8 +67,8 @@ const OrdersPage = ({
     try {
       await updateOrderStatus({ orderId, newStatus });
       // Refresh the orders after update
-      const q = searchParams?.q || "";
-      const page = parseInt(searchParams?.page || "1", 10);
+      const q = searchParams?.get("q") || "";
+      const page = parseInt(searchParams?.get("page") || "1", 10);
       const { count, orders: updatedOrders } = await fetchOrders(q, page);
 
       const formattedOrders: Order[] = updatedOrders.map((order) => ({
@@ -232,6 +230,14 @@ const OrdersPage = ({
         <Pagination count={count} />
       </div>
     </div>
+  );
+};
+
+const OrdersPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OrdersPageContent />
+    </Suspense>
   );
 };
 

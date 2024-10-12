@@ -7,24 +7,24 @@ import Chart from "../../ui/dashboard/chart/page";
 
 type Props = {};
 
-const page = (props: Props) => {
+const Page = (props: Props) => {
   return (
     <div className="flex gap-5 mt-5">
       <div className="flex-[3] flex flex-col gap-5">
         <div className="flex gap-5 justify-between">
-          {cards.map((item: any) => (
-            <Card item={item} key={item.id} />
+          {cards && cards.map((item: any) => (
+            item && item.id && item.title ? <Card item={item} key={item.id} /> : null
           ))}
         </div>
         <Transactions/>
         <Chart/>
       </div>
 
-      <div className=" flex-1 ">
+      <div className="flex-1">
         <Rightbar/>
       </div>
     </div>
   );
 };
 
-export default page;
+export default Page;
