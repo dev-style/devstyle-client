@@ -20,6 +20,11 @@ typescript: {
     ],
     domains: ["res.cloudinary.com"],
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb'
+    }
+  },
 
   env: {
     DB_URI:
