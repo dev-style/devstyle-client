@@ -27,28 +27,28 @@ export const menuItems = [
         },
         {
           title: "Collections",
-          path: "admin/dashboard/collections",
+          path: "/admin/dashboard/collections",
           icon: <MdSupervisedUserCircle />,
         },
         {
-          title: "Users",
-          path: "admin/dashboard/users",
+          title: "Orders",
+          path: "/admin/dashboard/orders",
           icon: <MdSupervisedUserCircle />,
-        },
-      
-        {
-          title: "Transactions",
-          path: "/admin/dashboard/transactions",
-          icon: <MdAttachMoney />,
         },
       ],
     },
     {
       title: "Analytics",
       list: [
+
+        {
+          title: "Transactions",
+          path: "/admin/dashboard/transactions",
+          icon: <MdAttachMoney />,
+        },
         {
           title: "Revenue",
-          path: "/dashboard/revenue",
+          path: "/admin/dashboard/revenue",
           icon: <MdWork />,
         },
         {

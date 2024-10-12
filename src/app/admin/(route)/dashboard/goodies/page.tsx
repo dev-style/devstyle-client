@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { fetchGoodies } from "@/app/admin/controllers/goodie";
+import Pagination from "@/app/admin/ui/dashboard/pagination/page";
 
 type Props = {};
 
@@ -55,7 +56,7 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 <td className="p-2.5">{goodie.name}</td>
                 <td className="p-2.5">{goodie.description}</td>
                 <td className="p-2.5">{goodie.fromCollection.title}</td>
-                <td className="p-2.5">${goodie.price}</td>
+                <td className="p-2.5">{goodie.price} CFA</td>
                 <td className="p-2.5">
                   {goodie.inPromo ? `${goodie.promoPercentage}%` : 'No'}
                 </td>
@@ -76,6 +77,8 @@ const GoodiesPage = async ({ searchParams }: any) => {
             ))}
           </tbody>
         </table>
+        <Pagination count={count} />
+
       </div>
     </div>
   );

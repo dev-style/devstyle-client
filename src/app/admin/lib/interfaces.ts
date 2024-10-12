@@ -50,3 +50,19 @@ export interface ISize extends mongoose.Document {
     size: string;
   }
   
+  export interface IOrder extends mongoose.Document {
+    name: string;
+    goodies: [
+      {
+        name: string;
+        price: number;
+        quantity: number;
+        total: number;
+      }
+    ];
+  
+    status: string;
+    email: string;
+    number?: number;
+    initDate: Date;
+  }

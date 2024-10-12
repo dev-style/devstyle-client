@@ -12,9 +12,7 @@ const collectionSchema = z.object({
   colors: z.string().min(1, "At least one color is required"),
   show: z.boolean(),
   views: z.number().default(0),
-  image: z
-    .instanceof(File)
-    .refine((file) => file !== null, "Image is required"),
+  image: z.string().min(1, " image is required"),
 });
 
 type CollectionFormData = z.infer<typeof collectionSchema>;
@@ -53,7 +51,13 @@ const AddCollectionPage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setValue("image", file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setValue("image", base64String);
+      };
+
+      reader.readAsDataURL(file);
     }
   };
 
@@ -92,9 +96,7 @@ const AddCollectionPage = () => {
               />
             )}
           />
-          {errors.slug && (
-            <p className="text-red-500">{errors.slug.message}</p>
-          )}
+          {errors.slug && <p className="text-red-500">{errors.slug.message}</p>}
 
           <Controller
             name="colors"
@@ -158,7 +160,7 @@ const AddCollectionPage = () => {
                   >
                     {imageFile ? (
                       <img
-                        src={URL.createObjectURL(imageFile)}
+                        src={imageFile}
                         alt="Collection preview"
                         className="max-w-full max-h-48 object-contain"
                       />

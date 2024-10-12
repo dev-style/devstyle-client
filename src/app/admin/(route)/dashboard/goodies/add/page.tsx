@@ -13,7 +13,6 @@ import { fetchSizes } from "@/app/admin/controllers/size";
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  slug: z.string().min(1, "Slug is required"),
   fromCollection: z
     .array(z.string())
     .min(1, "At least one collection is required"),
@@ -217,29 +216,6 @@ const AddGoodiePage = () => {
             <div className="flex flex-col space-y-2">
               <div className="relative">
                 <Controller
-                  name="slug"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder=" "
-                      className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 peer"
-                    />
-                  )}
-                />
-                <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                  Slug
-                </label>
-              </div>
-              {errors.slug && (
-                <p className="text-red-500 text-sm">{errors.slug.message}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col space-y-2">
-              <div className="relative">
-                <Controller
                   name="fromCollection"
                   control={control}
                   render={({ field }) => (
@@ -294,7 +270,7 @@ const AddGoodiePage = () => {
                   )}
                 />
                 <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                  Price
+                  Price (CFA Franc)
                 </label>
               </div>
               {errors.price && (

@@ -1,109 +1,57 @@
+import { fetchRecentOrders } from "@/app/admin/controllers/order";
 import Image from "next/image";
 import React from "react";
+import { IOrder } from "@/app/admin/lib/interfaces";
 
 type Props = {};
 
-const Transactions = (props: Props) => {
+const Transactions = async (props: Props) => {
+  const { recentOrders } = await fetchRecentOrders();
+
   return (
-    <div className="bg-primary p-5 rounded-lg">
-      <h2 className="text-text-light font-semibold mb-5">
-        Latest Transactions
-      </h2>
+    <div className="bg-[var(--bgSoft)] p-5 rounded-lg mt-5">
+      <h2 className="mb-5 font-extralight text-[24px]">Latest Transactions</h2>
       <table className="w-full">
         <thead>
           <tr>
-            <td>Name</td>
-            <td>Status</td>
-            <td>Date</td>
-            <td>Amount</td>
+            <td className="p-2.5">Name</td>
+            <td className="p-2.5">Status</td>
+            <td className="p-2.5">Date</td>
+            <td className="p-2.5">Amount</td>
           </tr>
         </thead>
-
         <tbody>
-          <tr>
-            <td className="">
-              <div className="flex gap-[10px] items-center">
-                <Image
-                  src="/noavatar.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="object-fill rounded-[50%]"
-                />
-                John Doe
-              </div>
-            </td>
-            <td>
-              <span className="rounded-sm p-[5px] text-[14px] text-text-light bg-warning">
-                Pending
-              </span>
-            </td>
-            <td>14.02.2024</td>
-            <td>$3.200</td>
-          </tr>
-          <tr>
-            <td>
-              <div className="flex gap-[10px] items-center">
-                <Image
-                  src="/noavatar.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="object-fill rounded-[50%]"
-                />
-                John Doe
-              </div>
-            </td>
-            <td>
-              <span className="rounded-sm p-[5px] text-[14px] text-text-light bg-success">
-                Done
-              </span>
-            </td>
-            <td>14.02.2024</td>
-            <td>$3.200</td>
-          </tr>
-          <tr>
-            <td>
-              <div className="flex gap-[10px] items-center">
-                <Image
-                  src="/noavatar.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="object-fill rounded-[50%]"
-                />
-                John Doe
-              </div>
-            </td>
-            <td>
-              <span className="rounded-sm p-[5px] text-[14px] text-text-light bg-danger">
-                Cancelled
-              </span>
-            </td>
-            <td>14.02.2024</td>
-            <td>$3.200</td>
-          </tr>
-          <tr>
-            <td>
-              <div className="flex gap-[10px] items-center">
-                <Image
-                  src="/noavatar.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="object-fill rounded-[50%]"
-                />
-                John Doe
-              </div>
-            </td>
-            <td>
-              <span className="rounded-sm p-[5px] text-[14px] text-text-light bg-warning">
-                Pending
-              </span>
-            </td>
-            <td>14.02.2024</td>
-            <td>$3.200</td>
-          </tr>
+          {recentOrders.map((order: IOrder) => (
+            <tr key={order._id?.toString()} className="hover:bg-[#2e374a]">
+              <td className="p-2.5">
+                <div className="flex items-center gap-2.5">
+                  <Image
+                    src="/noavatar.png"
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover"
+                  />
+                  {order.name}
+                </div>
+              </td>
+              <td className="p-2.5">
+                <span
+                  className={`rounded-md p-1.5 text-sm ${
+                    order.status === "processing"
+                      ? "bg-[#f7cb7375] text-[#ffb42e]"
+                      : order.status === "completed"
+                      ? "bg-[#afd6ee75] text-[#3da5f4]"
+                      : "bg-[#f7737375] text-[#ff0000]"
+                  }`}
+                >
+                  {order.status}
+                </span>
+              </td>
+              <td className="p-2.5">{new Date(order.initDate).toLocaleDateString()}</td>
+              <td className="p-2.5">{order.goodies.reduce((total, item) => total + item.total, 0)} CFA</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
