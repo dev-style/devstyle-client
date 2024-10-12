@@ -29,6 +29,13 @@ export interface ISize extends mongoose.Document {
     size: string;
   }
 
+
+  export interface ICloudinaryUploadResponse extends mongoose.Document {
+    public_id: string;
+    secure_url: string;
+  }
+  
+
   export interface ICollection extends mongoose.Document {
     title: string;
     slug: string;
@@ -37,3 +44,9 @@ export interface ISize extends mongoose.Document {
     views: number;
     show: boolean;
   }
+
+  export interface ISize extends mongoose.Document {
+    id: string;
+    size: string;
+  }
+  

@@ -21,15 +21,21 @@ export const menuItems = [
           icon: <MdDashboard />,
         },
         {
-          title: "Users",
-          path: "admin/dashboard/users",
-          icon: <MdSupervisedUserCircle />,
-        },
-        {
           title: "Goodies",
           path: "/admin/dashboard/goodies",
           icon: <MdShoppingBag />,
         },
+        {
+          title: "Collections",
+          path: "admin/dashboard/collections",
+          icon: <MdSupervisedUserCircle />,
+        },
+        {
+          title: "Users",
+          path: "admin/dashboard/users",
+          icon: <MdSupervisedUserCircle />,
+        },
+      
         {
           title: "Transactions",
           path: "/admin/dashboard/transactions",

@@ -28,7 +28,7 @@ const GoodiesPage = async ({ searchParams }: any) => {
               <td className="p-2.5">Image</td>
               <td className="p-2.5">Name</td>
               <td className="p-2.5">Description</td>
-              {/* <td className="p-2.5">Collection</td> */}
+              <td className="p-2.5">Collection</td>
               <td className="p-2.5">Price</td>
               <td className="p-2.5">Promo</td>
               <td className="p-2.5">Views</td>
@@ -54,7 +54,7 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 </td>
                 <td className="p-2.5">{goodie.name}</td>
                 <td className="p-2.5">{goodie.description}</td>
-                {/* <td className="p-2.5">{goodie.fromCollection.title}</td> */}
+                <td className="p-2.5">{goodie.fromCollection.title}</td>
                 <td className="p-2.5">${goodie.price}</td>
                 <td className="p-2.5">
                   {goodie.inPromo ? `${goodie.promoPercentage}%` : 'No'}
