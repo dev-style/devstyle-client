@@ -4,10 +4,14 @@ import React from "react";
 import { MdSupervisedUserCircle } from "react-icons/md";
 
 type Props = {
-  item: { title: string; number: number; change: number };
+  item?: { title: string; number: number; change: number };
 };
 
 const Card = ({ item }: Props) => {
+  if (!item) {
+    return null; // or return a placeholder/loading state
+  }
+
   return (
     <div className="bg-primary p-5 rounded-lg flex gap-5 cursor-pointer w-full">
       <MdSupervisedUserCircle size={24} />
@@ -23,8 +27,7 @@ const Card = ({ item }: Props) => {
             {item.change}%
           </span>
           <span className="text-text-light">
-
-          {item.change > 0 ? "more" : "less"} than previous week
+            {item.change > 0 ? "more" : "less"} than previous week
           </span>
         </span>
       </div>
