@@ -17,12 +17,12 @@ const Rightbar = (props: Props) => {
           />
         </div>
         <div className=" flex flex-col gap-5  ">
-          <span className="font-bold text-text">🔥 Available Now</span>
-          <h3 className="text-text font-semibold">How to use the new version of the admin dashboard?</h3>
-          <span className=" text-text text-sm font-[500]">
+          <span className="font-bold text-text-light">🔥 Available Now</span>
+          <h3 className="text-text-light font-semibold">How to use the new version of the admin dashboard?</h3>
+          <span className=" text-text-light text-sm font-[500]">
             Takes 4 minutes to learn
           </span>
-          <p className="text-text text-sm">
+          <p className="text-text-light text-sm">
             Lorem ipsum dolor sit amet consectetur adipisicing elit.
             Reprehenderit eius libero perspiciatis recusandae possimus.
           </p>
