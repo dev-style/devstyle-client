@@ -4,7 +4,7 @@ export interface IGoodie extends mongoose.Document {
   name: string;
   description: string;
   slug: string;
-  fromCollection:any;
+  fromCollection: any;
   promoPercentage: number;
   price: number;
   inPromo: boolean;
@@ -25,44 +25,55 @@ export interface IGoodie extends mongoose.Document {
 }
 
 export interface ISize extends mongoose.Document {
-    id: string;
-    size: string;
-  }
+  id: string;
+  size: string;
+}
 
+export interface ICloudinaryUploadResponse extends mongoose.Document {
+  public_id: string;
+  secure_url: string;
+}
 
-  export interface ICloudinaryUploadResponse extends mongoose.Document {
+export interface ICollection extends mongoose.Document {
+  title: string;
+  slug: string;
+  colors: string;
+  image: {};
+  views: number;
+  show: boolean;
+}
+
+export interface ISize extends mongoose.Document {
+  id: string;
+  size: string;
+}
+
+export interface IOrder extends mongoose.Document {
+  name: string;
+  goodies: [
+    {
+      name: string;
+      price: number;
+      quantity: number;
+      total: number;
+    }
+  ];
+
+  status: string;
+  email: string;
+  number?: number;
+  initDate: Date;
+}
+export interface IUser extends mongoose.Document {
+  username: string;
+  email: string;
+  password: string;
+  avatar: {
     public_id: string;
-    secure_url: string;
-  }
-  
-
-  export interface ICollection extends mongoose.Document {
-    title: string;
-    slug: string;
-    colors: string;
-    image: {};
-    views: number;
-    show: boolean;
-  }
-
-  export interface ISize extends mongoose.Document {
-    id: string;
-    size: string;
-  }
-  
-  export interface IOrder extends mongoose.Document {
-    name: string;
-    goodies: [
-      {
-        name: string;
-        price: number;
-        quantity: number;
-        total: number;
-      }
-    ];
-  
-    status: string;
-    email: string;
-    number?: number;
-    initDate: Date;
-  }
+    url: string;
+  };
+  role: string;
+  isActive: boolean;
+  phone: number;
+  address: string;
+}

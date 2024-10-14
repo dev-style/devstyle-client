@@ -35,6 +35,11 @@ export const menuItems = [
           path: "/admin/dashboard/orders",
           icon: <MdSupervisedUserCircle />,
         },
+        {
+          title: "Users",
+          path: "/admin/dashboard/users",
+          icon: <MdSupervisedUserCircle />,
+        },
       ],
     },
     {
