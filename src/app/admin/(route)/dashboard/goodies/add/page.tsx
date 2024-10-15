@@ -87,6 +87,8 @@ const AddGoodiePage = () => {
       likes: 0,
       fromCollection: [],
       sizes: [],
+      availableColors: "",
+      backgroundColors: "",
     },
   });
 
@@ -136,25 +138,70 @@ const AddGoodiePage = () => {
     }
   };
 
-  const handleAdditionalImagesChange = (
+  const extractColorFromFileName = (fileName: string): string | null => {
+    const match = fileName.match(/_([0-9A-Fa-f]{6})_/);
+    return match ? `#${match[1]}` : null;
+  };
+
+  const getBackgroundColor = (imageData: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0, img.width, img.height);
+        const imageData = ctx?.getImageData(0, 0, 1, 1);
+        if (imageData) {
+          const [r, g, b] = imageData.data;
+          resolve(`#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`);
+        } else {
+          resolve('#FFFFFF'); // Default to white if we can't get the color
+        }
+      };
+      img.src = imageData;
+    });
+  };
+
+  const handleAdditionalImagesChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = Array.from(e.target.files || []);
     const newImages: string[] = [];
+    const newColors: string[] = [];
+    const newBackgroundColors: string[] = [];
 
-    files.forEach(file => {
+    for (const file of files) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        newImages.push(base64String);
-        
-        if (newImages.length === files.length) {
-          setAdditionalImages(prev => [...prev, ...newImages]);
-          setValue("images", [...additionalImages, ...newImages]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+      const base64String = await new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      newImages.push(base64String);
+      
+      const color = extractColorFromFileName(file.name);
+      if (color) {
+        newColors.push(color);
+      }
+
+      const backgroundColor = await getBackgroundColor(base64String);
+      newBackgroundColors.push(backgroundColor);
+    }
+
+    setAdditionalImages(prev => [...prev, ...newImages]);
+    setValue("images", [...additionalImages, ...newImages]);
+    
+    // Update availableColors
+    const currentColors = watch("availableColors").split(",").filter(Boolean);
+    const uniqueColors = Array.from(new Set([...currentColors, ...newColors]));
+    setValue("availableColors", uniqueColors.join(","));
+
+    // Update backgroundColors
+    const currentBackgroundColors = watch("backgroundColors").split(",").filter(Boolean);
+    const uniqueBackgroundColors = Array.from(new Set([...currentBackgroundColors, ...newBackgroundColors]));
+    setValue("backgroundColors", uniqueBackgroundColors.join(","));
   };
 
   return (
@@ -367,70 +414,25 @@ const AddGoodiePage = () => {
               )}
             </div>
 
-            <div className="flex flex-col space-y-2">
-              <div className="relative">
-                <Controller
-                  name="availableColors"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder=" "
-                      className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 peer"
-                    />
-                  )}
-                />
-                <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                  Available Colors (comma-separated)
-                </label>
-              </div>
-              {errors.availableColors && (
-                <p className="text-red-500 text-sm">{errors.availableColors.message}</p>
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <div className="relative">
+            <div className="flex items-center">
               <Controller
-                name="backgroundColors"
+                name="show"
                 control={control}
                 render={({ field }) => (
                   <input
                     {...field}
-                    type="text"
-                    placeholder=" "
-                    className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 peer"
+                    type="checkbox"
+                    id="show"
+                    className="mr-2 h-5 w-5"
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
                   />
                 )}
               />
-              <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                Background Colors (comma-separated)
+              <label htmlFor="show" className="text-[var(--text)]">
+                Show Goodie
               </label>
             </div>
-            {errors.backgroundColors && (
-              <p className="text-red-500 text-sm">{errors.backgroundColors.message}</p>
-            )}
-          </div>
-
-          <div className="flex items-center">
-            <Controller
-              name="show"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="checkbox"
-                  id="show"
-                  className="mr-2 h-5 w-5"
-                  checked={field.value}
-                  onChange={(e) => field.onChange(e.target.checked)}
-                />
-              )}
-            />
-            <label htmlFor="show" className="text-[var(--text)]">
-              Show Goodie
-            </label>
           </div>
 
           <div className="space-y-4">
@@ -515,6 +517,52 @@ const AddGoodiePage = () => {
               />
             </div>
           </div>
+          <div className="flex flex-col space-y-2">
+            <div className="relative">
+              <Controller
+                name="availableColors"
+                control={control}
+                render={({ field }) => (
+                  <div
+                    {...field}
+                    className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
+                  >
+                    {field.value || "Colors will be extracted from images"}
+                  </div>
+                )}
+              />
+              <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 left-1">
+                Available Colors (extracted from images)
+              </label>
+            </div>
+            {errors.availableColors && (
+              <p className="text-red-500 text-sm">{errors.availableColors.message}</p>
+            )}
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <div className="relative">
+              <Controller
+                name="backgroundColors"
+                control={control}
+                render={({ field }) => (
+                  <div
+                    {...field}
+                    className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
+                  >
+                    {field.value || "Background colors will be extracted from images"}
+                  </div>
+                )}
+              />
+              <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 left-1">
+                Background Colors (extracted from images)
+              </label>
+            </div>
+            {errors.backgroundColors && (
+              <p className="text-red-500 text-sm">{errors.backgroundColors.message}</p>
+            )}
+          </div>
+
           <button
             type="submit"
             className="w-full p-4 bg-teal-500 text-white font-bold border-none rounded-lg cursor-pointer hover:bg-teal-600 transition duration-300"

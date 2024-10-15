@@ -77,3 +77,18 @@ export interface IUser extends mongoose.Document {
   phone: number;
   address: string;
 }
+
+export interface ICombo extends mongoose.Document {
+  title: string;
+  description: string;
+  price: number;
+  inPromo: boolean;
+  promoPercentage?: number;
+  items: string[]; // Array of Goodie IDs
+  mainImage: string;
+  images: string[];
+  availableColors: string[];
+  backgroundColors: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
