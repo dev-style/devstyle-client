@@ -1,7 +1,5 @@
 import { connectToDB } from "../lib/utils";
 import GoodieModel from "../models/goodie";
-import CollectionModel from "../models/collection"; // Import the Collection model
-import SizeModel from "../models/size"; // Import the Size model
 
 export const fetchGoodies = async (q: string, page: number) => {
   console.log(q);
@@ -11,20 +9,8 @@ export const fetchGoodies = async (q: string, page: number) => {
 
   try {
     await connectToDB();
-    
-    // Ensure models are registered
-    await Promise.all([
-      GoodieModel.init(),
-      CollectionModel.init(),
-      SizeModel.init()
-    ]);
-
-    const count = await GoodieModel.find({
-      name: { $regex: regex },
-    }).countDocuments();
+    const count = await GoodieModel.find({ name: { $regex: regex } }).countDocuments();
     const goodies = await GoodieModel.find({ name: { $regex: regex } })
-      .populate("sizes")
-      .populate("fromCollection")
       .limit(ITEM_PER_PAGE)
       .skip(ITEM_PER_PAGE * (page - 1));
     console.log("list of goodies", goodies);
