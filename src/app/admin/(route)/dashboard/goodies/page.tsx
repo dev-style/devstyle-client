@@ -56,7 +56,7 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 <td className="p-2.5">{goodie.name}</td>
                 <td className="p-2.5">
                   <div className="max-h-20 overflow-hidden max-w-[200px] overflow-y-auto">
-                    <div className="prose prose-sm">
+                    {/* <div className="prose prose-sm">
                       {goodie.description.length > 100 ? (
                         <div>
                           <div
@@ -72,7 +72,7 @@ const GoodiesPage = async ({ searchParams }: any) => {
                           }}
                         />
                       )}
-                    </div>
+                    </div> */}
                   </div>
                 </td>
                 <td className="p-2.5">{goodie.fromCollection.title}</td>
