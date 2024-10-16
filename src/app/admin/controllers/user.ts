@@ -89,7 +89,7 @@ export const authentificate = async (formData:FormData) => {
   console.log("username , password", username, password);
 
   try {
-    await signIn("credentials", { username, password });
+    // await signIn("credentials", { username, password });
   } catch (err: any) {
     if (err.message.includes("CredentialsSignin")) {
       return "Wrong Credentials";
