@@ -9,8 +9,12 @@ export const fetchGoodies = async (q: string, page: number) => {
 
   try {
     await connectToDB();
-    const count = await GoodieModel.find({ name: { $regex: regex } }).countDocuments();
+    const count = await GoodieModel.find({
+      name: { $regex: regex },
+    }).countDocuments();
     const goodies = await GoodieModel.find({ name: { $regex: regex } })
+      .populate("sizes")
+      .populate("fromCollection")
       .limit(ITEM_PER_PAGE)
       .skip(ITEM_PER_PAGE * (page - 1));
     console.log("list of goodies", goodies);

@@ -4929,7 +4929,7 @@ tiny-warning@^1.0.2:
   resolved "https://registry.npmjs.org/tiny-warning/-/tiny-warning-1.0.3.tgz"
   integrity sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==
 
-"tinymce@^7.0.0 || ^6.0.0 || ^5.5.1":
+"tinymce@^7.0.0 || ^6.0.0 || ^5.5.1", tinymce@^7.4.1:
   version "7.4.1"
   resolved "https://registry.npmjs.org/tinymce/-/tinymce-7.4.1.tgz"
   integrity sha512-g1Ieaio5YU+jLEQZkQyxTT8EY/im+TC/CFBPlqDBCNdsF8YQOeLMot+K6vmFOAXhNc85KhP1rC9Dn2X+iBFDGg==

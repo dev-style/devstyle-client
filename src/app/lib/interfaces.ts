@@ -26,6 +26,7 @@ export interface IGoodieForCart {
   fromCollection: ICollectionForCart;
   sizes: IGoodieSize[];
   color: string;
+  etsy:string;
 }
 
 export interface IUrlWithColor extends IUrl {
