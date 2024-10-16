@@ -13,17 +13,17 @@ export const fetchGoodies = async (q: string, page: number) => {
     await connectToDB();
     
     // Ensure models are registered
-    await Promise.all([
-      GoodieModel.init(),
-      CollectionModel.init(),
-      SizeModel.init()
-    ]);
+    // await Promise.all([
+    //   GoodieModel.init(),
+    //   CollectionModel.init(),
+    //   SizeModel.init()
+    // ]);
 
     const count = await GoodieModel.find({
       name: { $regex: regex },
     }).countDocuments();
     const goodies = await GoodieModel.find({ name: { $regex: regex } })
-      .populate("sizes")
+      // .populate("sizes")
       .limit(ITEM_PER_PAGE)
       .skip(ITEM_PER_PAGE * (page - 1));
     console.log("list of goodies", goodies);
