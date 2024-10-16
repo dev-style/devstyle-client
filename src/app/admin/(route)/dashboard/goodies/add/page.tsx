@@ -9,6 +9,7 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {fetchCollections} from "@/app/admin/controllers/collection";
 import { fetchSizes } from "@/app/admin/controllers/size";
+import { Editor } from '@tinymce/tinymce-react';
 
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -29,6 +30,7 @@ const goodieSchema = z.object({
   likes: z.number().default(0),
   mainImage: z.string().min(1, "Main image is required"),
   images: z.array(z.string()).optional(),
+  etsy: z.string().url("Invalid URL").optional(),
 });
 
 type GoodieFormData = z.infer<typeof goodieSchema>;
@@ -89,6 +91,7 @@ const AddGoodiePage = () => {
       sizes: [],
       availableColors: "",
       backgroundColors: "",
+      etsy: "",
     },
   });
 
@@ -243,11 +246,23 @@ const AddGoodiePage = () => {
                   name="description"
                   control={control}
                   render={({ field }) => (
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder=" "
-                      className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 peer"
+                    <Editor
+                      apiKey="88rw7imkx4lg0r7qxqpnl6avup60lw6uyuqij8zm9j8h5owv"
+                      init={{
+                        height: 300,
+                        menubar: false,
+                        plugins: [
+                          'advlist autolink lists link image charmap print preview anchor',
+                          'searchreplace visualblocks code fullscreen',
+                          'insertdatetime media table paste code help wordcount'
+                        ],
+                        toolbar: 'undo redo | formatselect | ' +
+                        'bold italic backcolor | alignleft aligncenter ' +
+                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                        'removeformat | help',
+                        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                      }}
+                      onEditorChange={(content) => field.onChange(content)}
                     />
                   )}
                 />
@@ -433,6 +448,29 @@ const AddGoodiePage = () => {
                 Show Goodie
               </label>
             </div>
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <div className="relative">
+              <Controller
+                name="etsy"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="url"
+                    placeholder=" "
+                    className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 peer"
+                  />
+                )}
+              />
+              <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                Etsy Link (Optional)
+              </label>
+            </div>
+            {errors.etsy && (
+              <p className="text-red-500 text-sm">{errors.etsy.message}</p>
+            )}
           </div>
 
           <div className="space-y-4">

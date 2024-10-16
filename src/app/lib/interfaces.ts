@@ -6,6 +6,7 @@ export interface IGoodie extends IGoodieForCart {
   availableColors: string[];
   likes: number;
   views: number;
+  description:string;
 }
 
 export interface IGoodieForCart {

@@ -9,7 +9,7 @@ export interface IGoodie extends mongoose.Document {
   price: number;
   inPromo: boolean;
   views: number;
-  size: Array<ISize>;
+  sizes: Array<ISize>;
   images: Array<{
     public_id: string;
     url: string;
@@ -22,6 +22,7 @@ export interface IGoodie extends mongoose.Document {
   backgroundColors: Array<string>;
   likes: number;
   show: boolean;
+  etsy: string;
 }
 
 export interface ISize extends mongoose.Document {
