@@ -25,6 +25,7 @@ export const addGoodie = async (formData: any) => {
     likes,
     mainImage,
     images,
+    etsy,
   } = formData;
 
   console.log("Données du goodie à envoyer:", {
@@ -40,6 +41,7 @@ export const addGoodie = async (formData: any) => {
     show,
     views,
     likes,
+    etsy,
   });
 
   try {
@@ -92,7 +94,7 @@ export const addGoodie = async (formData: any) => {
       price: Number(price),
       inPromo,
       promoPercentage: promoPercentage ? Number(promoPercentage) : undefined,
-      sizes,
+      sizes: sizes,
       availableColors: (availableColors as string)
         .split(",")
         .map((color: string) => color.trim()),
@@ -104,6 +106,7 @@ export const addGoodie = async (formData: any) => {
       likes: Number(likes),
       mainImage: uploadedMainImage,
       images: uploadedImages,
+      etsy,
     });
 
     await newGoodie.save();
@@ -146,17 +149,18 @@ const uploader = async (path: any) =>
   });
 
 export const addCollection = async (formData: FormData) => {
-  const { title, slug, colors, show, views, image } =
+  const { title, slug, colors, show, views, image, etsy } =
     Object.fromEntries(formData);
 
   console.log(
-    "title,slug,colors,show,views,image",
+    "title,slug,colors,show,views,image,etsy",
     title,
     slug,
     colors,
     show,
     views,
-    image
+    image,
+    etsy
   );
 
   try {
@@ -181,6 +185,7 @@ export const addCollection = async (formData: FormData) => {
       show: show === "true",
       views: Number(views),
       image: uploadedImage,
+      etsy,
     });
 
     await newCollection.save();

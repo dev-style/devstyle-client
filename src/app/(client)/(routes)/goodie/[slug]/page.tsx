@@ -21,7 +21,7 @@ import {
   Check,
   FavoriteRounded,
 } from "@mui/icons-material";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import OrderModal from "@/app/(client)/components/orderModal";
 import GoodieCardSkeleton from "@/app/(client)/components/goodieCardSkeleton";
@@ -48,6 +48,7 @@ const Goodie = (props: any) => {
   const match700 = useMediaQuery("(max-width:700px)");
   const match900 = useMediaQuery("(max-width:900px)");
   const pathname = usePathname();
+  const router = useRouter();
 
   const [isLoadingGoodie, setIsLoadingGoodie] = useState(true);
   const [isLoadingSomeCollectionGoodies, setIsLoadingSomeCollectionGoodies] =
@@ -60,6 +61,7 @@ const Goodie = (props: any) => {
   const [goodie, setGoodie] = useState<IGoodie>();
   const [modalOpen, setModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [userCountry, setUserCountry] = useState("");
 
   const changeMainImage = (image: IUrl) => {
     if (image.url) {
@@ -101,14 +103,14 @@ const Goodie = (props: any) => {
         if (response.status === 200) {
           setGoodie({
             ...response.data.message,
-            sizes: response.data.message.size.filter(
+            sizes: response.data.message.sizes.filter(
               (size: IGoodieSize) => size.size !== ""
             ),
             quantity: 1,
             selectedColor: response.data.message.availableColors[0],
             selectedSize:
-              response.data.message.size[
-                Math.floor(response.data.message.size?.length ?? 0) / 2
+              response.data.message.sizes[
+                Math.floor(response.data.message.sizes?.length ?? 0) / 2
               ]?.size,
           });
           setIsLoadingGoodie(false);
@@ -139,6 +141,20 @@ const Goodie = (props: any) => {
           style: { textAlign: "center" },
         });
         console.log(error);
+      });
+
+    // Fetch user's country
+    fetch(
+      "https://api.ipgeolocation.io/ipgeo?apiKey=faf527222d2a46c8a4ba42da7d2ab1d8"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("country location", data);
+        setUserCountry(data.country_name);
+      })
+      .catch((error) => {
+        console.error("Error fetching country:", error);
+        setUserCountry("Unknown"); // Set a default value in case of error
       });
   }, [props.slug]);
 
@@ -252,18 +268,28 @@ const Goodie = (props: any) => {
 
   const propertiesToSelect = ["name", "price", "quantity", "total"];
 
-
-
   const goodies = [
     {
       name: goodie?.name,
       price: goodie?.price,
       quantity: goodie?.quantity,
-      total: goodie? ( goodie.price || 0) * (goodie?.quantity || 0) :0
-    }
+      total: goodie ? (goodie.price || 0) * (goodie?.quantity || 0) : 0,
+    },
   ];
 
   console.log(goodies);
+
+  const handleOrderClick = () => {
+    if (userCountry === "Cameroon") {
+      setModalOpen(true);
+    } else {
+      if (goodie?.etsy) {
+        window.open(goodie.etsy, "_blank");
+      } else {
+        toast.error("Le lien Etsy n'est pas disponible pour ce produit.");
+      }
+    }
+  };
 
   return (
     <React.Fragment>
@@ -573,21 +599,36 @@ const Goodie = (props: any) => {
                     </Box>
                   )
                 )}
+
+                {isLoadingGoodie ? (
+                  <Skeleton
+                    animation="wave"
+                    variant="rectangular"
+                    height={40}
+                    width={100}
+                  />
+                ) : (
+                  <Box className="">
+                    <div dangerouslySetInnerHTML={{ __html: goodie?.description || '' }} />
+                  </Box>
+                )}
+
                 <Grid container spacing={match900 ? 0 : 1} className="buttons">
                   <Grid item xs={12} md={6} style={{ width: "100%" }}>
                     <Button
                       style={{ backgroundColor: "#220F00", color: "white" }}
                       disabled={isLoadingGoodie}
-                      onClick={() => setModalOpen(true)}
+                      onClick={handleOrderClick}
                     >
-                      Commander maintenant(
-                      <Image
-                        src={"/assets/icons/whatsapp-green.png"}
-                        alt="whatsapp devstyle"
-                        width={18}
-                        height={18}
-                      />
-                      )
+                      Commander maintenant
+                      {userCountry === "Cameroon" && (
+                        <Image
+                          src={"/assets/icons/whatsapp-green.png"}
+                          alt="whatsapp devstyle"
+                          width={18}
+                          height={18}
+                        />
+                      )}
                     </Button>
                   </Grid>
                   <Grid item xs={12} md={6} style={{ width: "100%" }}>

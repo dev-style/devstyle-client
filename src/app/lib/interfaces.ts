@@ -6,6 +6,7 @@ export interface IGoodie extends IGoodieForCart {
   availableColors: string[];
   likes: number;
   views: number;
+  description:string;
 }
 
 export interface IGoodieForCart {
@@ -25,6 +26,7 @@ export interface IGoodieForCart {
   fromCollection: ICollectionForCart;
   sizes: IGoodieSize[];
   color: string;
+  etsy:string;
 }
 
 export interface IUrlWithColor extends IUrl {
@@ -92,7 +94,7 @@ export interface ISocial {
 
 export interface IUser {
   id: string;
-  name: string;
+  username: string;
   email: string;
   authToken?: string;
 }
