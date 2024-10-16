@@ -54,31 +54,56 @@ const GoodiesPage = async ({ searchParams }: any) => {
                   </div>
                 </td>
                 <td className="p-2.5">{goodie.name}</td>
-                <td className="p-2.5">{goodie.description}</td>
+                <td className="p-2.5">
+                  <div className="max-h-20 overflow-hidden max-w-[200px] overflow-y-auto">
+                    <div className="prose prose-sm">
+                      {goodie.description.length > 100 ? (
+                        <div>
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: goodie.description.slice(0, 100) + "...",
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: goodie.description,
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </td>
                 <td className="p-2.5">{goodie.fromCollection.title}</td>
                 <td className="p-2.5">{goodie.price} CFA</td>
                 <td className="p-2.5">
-                  {goodie.inPromo ? `${goodie.promoPercentage}%` : 'No'}
+                  {goodie.inPromo ? `${goodie.promoPercentage}%` : "No"}
                 </td>
                 <td className="p-2.5">{goodie.views}</td>
-                <td className="p-2.5">{goodie.size.map(s => s.size).join(', ')}</td>
                 <td className="p-2.5">
-                  <span title={`Available: ${goodie.availableColors.join(', ')}`}>
+                  {goodie.sizes.map((s) => s.size).join(", ")}
+                </td>
+                <td className="p-2.5">
+                  <span
+                    title={`Available: ${goodie.availableColors.join(", ")}`}
+                  >
                     {goodie.availableColors.length}
                   </span>
-                  {' / '}
-                  <span title={`Background: ${goodie.backgroundColors.join(', ')}`}>
+                  {" / "}
+                  <span
+                    title={`Background: ${goodie.backgroundColors.join(", ")}`}
+                  >
                     {goodie.backgroundColors.length}
                   </span>
                 </td>
                 <td className="p-2.5">{goodie.likes}</td>
-                <td className="p-2.5">{goodie.show ? 'Yes' : 'No'}</td>
+                <td className="p-2.5">{goodie.show ? "Yes" : "No"}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <Pagination count={count} />
-
       </div>
     </div>
   );
