@@ -58,8 +58,8 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 <td className="p-2.5">
                   <div className="max-h-20 overflow-hidden max-w-[200px] overflow-y-auto">
                     {goodie.description ? (
-                      <>{parse(goodie.description)}</>
-                    ) : (
+                    <div dangerouslySetInnerHTML={{ __html: goodie?.description || '' }} />
+                  ) : (
                       <>No description</>
                     )}
                   </div>
