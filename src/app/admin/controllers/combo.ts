@@ -1,3 +1,5 @@
+"use server"
+import { ICombo } from "../lib/interfaces";
 import { connectToDB } from "../lib/utils";
 import ComboModel from "../models/combo";
 
@@ -21,4 +23,9 @@ export const fetchCombos = async (q: string, page: number) => {
     console.error("Error fetching combos:", err);
     throw new Error("Failed to fetch combos!");
   }
+};
+export const addCombo = async (data: ICombo) => {
+
+  console.log("combo data",data)
+ 
 };
