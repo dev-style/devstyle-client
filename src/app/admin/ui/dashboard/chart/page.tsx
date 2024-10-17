@@ -10,8 +10,7 @@ const Chart = (props: Props) => {
   return (
     <div className="h-[450px] bg-primary p-5 rounded-xl">
       <h2 className=" font-semibold text-text-light mb-5 ">Weekly Recap</h2>
-
-      <ResponsiveContainer width="100%" height="90%">
+      {/* <ResponsiveContainer width="100%" height="90%">
         <LineChart
           width={500}
           height={300}
@@ -40,7 +39,7 @@ const Chart = (props: Props) => {
             strokeDasharray="3 4 5 2"
           />
         </LineChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer> */}
     </div>
   );
 };
