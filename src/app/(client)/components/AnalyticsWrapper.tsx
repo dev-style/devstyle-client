@@ -1,10 +1,10 @@
 'use client'
 
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { pageview } from '../lib/gtag'
 
-export default function AnalyticsWrapper({ children }: { children: React.ReactNode }) {
+function AnalyticsContent() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -14,5 +14,16 @@ export default function AnalyticsWrapper({ children }: { children: React.ReactNo
     }
   }, [pathname, searchParams])
 
-  return <>{children}</>
+  return null
+}
+
+export default function AnalyticsWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <AnalyticsContent />
+      </Suspense>
+      {children}
+    </>
+  )
 }
