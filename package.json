@@ -38,6 +38,7 @@
     "eslint-config-next": "13.4.19",
     "express": "^4.18.2",
     "formik": "^2.4.5",
+    "html-react-parser": "^5.1.18",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.1",
     "next": "^14.2.13",
