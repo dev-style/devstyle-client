@@ -6,7 +6,7 @@ import GoodieModel from "../models/goodie";
 import SizeModel from "../models/size";
 
 export const fetchGoodies = async (q: string, page: number) => {
-  console.log(q);
+  console.log("Query:", q);
   const regex = new RegExp(q, "i");
 
   const ITEM_PER_PAGE = 5;
@@ -14,20 +14,29 @@ export const fetchGoodies = async (q: string, page: number) => {
   try {
     await connectToDB();
 
-   
-
     const count = await GoodieModel.find({
       name: { $regex: regex },
     }).countDocuments();
-    const goodies = await GoodieModel.find({ name: { $regex: regex } })
-      .populate("sizes")
-      .populate("fromCollection")
-      .limit(ITEM_PER_PAGE)
-      .skip(ITEM_PER_PAGE * (page - 1)).lean();
-    console.log("list of goodies", goodies);
+
+    const goodies = await GoodieModel.find({ name: { $regex: regex } }).limit(ITEM_PER_PAGE)
+      .skip(ITEM_PER_PAGE * (page - 1))
+      .lean();
+
+    console.log("Number of goodies found:", count);
+    console.log("First goodie:", goodies[0]);
+
+    if (!goodies || goodies.length === 0) {
+      console.log("No goodies found");
+      return { count: 0, goodies: [] };
+    }
+
     return { count, goodies };
   } catch (err) {
     console.error("Error fetching goodies:", err);
-    throw new Error("Failed to fetch goodies!");
+    if (err instanceof Error) {
+      throw new Error(`Failed to fetch goodies: ${err.message}`);
+    } else {
+      throw new Error("Failed to fetch goodies: Unknown error");
+    }
   }
 };
