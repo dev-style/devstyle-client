@@ -9,7 +9,7 @@ export const fetchGoodies = async (q: string, page: number) => {
   console.log("Query:", q);
   const regex = new RegExp(q, "i");
 
-  const ITEM_PER_PAGE = 5;
+  const ITEM_PER_PAGE = 15;
 
   try {
     await connectToDB();
@@ -29,6 +29,7 @@ export const fetchGoodies = async (q: string, page: number) => {
         path: 'fromCollection',
         model: CollectionModel
       })
+      .sort({ createdAt: -1 })
       .lean();
 
     console.log("Number of goodies found:", count);

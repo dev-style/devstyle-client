@@ -608,7 +608,7 @@ const Goodie = (props: any) => {
                     width={100}
                   />
                 ) : (
-                  <Box className="">
+                  <Box className="description">
                     <div dangerouslySetInnerHTML={{ __html: goodie?.description || '' }} />
                   </Box>
                 )}
