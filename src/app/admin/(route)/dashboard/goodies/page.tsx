@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { fetchGoodies } from "@/app/admin/controllers/goodie";
 import Pagination from "@/app/admin/ui/dashboard/pagination/page";
+import parse from "html-react-parser";
 
 type Props = {};
 
@@ -56,9 +57,11 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 <td className="p-2.5">{goodie.name}</td>
                 <td className="p-2.5">
                   <div className="max-h-20 overflow-hidden max-w-[200px] overflow-y-auto">
-                    <div className="prose prose-sm">
-                 {goodie.description}
-                    </div>
+                    {goodie.description ? (
+                      <>{parse(goodie.description)}</>
+                    ) : (
+                      <>No description</>
+                    )}
                   </div>
                 </td>
                 <td className="p-2.5">{goodie.fromCollection.title}</td>
