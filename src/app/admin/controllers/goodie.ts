@@ -18,7 +18,7 @@ export const fetchGoodies = async (q: string, page: number) => {
       name: { $regex: regex },
     }).countDocuments();
 
-    const goodies = await GoodieModel.find({ name: { $regex: regex } }).limit(ITEM_PER_PAGE)
+    const goodies = await GoodieModel.find({ name: { $regex: regex } }).limit(ITEM_PER_PAGE).populate("sizes").populate("fromCollection")
       .skip(ITEM_PER_PAGE * (page - 1))
       .lean();
 
