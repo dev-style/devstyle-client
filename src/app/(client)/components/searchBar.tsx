@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import "./searchBar.scss";
 import SearchIcon from "@mui/icons-material/Search";
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ICollectionForCart, IGoodie } from "@/app/lib/interfaces";
 
@@ -25,6 +25,7 @@ const SearchBar = ({ goodies }: any) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (inputValue) {
@@ -39,6 +40,21 @@ const SearchBar = ({ goodies }: any) => {
       setSuggestions([]);
     }
   }, [inputValue, goodies]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && 
+          !searchContainerRef.current.contains(event.target as Node) &&
+          !(event.target as Element).closest('.suggestions-list')) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -97,6 +113,7 @@ const SearchBar = ({ goodies }: any) => {
             }}
           >
             <Box
+              ref={searchContainerRef}
               className="search-bar"
               sx={{
                 width: "80%",

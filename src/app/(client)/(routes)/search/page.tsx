@@ -154,13 +154,18 @@ const SearchPage = () => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          <Box sx={{ 
+            display: "flex", 
+            flexWrap: "wrap", 
+            gap: "10px",
+            justifyContent: { xs: "center", sm: "flex-start" }
+          }}>
             {isLoadingGoodies ? (
               Array.from(new Array(8)).map((_, index) => (
                 <GoodieCardSkeleton key={index} search={true} />
               ))
             ) : filteredGoodies.length === 0 ? (
-              <Typography sx={{ fontStyle: "italic", width: "100%", margin: "25px 0", fontSize: "22px", fontWeight: "bold" }}>
+              <Typography sx={{ fontStyle: "italic", width: "100%", margin: "25px 0", fontSize: "22px", fontWeight: "bold", textAlign: "center" }}>
                 Aucun résultat trouvé
               </Typography>
             ) : (
