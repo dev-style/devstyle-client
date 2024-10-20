@@ -3,7 +3,7 @@ const nextConfig = (module.exports = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-typescript: {
+  typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
     // your project has type errors.
@@ -25,7 +25,7 @@ typescript: {
       bodySizeLimit: '4mb'
     }
   },
-
+  httpTimeout: 60000, // Increase timeout to 60 seconds (60000 milliseconds)
   env: {
     DB_URI:
       // "mongodb+srv://Dev-scott:Scotty-dev-camer123@devstyle.45jjjdi.mongodb.net/devstyle?retryWrites=true&w=majority",
