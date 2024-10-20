@@ -1,4 +1,3 @@
-import ProtectedRoute from "./lib/protectedRoute";
 import "./ui/globals.css";
 export const metadata = {
   title: "Admin | Devstyle",
@@ -11,8 +10,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedRoute>
       <div>{children}</div>
-    </ProtectedRoute>
   );
 }

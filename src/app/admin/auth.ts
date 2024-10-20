@@ -9,7 +9,7 @@ const login = async (credentials:{username:string,password:string}) => {
   try {
     connectToDB();
     const user = await UserModel.findOne({ username: credentials.username });
-
+    console.log("user in login function", user);
     if (!user || user.role!="admin") throw new Error("Wrong credentials!");
 
     const isPasswordCorrect = await bcrypt.compare(
