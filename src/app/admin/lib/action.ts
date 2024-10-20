@@ -47,35 +47,41 @@ export const addGoodie = async (formData: any) => {
   try {
     await connectToDB();
 
-    // Upload main image
+    // Upload main image and additional images concurrently
+    const uploadPromises = [];
     let uploadedMainImage = { public_id: "", url: "" };
+
     if (mainImage) {
-      const mainImageResult: ICloudinaryUploadResponse = (await uploader(
-        mainImage
-      )) as ICloudinaryUploadResponse;
-      console.log("mainImageResult", mainImageResult);
-      uploadedMainImage = {
-        public_id: mainImageResult.public_id,
-        url: mainImageResult.secure_url,
-      };
+      uploadPromises.push(
+        uploader(mainImage).then((result: ICloudinaryUploadResponse) => {
+          uploadedMainImage = {
+            public_id: result.public_id,
+            url: result.secure_url,
+          };
+        })
+      );
     }
 
-    // Upload additional images
     const uploadedImages = [];
     if (images) {
       console.log("les image existe :", images);
-      for (const image of images) {
-        const myCloud: ICloudinaryUploadResponse = (await uploader(
-          image
-        )) as ICloudinaryUploadResponse;
-
-        uploadedImages.push({
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        });
-      }
-      console.log("uploadedImages", uploadedImages);
+      uploadPromises.push(
+        ...images.map((image: any) =>
+          uploader(image).then((result: ICloudinaryUploadResponse) => {
+            uploadedImages.push({
+              public_id: result.public_id,
+              url: result.secure_url,
+            });
+          })
+        )
+      );
     }
+
+    // Wait for all uploads to complete
+    await Promise.all(uploadPromises);
+
+    console.log("mainImageResult", uploadedMainImage);
+    console.log("uploadedImages", uploadedImages);
 
     // Generate unique slug
     const collection = await CollectionModel.findById(fromCollection);
