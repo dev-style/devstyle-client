@@ -1,26 +1,36 @@
 "use client";
 
 import { FaUser, FaLock } from "react-icons/fa";
-import { authentificate } from "../../controllers/user";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 const LoginForm = () => {
   const [error, setError] = useState<string|null>(null);
 
-  const handleSubmit = async (event:React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
+    
+    const formData = new FormData(event.currentTarget);
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
+
     try {
-      const result = await authentificate(formData);
-      console.log("result", result);
-      if (result) {
-        setError(result);
+      console.log("username",username)
+      console.log("password",password)
+      const result = await signIn("credentials", {
+        username,
+        password,
+        callbackUrl:'http://localhost:3000/admin/dashboard',
+      });
+
+      if (result?.error) {
+        setError("Invalid username or password");
       } else {
-        setError(null);
-        // Handle successful login here (e.g., redirect)
+        // Redirect or update state on successful login
+        // For example: router.push("/dashboard");
       }
-    } catch (err) {
-      setError("An unexpected error occurred");
+    } catch (error) {
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -34,6 +44,7 @@ const LoginForm = () => {
             placeholder="Username"
             name="username"
             className="appearance-none bg-transparent border-none w-full text-text-light mr-3 py-1 px-2 leading-tight focus:outline-none"
+            required
           />
         </div>
       </div>
@@ -45,6 +56,7 @@ const LoginForm = () => {
             placeholder="Password"
             name="password"
             className="appearance-none bg-transparent border-none w-full text-text-light mr-3 py-1 px-2 leading-tight focus:outline-none"
+            required
           />
         </div>
       </div>

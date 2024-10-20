@@ -7,7 +7,7 @@ import UserModel from "../models/user";
 import { redirect } from "next/navigation";
 import uploadToCloudinary from "../lib/cloudinaryConfig";
 import bcrypt from "bcrypt";
-import { signIn } from "../auth";
+import { signIn } from "next-auth/react";
 
 export const fetchUsers = async (q: string, page: number) => {
   console.log(q);
@@ -83,17 +83,17 @@ export const addUser = async (user: IUser) => {
   redirect("/admin/dashboard/users");
 };
 
-export const authentificate = async (formData:FormData) => {
-  const { username, password } = Object.fromEntries(formData);
+// export const authentificate = async (formData:FormData) => {
+//   const { username, password } = Object.fromEntries(formData);
 
-  console.log("username , password", username, password);
+//   console.log("username , password", username, password);
 
-  try {
-    // await signIn("credentials", { username, password });
-  } catch (err: any) {
-    if (err.message.includes("CredentialsSignin")) {
-      return "Wrong Credentials";
-    }
-    throw err;
-  }
-};
+//   try {
+//     await signIn("credentials", { username, password ,redirect:false});
+//   } catch (err: any) {
+//     if (err.message.includes("CredentialsSignin")) {
+//       return "Wrong Credentials";
+//     }
+//     throw err;
+//   }
+// };
