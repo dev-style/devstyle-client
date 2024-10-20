@@ -3,10 +3,11 @@
 import { FaUser, FaLock } from "react-icons/fa";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [error, setError] = useState<string|null>(null);
-
+  const router = useRouter()
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
@@ -20,14 +21,14 @@ const LoginForm = () => {
       const result = await signIn("credentials", {
         username,
         password,
-        callbackUrl:'http://localhost:3000/admin/dashboard',
+        redirect: false,
       });
 
       if (result?.error) {
         setError("Invalid username or password");
       } else {
         // Redirect or update state on successful login
-        // For example: router.push("/dashboard");
+        router.push("/admin/dashboard");
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
