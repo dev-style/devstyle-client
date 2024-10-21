@@ -22,10 +22,10 @@ const nextConfig = (module.exports = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '4mb'
+      bodySizeLimit: '2gb' // Maximum allowed value
     }
   },
-  httpTimeout: 60000, // Increase timeout to 60 seconds (60000 milliseconds)
+  httpTimeout: 300000, // Increase timeout to 5 minutes (300000 milliseconds), which is the maximum value
   env: {
     DB_URI:
       // "mongodb+srv://Dev-scott:Scotty-dev-camer123@devstyle.45jjjdi.mongodb.net/devstyle?retryWrites=true&w=majority",
