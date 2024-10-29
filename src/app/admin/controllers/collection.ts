@@ -8,7 +8,7 @@ export async function fetchCollections() {
   try {
     await connectToDB();
 
-    const collections = await CollectionModel.find({}).sort({ size: 1 });
+    const collections = await CollectionModel.find({}).sort({ size: 1 }).lean();
 
     return {collections}
   

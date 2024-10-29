@@ -6,12 +6,12 @@ import * as z from "zod";
 import { useState, useRef, useEffect } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import {fetchCollections} from "@/app/admin/controllers/collection";
+import { fetchGoodie, updateGoodie } from "@/app/admin/controllers/goodie";
+import { fetchCollections } from "@/app/admin/controllers/collection";
 import { fetchSizes } from "@/app/admin/controllers/size";
-import { Editor } from '@tinymce/tinymce-react';
-import { addGoodie } from "@/app/admin/controllers/goodie";
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { Editor } from "@tinymce/tinymce-react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -75,7 +75,8 @@ const ImagePreview = ({
   );
 };
 
-const AddGoodiePage = () => {
+const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
+  const { id } = params;
   const router = useRouter();
   const {
     control,
@@ -101,31 +102,83 @@ const AddGoodiePage = () => {
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
-  const [collections, setCollections] = useState<{ _id: string; title: string }[]>([]);
-  const [availableSizes, setAvailableSizes] = useState<{ _id: string; size: string }[]>([]);
+  const [collections, setCollections] = useState<
+    { _id: string; title: string }[]
+  >([]);
+  const [availableSizes, setAvailableSizes] = useState<
+    { _id: string; size: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchData = async () => {
-      const {  collections } = await fetchCollections();
+      const { goodie } = await fetchGoodie(id);
+      console.log("single goodie", goodie);
+      const { collections } = await fetchCollections();
+      console.log("the collections i have", collections);
       setCollections(collections);
 
       const { sizes } = await fetchSizes();
-      setAvailableSizes(sizes);
+      setAvailableSizes(sizes.map(size => ({
+        _id: size._id.toString(),
+        size: size.size,
+      })));
+
+      // Set the default values of the form fields with the fetched goodie data
+      setValue("name", goodie.name);
+      setValue("description", goodie.description);
+      setValue("fromCollection", goodie.fromCollection._id.toString());
+      setValue("price", goodie.price);
+      setValue("inPromo", goodie.inPromo);
+      setValue("promoPercentage", goodie.promoPercentage);
+      setValue(
+        "sizes",
+        goodie.sizes.map((size) => size._id.toString())
+      );
+      setValue("show", goodie.show);
+      setValue("etsy", goodie.etsy);
+      setValue(
+        "availableColors",
+        goodie.availableColors
+      );
+      setValue(
+        "backgroundColors",
+        goodie.backgroundColors
+      );
+      setValue("mainImage", goodie.mainImage.url);
+      const convertCloudinaryUrlToBase64 = async (url: string) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        const base64String = await new Promise((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+        console.log("base64String", base64String);
+        return base64String;
+      };
+
+      const base64Images = await Promise.all(
+        goodie.images.map(async (imageUrl) => {
+          const base64String = await convertCloudinaryUrlToBase64(imageUrl.url);
+          return base64String;
+        })
+      );
+
+      setAdditionalImages(base64Images);
     };
     fetchData();
-  },[])
+  }, []);
 
   const onSubmit = async (data: GoodieFormData) => {
     setIsLoading(true);
     try {
-      await addGoodie(data);
-      router.push('/admin/dashboard/goodies');
+      await updateGoodie(id, data);
+      router.push("/admin/dashboard/goodies");
     } catch (error) {
-      toast.error('An error occurred while adding the goodie.');
+      toast.error("An error occurred while updating the goodie.");
     } finally {
       setIsLoading(false);
-      router.push('/admin/dashboard/goodies');
     }
   };
 
@@ -161,17 +214,19 @@ const AddGoodiePage = () => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
         canvas.width = img.width;
         canvas.height = img.height;
         ctx?.drawImage(img, 0, 0, img.width, img.height);
         const imageData = ctx?.getImageData(0, 0, 1, 1);
         if (imageData) {
           const [r, g, b] = imageData.data;
-          resolve(`#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`);
+          resolve(
+            `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`
+          );
         } else {
-          resolve('#FFFFFF'); // Default to white if we can't get the color
+          resolve("#FFFFFF"); // Default to white if we can't get the color
         }
       };
       img.src = imageData;
@@ -194,7 +249,7 @@ const AddGoodiePage = () => {
       });
 
       newImages.push(base64String);
-      
+
       const color = extractColorFromFileName(file.name);
       if (color) {
         newColors.push(color);
@@ -204,17 +259,21 @@ const AddGoodiePage = () => {
       newBackgroundColors.push(backgroundColor);
     }
 
-    setAdditionalImages(prev => [...prev, ...newImages]);
+    setAdditionalImages((prev) => [...prev, ...newImages]);
     setValue("images", [...additionalImages, ...newImages]);
-    
+
     // Update availableColors
     const currentColors = watch("availableColors").split(",").filter(Boolean);
     const uniqueColors = Array.from(new Set([...currentColors, ...newColors]));
     setValue("availableColors", uniqueColors.join(","));
 
     // Update backgroundColors
-    const currentBackgroundColors = watch("backgroundColors").split(",").filter(Boolean);
-    const uniqueBackgroundColors = Array.from(new Set([...currentBackgroundColors, ...newBackgroundColors]));
+    const currentBackgroundColors = watch("backgroundColors")
+      .split(",")
+      .filter(Boolean);
+    const uniqueBackgroundColors = Array.from(
+      new Set([...currentBackgroundColors, ...newBackgroundColors])
+    );
     setValue("backgroundColors", uniqueBackgroundColors.join(","));
   };
 
@@ -222,7 +281,7 @@ const AddGoodiePage = () => {
     <DndProvider backend={HTML5Backend}>
       <div className="bg-primary p-8 rounded-lg mt-5 shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-left text-[var(--text)]">
-          Add New Goodie
+          Update Goodie
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* ... (previous form fields remain unchanged) ... */}
@@ -263,17 +322,20 @@ const AddGoodiePage = () => {
                         height: 300,
                         menubar: false,
                         plugins: [
-                          'advlist autolink lists link image charmap print preview anchor',
-                          'searchreplace visualblocks code fullscreen',
-                          'insertdatetime media table paste code help wordcount'
+                          "advlist autolink lists link image charmap print preview anchor",
+                          "searchreplace visualblocks code fullscreen",
+                          "insertdatetime media table paste code help wordcount",
                         ],
-                        toolbar: 'undo redo | formatselect | ' +
-                        'bold italic backcolor | alignleft aligncenter ' +
-                        'alignright alignjustify | bullist numlist outdent indent | ' +
-                        'removeformat | help',
-                        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                        toolbar:
+                          "undo redo | formatselect | " +
+                          "bold italic backcolor | alignleft aligncenter " +
+                          "alignright alignjustify | bullist numlist outdent indent | " +
+                          "removeformat | help",
+                        content_style:
+                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
                       }}
                       onEditorChange={(content) => field.onChange(content)}
+                      value={field.value}
                     />
                   )}
                 />
@@ -282,7 +344,9 @@ const AddGoodiePage = () => {
                 </label>
               </div>
               {errors.description && (
-                <p className="text-red-500 text-sm">{errors.description.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.description.message}
+                </p>
               )}
             </div>
 
@@ -303,7 +367,6 @@ const AddGoodiePage = () => {
                           )
                         )
                       }
-                      
                     >
                       <option value="" disabled hidden></option>
                       {collections.map((collection) => (
@@ -318,13 +381,19 @@ const AddGoodiePage = () => {
                   From Collection
                 </label>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--text)]">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  <svg
+                    className="fill-current h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                   </svg>
                 </div>
               </div>
               {errors.fromCollection && (
-                <p className="text-red-500 text-sm">{errors.fromCollection.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.fromCollection.message}
+                </p>
               )}
             </div>
 
@@ -391,7 +460,9 @@ const AddGoodiePage = () => {
                 </div>
               </div>
               {errors.promoPercentage && (
-                <p className="text-red-500 text-sm">{errors.promoPercentage.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.promoPercentage.message}
+                </p>
               )}
             </div>
           </div>
@@ -414,7 +485,6 @@ const AddGoodiePage = () => {
                             )
                           )
                         }
-                        
                       >
                         <option value="" disabled hidden></option>
                         {availableSizes.map((size) => (
@@ -424,8 +494,12 @@ const AddGoodiePage = () => {
                         ))}
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--text)]">
-                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                        <svg
+                          className="fill-current h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                         </svg>
                       </div>
                     </div>
@@ -523,7 +597,9 @@ const AddGoodiePage = () => {
                 )}
               />
               {errors.mainImage && (
-                <p className="text-red-500 text-sm">{errors.mainImage.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.mainImage.message}
+                </p>
               )}
             </div>
             <div className="flex flex-col space-y-2">
@@ -585,7 +661,9 @@ const AddGoodiePage = () => {
               </label>
             </div>
             {errors.availableColors && (
-              <p className="text-red-500 text-sm">{errors.availableColors.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.availableColors.message}
+              </p>
             )}
           </div>
 
@@ -599,7 +677,8 @@ const AddGoodiePage = () => {
                     {...field}
                     className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
                   >
-                    {field.value || "Background colors will be extracted from images"}
+                    {field.value ||
+                      "Background colors will be extracted from images"}
                   </div>
                 )}
               />
@@ -608,7 +687,9 @@ const AddGoodiePage = () => {
               </label>
             </div>
             {errors.backgroundColors && (
-              <p className="text-red-500 text-sm">{errors.backgroundColors.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.backgroundColors.message}
+              </p>
             )}
           </div>
 
@@ -619,14 +700,30 @@ const AddGoodiePage = () => {
           >
             {isLoading ? (
               <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Adding Goodie...
               </span>
             ) : (
-              'Add Goodie'
+              "Add Goodie"
             )}
           </button>
         </form>
@@ -635,4 +732,4 @@ const AddGoodiePage = () => {
   );
 };
 
-export default AddGoodiePage;
+export default SingleGoodiePage;
