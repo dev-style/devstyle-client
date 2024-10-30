@@ -5,7 +5,6 @@ import Image from "next/image";
 import Pagination from "@/app/admin/ui/dashboard/pagination/page";
 import { fetchCombos } from "@/app/admin/controllers/combo";
 import { ICombo } from "@/app/admin/lib/interfaces";
-import parse from 'html-react-parser';
 
 type Props = {};
 
@@ -52,7 +51,7 @@ const CombosPage = async ({ searchParams }: any) => {
                   </div>
                 </td>
                 <td className="p-2.5">{combo.title}</td>
-                <td className="p-2.5">{parse(combo.description)}</td>
+                <td className="p-2.5">{combo.description}</td>
                 <td className="p-2.5">{combo.price} CFA</td>
                 <td className="p-2.5">
                   {combo.inPromo ? `${combo.promoPercentage}%` : "No"}

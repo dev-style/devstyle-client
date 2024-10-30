@@ -8,7 +8,7 @@ export async function fetchSizes() {
   try {
     await connectToDB();
 
-    const sizes = await SizeModel.find({}).sort({ size: 1 });
+    const sizes = await SizeModel.find({}).sort({ size: 1 }).lean();
 
     return {sizes}
   

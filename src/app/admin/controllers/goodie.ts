@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import uploadToCloudinary from "../lib/cloudinaryConfig";
@@ -7,6 +7,28 @@ import { connectToDB } from "../lib/utils";
 import CollectionModel from "../models/collection";
 import GoodieModel from "../models/goodie";
 import SizeModel from "../models/size";
+
+export const fetchGoodie = async (id: string) => {
+  try {
+    await connectToDB();
+    const goodie = await GoodieModel.findById(id).populate({
+      path: "sizes",
+      model: SizeModel,
+    }).populate({
+      path: "fromCollection",
+      model: CollectionModel,
+    }).lean();
+    if (!goodie) {
+      console.log("Goodie not found");
+      return null;
+    }
+    console.log("Goodie found:", goodie);
+    return {goodie};
+  } catch (error) {
+    console.error("Error fetching goodie:", error);
+    throw new Error(`Failed to fetch goodie: ${error.message}`);
+  }
+};
 
 export const fetchGoodies = async (q: string, page: number) => {
   console.log("Query:", q);
@@ -25,12 +47,12 @@ export const fetchGoodies = async (q: string, page: number) => {
       .limit(ITEM_PER_PAGE)
       .skip(ITEM_PER_PAGE * (page - 1))
       .populate({
-        path: 'sizes',
-        model: SizeModel
+        path: "sizes",
+        model: SizeModel,
       })
       .populate({
-        path: 'fromCollection',
-        model: CollectionModel
+        path: "fromCollection",
+        model: CollectionModel,
       })
       .sort({ createdAt: -1 })
       .lean();
@@ -54,8 +76,10 @@ export const fetchGoodies = async (q: string, page: number) => {
   }
 };
 
+export const updateGoodie= async (id:string,data:any)=>{
+  console.log("goodie data i updated",data)
 
-
+}
 
 export const addGoodie = async (formData: any) => {
   const {

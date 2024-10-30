@@ -12,6 +12,7 @@ const GoodiesPage = async ({ searchParams }: any) => {
   const q = searchParams?.q || "";
   const page = searchParams?.page || 1;
   const { count, goodies } = await fetchGoodies(q, page);
+  console.log("all goodies", goodies);
 
   return (
     <div className="bg-[var(--bgSoft)] p-5 rounded-lg mt-5">
@@ -38,6 +39,8 @@ const GoodiesPage = async ({ searchParams }: any) => {
               <td className="p-2.5">Colors</td>
               <td className="p-2.5">Likes</td>
               <td className="p-2.5">Show</td>
+              <td className="p-2.5">Edite</td>
+              <td className="p-2.5">Delete</td>
             </tr>
           </thead>
           <tbody>
@@ -58,8 +61,12 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 <td className="p-2.5">
                   <div className="max-h-20 overflow-hidden max-w-[200px] overflow-y-auto">
                     {goodie.description ? (
-                    <div dangerouslySetInnerHTML={{ __html: goodie?.description || '' }} />
-                  ) : (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: goodie?.description || "",
+                        }}
+                      />
+                    ) : (
                       <>No description</>
                     )}
                   </div>
@@ -88,6 +95,14 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 </td>
                 <td className="p-2.5">{goodie.likes}</td>
                 <td className="p-2.5">{goodie.show ? "Yes" : "No"}</td>
+                <td className="p-2.5">
+                  {" "}
+                  <Link href={`/admin/dashboard/goodies/${goodie._id}`}>
+                    {" "}
+                    Edit
+                  </Link>
+                </td>
+                <td className="p-2.5">Delete</td>
               </tr>
             ))}
           </tbody>
