@@ -124,8 +124,8 @@ const AddGoodiePage = () => {
     } catch (error) {
       toast.error('An error occurred while adding the goodie.');
     } finally {
-      setIsLoading(false);
       router.push('/admin/dashboard/goodies');
+      setIsLoading(false);
     }
   };
 

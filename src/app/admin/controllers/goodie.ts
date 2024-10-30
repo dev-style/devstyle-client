@@ -11,19 +11,22 @@ import SizeModel from "../models/size";
 export const fetchGoodie = async (id: string) => {
   try {
     await connectToDB();
-    const goodie = await GoodieModel.findById(id).populate({
-      path: "sizes",
-      model: SizeModel,
-    }).populate({
-      path: "fromCollection",
-      model: CollectionModel,
-    }).lean();
+    const goodie = await GoodieModel.findById(id)
+      .populate({
+        path: "sizes",
+        model: SizeModel,
+      })
+      .populate({
+        path: "fromCollection",
+        model: CollectionModel,
+      })
+      .lean();
     if (!goodie) {
       console.log("Goodie not found");
       return null;
     }
-    console.log("Goodie found:", goodie);
-    return {goodie};
+    // console.log("Goodie found:", goodie);
+    return { goodie };
   } catch (error) {
     console.error("Error fetching goodie:", error);
     throw new Error(`Failed to fetch goodie: ${error.message}`);
@@ -76,10 +79,86 @@ export const fetchGoodies = async (q: string, page: number) => {
   }
 };
 
-export const updateGoodie= async (id:string,data:any)=>{
-  console.log("goodie data i updated",data)
+export const updateGoodie = async (id: string, data: any) => {
+  console.log("goodie data to be updated", id, data);
 
-}
+  try {
+    await connectToDB();
+
+    // Upload main image and additional images concurrently
+    const uploadPromises = [];
+    let uploadedMainImage = {};
+
+    // Check if mainImage is not a string to proceed with upload
+    if (data.mainImage.startsWith("data:image")) {
+      uploadPromises.push(
+        uploader(data.mainImage).then((result: ICloudinaryUploadResponse) => {
+          uploadedMainImage = {
+            public_id: result.public_id,
+            url: result.secure_url,
+          };
+        })
+      );
+    }
+
+    const uploadedImages: { public_id: string; url: string }[] = [];
+    if (data.images) {
+      console.log("images exist:", data.images);
+      uploadPromises.push(
+        ...data.images.map((image: any) =>
+          uploader(image).then((result: ICloudinaryUploadResponse) => {
+            uploadedImages.push({
+              public_id: result.public_id,
+              url: result.secure_url,
+            });
+          })
+        )
+      );
+    }
+
+    // Wait for all uploads to complete
+    await Promise.all(uploadPromises);
+
+    console.log("mainImageResult", uploadedMainImage);
+    console.log("uploadedImages", uploadedImages);
+
+    // Generate unique slug
+    // const collection = await CollectionModel.findById(data.fromCollection);
+
+    // if (!collection) {
+    //   throw new Error("Collection not found");
+    // }
+
+    // edit goodie feature
+    const updateGoodie = await GoodieModel.findByIdAndUpdate(id, {
+      name: data.name,
+      description: data.description,
+      fromCollection: data.fromCollection,
+      price: data.price,
+      inPromo: data.inPromo,
+      promoPercentage: data.promoPercentage,
+      sizes: data.sizes,
+      availableColors: data.availableColors,
+      backgroundColors: data.backgroundColors,
+      show: data.show,
+      views: data.views,
+      likes: data.likes,
+      etsy: data.etsy,
+      images: uploadedImages,
+      ...(Object.keys(uploadedMainImage).length > 0
+        ? { mainImage: uploadedMainImage }
+        : {}),
+    });
+
+    console.log("Goodie updated successfully:", updateGoodie);
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(`Failed to edit goodies: ${err.message}`);
+    } else {
+      throw new Error("Failed to edit goodies: Unknown error");
+    }
+  }
+};
 
 export const addGoodie = async (formData: any) => {
   const {
