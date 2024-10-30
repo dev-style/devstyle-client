@@ -31,7 +31,7 @@ const goodieSchema = z.object({
   views: z.number().default(0),
   likes: z.number().default(0),
   mainImage: z.string().min(1, "Main image is required"),
-  images: z.array(z.string()).optional(),
+  images: z.union([z.array(z.string()), z.array(z.object({ url: z.string() }))]).optional(),
   etsy: z.string().url("Invalid URL").optional(),
 });
 
@@ -119,15 +119,17 @@ const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
       setCollections(collections);
 
       const { sizes } = await fetchSizes();
-      setAvailableSizes(sizes.map(size => ({
-        _id: size._id.toString(),
-        size: size.size,
-      })));
+      setAvailableSizes(
+        sizes.map((size) => ({
+          _id: size._id.toString(),
+          size: size.size,
+        }))
+      );
 
       // Set the default values of the form fields with the fetched goodie data
       setValue("name", goodie.name);
       setValue("description", goodie.description);
-      setValue("fromCollection", goodie.fromCollection._id.toString());
+      setValue("fromCollection", [goodie.fromCollection._id]);
       setValue("price", goodie.price);
       setValue("inPromo", goodie.inPromo);
       setValue("promoPercentage", goodie.promoPercentage);
@@ -137,15 +139,11 @@ const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
       );
       setValue("show", goodie.show);
       setValue("etsy", goodie.etsy);
-      setValue(
-        "availableColors",
-        goodie.availableColors
-      );
-      setValue(
-        "backgroundColors",
-        goodie.backgroundColors
-      );
+      setValue("availableColors", goodie.availableColors.join(","));
+      setValue("backgroundColors", goodie.backgroundColors.join(","));
       setValue("mainImage", goodie.mainImage.url);
+      setValue("images", goodie.images);
+      
       const convertCloudinaryUrlToBase64 = async (url: string) => {
         const response = await fetch(url);
         const blob = await response.blob();
@@ -171,13 +169,16 @@ const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
   }, []);
 
   const onSubmit = async (data: GoodieFormData) => {
+    console.log("all the data i wanna update", data);
     setIsLoading(true);
     try {
+    
       await updateGoodie(id, data);
       router.push("/admin/dashboard/goodies");
     } catch (error) {
       toast.error("An error occurred while updating the goodie.");
     } finally {
+      router.push("/admin/dashboard/goodies");
       setIsLoading(false);
     }
   };
