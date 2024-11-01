@@ -1,4 +1,4 @@
-export const GA_MEASUREMENT_ID = 'G-YYXJ342517' // Remplacez par votre ID de mesure
+export const GA_MEASUREMENT_ID = 'G-56ZB7XCQHC' // Remplacez par votre ID de mesure
 
 // Fonction pour envoyer des pages vues
 export const pageview = (url) => {

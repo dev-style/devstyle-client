@@ -90,7 +90,10 @@ export const updateGoodie = async (id: string, data: any) => {
     let uploadedMainImage = {};
 
     // Check if mainImage is not a string to proceed with upload
-    if (data.mainImage.startsWith("data:image")) {
+    if (
+      typeof data.mainImage == "string" &&
+      data.mainImage.startsWith("data:image")
+    ) {
       uploadPromises.push(
         uploader(data.mainImage).then((result: ICloudinaryUploadResponse) => {
           uploadedMainImage = {
@@ -105,14 +108,17 @@ export const updateGoodie = async (id: string, data: any) => {
     if (data.images) {
       console.log("images exist:", data.images);
       uploadPromises.push(
-        ...data.images.map((image: any) =>
-          uploader(image).then((result: ICloudinaryUploadResponse) => {
-            uploadedImages.push({
-              public_id: result.public_id,
-              url: result.secure_url,
+        ...data.images.map((image: any) => {
+          if (typeof image === "string" && image.startsWith("data:image")) {
+            return uploader(image).then((result: ICloudinaryUploadResponse) => {
+              uploadedImages.push({
+                public_id: result.public_id,
+                url: result.secure_url,
+              });
             });
-          })
-        )
+          }
+          return Promise.resolve(); // Skip non-base64 strings
+        })
       );
     }
 
@@ -144,7 +150,8 @@ export const updateGoodie = async (id: string, data: any) => {
       views: data.views,
       likes: data.likes,
       etsy: data.etsy,
-      images: uploadedImages,
+      // images: uploadedImages,
+      ...(uploadedImages.length > 0 ? { images: uploadPromises } : {}),
       ...(Object.keys(uploadedMainImage).length > 0
         ? { mainImage: uploadedMainImage }
         : {}),
@@ -158,6 +165,8 @@ export const updateGoodie = async (id: string, data: any) => {
       throw new Error("Failed to edit goodies: Unknown error");
     }
   }
+
+  revalidatePath("/admin/dashboard/goodies");
 };
 
 export const addGoodie = async (formData: any) => {
