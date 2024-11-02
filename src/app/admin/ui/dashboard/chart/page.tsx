@@ -1,12 +1,36 @@
-"use client"
+"use client";
 
 import { chartData } from "@/app/admin/lib/data";
-import React from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
+import React, { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { google } from "googleapis";
+import { getAnalyticsData } from "@/app/admin/lib/googleAnalytics";
+import { GoogleAuth } from "google-auth-library";
 type Props = {};
 
 const Chart = (props: Props) => {
+  const [data, setData] = useState([]);
+  const [chartData, setChartData] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const propertyId = "465712653";
+      const analyticsData = await getAnalyticsData(propertyId);
+      console.log("test ff")
+      console.log("analyticsData", analyticsData);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="h-[450px] bg-primary p-5 rounded-xl">
       <h2 className=" font-semibold text-text-light mb-5 ">Weekly Recap</h2>
