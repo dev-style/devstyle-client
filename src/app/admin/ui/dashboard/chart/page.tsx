@@ -22,7 +22,7 @@ const Chart = (props: Props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const propertyId = "342571068";
+      const propertyId = "465712653";
       const analyticsData = await getAnalyticsData(propertyId);
       console.log("test ff")
       console.log("analyticsData", analyticsData);
