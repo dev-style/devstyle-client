@@ -18,17 +18,32 @@ const analyticsDataClient = new BetaAnalyticsDataClient({
   credentials: credentials,
 });
 
-export const getAnalyticsData = async (propertyId: string) => {
+export const getWeeklyVisits = async (propertyId: string) => {
   try {
     const [response] = await analyticsDataClient.runReport({
       property: `properties/${propertyId}`, // Replace with your GA4 property ID
       dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
-      metrics: [{ name: "sessions" }, { name: "activeUsers" }],
+      metrics: [{ name: "sessions" }],
       dimensions: [{ name: "date" }],
     });
     return response;
   } catch (error) {
-    console.error("Error fetching analytics data:", error);
-    throw new Error("Failed to fetch analytics data");
+    console.error("Error fetching weekly visits data:", error);
+    throw new Error("Failed to fetch weekly visits data");
+  }
+};
+
+export const getPageData = async (propertyId: string) => {
+  try {
+    const [response] = await analyticsDataClient.runReport({
+      property: `properties/${propertyId}`, // Replace with your GA4 property ID
+      dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+      metrics: [{ name: "pageViews" }],
+      dimensions: [{ name: "pagePath" }],
+    });
+    return response;
+  } catch (error) {
+    console.error("Error fetching page data:", error);
+    throw new Error("Failed to fetch page data");
   }
 };

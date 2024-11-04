@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { google } from "googleapis";
-import { getAnalyticsData } from "@/app/admin/lib/googleAnalytics";
+import { getPageData, getWeeklyVisits } from "@/app/admin/lib/googleAnalytics";
 import { GoogleAuth } from "google-auth-library";
 type Props = {};
 
@@ -23,8 +23,9 @@ const Chart = (props: Props) => {
   useEffect(() => {
     const fetchData = async () => {
       const propertyId = "465712653";
-      const analyticsData = await getAnalyticsData(propertyId);
-      console.log("test ff")
+      const analyticsData = await getWeeklyVisits(propertyId);
+      const pageData = await getPageData(propertyId);
+      console.log("pageData", pageData);
       console.log("analyticsData", analyticsData);
     };
 
