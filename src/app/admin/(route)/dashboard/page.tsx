@@ -12,16 +12,19 @@ const Page = (props: Props) => {
     <div className="flex gap-5 mt-5">
       <div className="flex-[3] flex flex-col gap-5">
         <div className="flex gap-5 justify-between">
-          {cards && cards.map((item: any) => (
-            item && item.id && item.title ? <Card item={item} key={item.id} /> : null
-          ))}
+          {cards &&
+            cards.map((item: any) =>
+              item && item.id && item.title ? (
+                <Card item={item} key={item.id} />
+              ) : null
+            )}
         </div>
-        <Transactions/>
-        <Chart/>
+        <Transactions />
+        <Chart />
       </div>
 
       <div className="flex-1">
-        <Rightbar/>
+        <Rightbar />
       </div>
     </div>
   );
