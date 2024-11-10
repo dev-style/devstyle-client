@@ -38,13 +38,13 @@ const OrderModal = ({
   goodie,
   open,
   handleClose,
-  message = () => "",
+  message,
 }: // orderData,
 {
   goodie: any;
   open: boolean;
   handleClose: () => void;
-  message?: () => string;
+  message: () => string;
   // orderData: IOrderData | undefined;
 }) => {
   const [number, setNumber] = React.useState(0);
@@ -54,76 +54,15 @@ const OrderModal = ({
   const match500 = useMediaQuery("(max-width:500px)");
 
   // console.log("L'order data dans orderModal", orderData);
-  const send = () => {
-    // setIsSending(true);
-    // if (!number || String(number).length < 9) {
-    //   toast.error(
-    //     <div style={{ color: "#fff" }}>
-    //       {" "}
-    //       Entrer un numéro valide: 6xxxxxxxx{" "}
-    //     </div>,
-    //     {
-    //       style: { textAlign: "center" },
-    //     }
-    //   );
-    //   setIsSending(false);
-    // } else {
-    //   if (orderData !== undefined) {
-    //     orderData["number"] = number;
-    //     console.log(orderData);
-    //     myAxios
-    //       .post("/order/create", orderData)
-    //       .then((response: any) => {
-    //         if (response.status === 200) {
-    //           window.localStorage.setItem(
-    //             "_devStyle-order-number",
-    //             String(number)
-    //               .split("")
-    //               .reduce(
-    //                 (acc, val, i) =>
-    //                   (acc += String.fromCharCode(val.charCodeAt(0) + 3)),
-    //                 ""
-    //               )
-    //           );
-    //           toast.success(
-    //             <div style={{ color: "#fff" }}>Commande bien reçu</div>,
-    //             {
-    //               style: { textAlign: "center" },
-    //               icon: "🎉",
-    //             }
-    //           );
-    //           // console.log(response.data.message);
-    //         } else {
-    //           toast.error(
-    //             <div style={{ color: "#fff" }}>Une erreur est survenu</div>,
-    //             {
-    //               style: { textAlign: "center" },
-    //             }
-    //           );
-    //           console.log(response.data.message);
-    //         }
-    //       })
-    //       .catch((error: any) => {
-    //         toast.error(
-    //           <div style={{ color: "#fff" }}>
-    //             Une erreur est survenu, réessayer
-    //           </div>,
-    //           {
-    //             style: { textAlign: "center" },
-    //             icon: "😕",
-    //           }
-    //         );
-    //         console.log(error);
-    //       })
-    //       .finally(() => {
-    //         setIsSending(false);
-    //         handleClose();
-    //       });
-    //   } else {
-    //     console.log("c'est indefinie");
-    //     return;
-    //   }
-    // }
+
+  const contact = () => {
+    const msg = message ? message() : "";
+    window
+      .open(
+        `https://api.whatsapp.com/send/?phone=237658732446&text=%0A%60%60%60%3C%20MA%20COMMANDE%20%2F%3E%60%60%60%F0%9F%9B%92%0A${msg}%5B%20%C3%A0%20ne%20pas%20supprimer%F0%9F%91%86%F0%9F%8F%BD%20%5D`,
+        "_blank"
+      )!
+      .focus();
   };
 
   React.useEffect(() => {
@@ -158,7 +97,8 @@ const OrderModal = ({
 
   const onSubmit: SubmitHandler<IOrderFormSchema> = (data) => {
     setIsSending(true);
-
+    console.log("message description", message && message());
+    
     const orderData: IOrderData | null = {
       goodies: goodie,
       status: "initiate",
@@ -187,6 +127,8 @@ const OrderModal = ({
               icon: "🎉",
             }
           );
+          contact()
+
           // console.log(response.data.message);
         } else {
           toast.error(

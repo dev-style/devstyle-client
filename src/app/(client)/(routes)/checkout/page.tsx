@@ -175,7 +175,7 @@ const Checkout = () => {
     )
   );
 
-  const _devstyle = () => {
+  const generateCartDescription = () => {
     const cartDescription = Object.values(cartContent).reduce(
       (acc, goodie, i) => {
         return (acc += `
@@ -372,7 +372,7 @@ const Checkout = () => {
         goodie={goodies}
         open={modalOpen}
         handleClose={() => setModalOpen(false)}
-        message={() => _devstyle()}
+        message={()=>generateCartDescription()}
         // order={orderData}
       />
     </Fragment>

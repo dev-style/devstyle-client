@@ -171,7 +171,7 @@ const Goodie = (props: any) => {
       .catch((error) => console.log(error));
   }, [props.slug]);
 
-  const _devstyle = () => {
+  const generateCartDescription = () => {
     if (goodie?._id) {
       let text = `
 *ID:* ${goodie?._id} ;
@@ -190,6 +190,8 @@ const Goodie = (props: any) => {
       } ;
 *PromoPercent:* ${goodie?.inPromo ? goodie?.promoPercentage : "none"} ;    
 `;
+
+      console.log("test message", text);
 
       return encodeURIComponent(text);
     }
@@ -609,7 +611,11 @@ const Goodie = (props: any) => {
                   />
                 ) : (
                   <Box className="description">
-                    <div dangerouslySetInnerHTML={{ __html: goodie?.description || '' }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: goodie?.description || "",
+                      }}
+                    />
                   </Box>
                 )}
 
@@ -845,7 +851,7 @@ const Goodie = (props: any) => {
         goodie={goodies}
         open={modalOpen}
         handleClose={() => setModalOpen(false)}
-        message={() => _devstyle()}
+        message={()=>generateCartDescription()}
       />
     </React.Fragment>
   );
