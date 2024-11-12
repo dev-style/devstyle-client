@@ -207,38 +207,28 @@ export const addGoodie = async (formData: any) => {
   try {
     await connectToDB();
 
-    // Upload main image and additional images concurrently
-    const uploadPromises = [];
+    // Upload main image and additional images sequentially to maintain order
     let uploadedMainImage = { public_id: "", url: "" };
+    let uploadedImages = [];
 
     if (mainImage) {
-      uploadPromises.push(
-        uploader(mainImage).then((result: ICloudinaryUploadResponse) => {
-          uploadedMainImage = {
-            public_id: result.public_id,
-            url: result.secure_url,
-          };
-        })
-      );
+      const result = await uploader(mainImage);
+      uploadedMainImage = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
     }
 
-    const uploadedImages = [];
     if (images) {
       console.log("les image existe :", images);
-      uploadPromises.push(
-        ...images.map((image: any) =>
-          uploader(image).then((result: ICloudinaryUploadResponse) => {
-            uploadedImages.push({
-              public_id: result.public_id,
-              url: result.secure_url,
-            });
-          })
-        )
-      );
+      for (const image of images) {
+        const result = await uploader(image);
+        uploadedImages.push({
+          public_id: result.public_id,
+          url: result.secure_url,
+        });
+      }
     }
-
-    // Wait for all uploads to complete
-    await Promise.all(uploadPromises);
 
     console.log("mainImageResult", uploadedMainImage);
     console.log("uploadedImages", uploadedImages);
