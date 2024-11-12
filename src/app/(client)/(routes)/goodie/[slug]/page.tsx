@@ -851,7 +851,7 @@ const Goodie = (props: any) => {
         goodie={goodies}
         open={modalOpen}
         handleClose={() => setModalOpen(false)}
-        message={()=>generateCartDescription()}
+        message={generateCartDescription}
       />
     </React.Fragment>
   );

@@ -6,12 +6,12 @@ import * as z from "zod";
 import { useState, useRef, useEffect } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import {fetchCollections} from "@/app/admin/controllers/collection";
+import { fetchCollections } from "@/app/admin/controllers/collection";
 import { fetchSizes } from "@/app/admin/controllers/size";
-import { Editor } from '@tinymce/tinymce-react';
+import { Editor } from "@tinymce/tinymce-react";
 import { addGoodie } from "@/app/admin/controllers/goodie";
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -98,33 +98,41 @@ const AddGoodiePage = () => {
     },
   });
 
+  const [selectSizesOptions, setSelectSizesOptions] = useState<string[]>([]);
+
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
-  const [collections, setCollections] = useState<{ _id: string; title: string }[]>([]);
-  const [availableSizes, setAvailableSizes] = useState<{ _id: string; size: string }[]>([]);
+  const [collections, setCollections] = useState<
+    { _id: string; title: string }[]
+  >([]);
+  const [availableSizes, setAvailableSizes] = useState<
+    { _id: string; size: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchData = async () => {
-      const {  collections } = await fetchCollections();
+      const { collections } = await fetchCollections();
       setCollections(collections);
 
       const { sizes } = await fetchSizes();
       setAvailableSizes(sizes);
+      console.log("my sizes", sizes);
     };
     fetchData();
-  },[])
+  }, []);
 
   const onSubmit = async (data: GoodieFormData) => {
     setIsLoading(true);
+    console.log("data i want to add", data);
     try {
       await addGoodie(data);
-      router.push('/admin/dashboard/goodies');
+      router.push("/admin/dashboard/goodies");
     } catch (error) {
-      toast.error('An error occurred while adding the goodie.');
+      toast.error("An error occurred while adding the goodie.");
     } finally {
-      router.push('/admin/dashboard/goodies');
+      router.push("/admin/dashboard/goodies");
       setIsLoading(false);
     }
   };
@@ -161,17 +169,19 @@ const AddGoodiePage = () => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
         canvas.width = img.width;
         canvas.height = img.height;
         ctx?.drawImage(img, 0, 0, img.width, img.height);
         const imageData = ctx?.getImageData(0, 0, 1, 1);
         if (imageData) {
           const [r, g, b] = imageData.data;
-          resolve(`#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`);
+          resolve(
+            `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`
+          );
         } else {
-          resolve('#FFFFFF'); // Default to white if we can't get the color
+          resolve("#FFFFFF"); // Default to white if we can't get the color
         }
       };
       img.src = imageData;
@@ -194,7 +204,7 @@ const AddGoodiePage = () => {
       });
 
       newImages.push(base64String);
-      
+
       const color = extractColorFromFileName(file.name);
       if (color) {
         newColors.push(color);
@@ -204,18 +214,45 @@ const AddGoodiePage = () => {
       newBackgroundColors.push(backgroundColor);
     }
 
-    setAdditionalImages(prev => [...prev, ...newImages]);
+    setAdditionalImages((prev) => [...prev, ...newImages]);
     setValue("images", [...additionalImages, ...newImages]);
-    
+
     // Update availableColors
     const currentColors = watch("availableColors").split(",").filter(Boolean);
     const uniqueColors = Array.from(new Set([...currentColors, ...newColors]));
     setValue("availableColors", uniqueColors.join(","));
 
     // Update backgroundColors
-    const currentBackgroundColors = watch("backgroundColors").split(",").filter(Boolean);
-    const uniqueBackgroundColors = Array.from(new Set([...currentBackgroundColors, ...newBackgroundColors]));
+    const currentBackgroundColors = watch("backgroundColors")
+      .split(",")
+      .filter(Boolean);
+    const uniqueBackgroundColors = Array.from(
+      new Set([...currentBackgroundColors, ...newBackgroundColors])
+    );
     setValue("backgroundColors", uniqueBackgroundColors.join(","));
+  };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = event.target;
+    console.log("value and checked", value, checked);
+    console.log("selected size", selectSizesOptions);
+    // setSelectSizesOptions(checked ? [...selectSizesOptions, value] : selectSizesOptions.filter(option => option !== value));
+    if (checked) {
+      setSelectSizesOptions((selectSizesOptions) => {
+        const result = [...selectSizesOptions, value];
+        console.log("sizes data ", result);
+        setValue("sizes", [...selectSizesOptions, value]);
+        return result;
+      });
+    } else {
+      setSelectSizesOptions((selectSizesOptions) => {
+        const result = selectSizesOptions.filter((option) => option !== value);
+        console.log("sizes data ", result);
+
+        setValue("sizes", result);
+        return result;
+      });
+    }
   };
 
   return (
@@ -263,15 +300,17 @@ const AddGoodiePage = () => {
                         height: 300,
                         menubar: false,
                         plugins: [
-                          'advlist autolink lists link image charmap print preview anchor',
-                          'searchreplace visualblocks code fullscreen',
-                          'insertdatetime media table paste code help wordcount'
+                          "advlist autolink lists link image charmap print preview anchor",
+                          "searchreplace visualblocks code fullscreen",
+                          "insertdatetime media table paste code help wordcount",
                         ],
-                        toolbar: 'undo redo | formatselect | ' +
-                        'bold italic backcolor | alignleft aligncenter ' +
-                        'alignright alignjustify | bullist numlist outdent indent | ' +
-                        'removeformat | help',
-                        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                        toolbar:
+                          "undo redo | formatselect | " +
+                          "bold italic backcolor | alignleft aligncenter " +
+                          "alignright alignjustify | bullist numlist outdent indent | " +
+                          "removeformat | help",
+                        content_style:
+                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
                       }}
                       onEditorChange={(content) => field.onChange(content)}
                     />
@@ -282,7 +321,9 @@ const AddGoodiePage = () => {
                 </label>
               </div>
               {errors.description && (
-                <p className="text-red-500 text-sm">{errors.description.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.description.message}
+                </p>
               )}
             </div>
 
@@ -303,7 +344,6 @@ const AddGoodiePage = () => {
                           )
                         )
                       }
-                      
                     >
                       <option value="" disabled hidden></option>
                       {collections.map((collection) => (
@@ -318,13 +358,19 @@ const AddGoodiePage = () => {
                   From Collection
                 </label>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--text)]">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  <svg
+                    className="fill-current h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                   </svg>
                 </div>
               </div>
               {errors.fromCollection && (
-                <p className="text-red-500 text-sm">{errors.fromCollection.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.fromCollection.message}
+                </p>
               )}
             </div>
 
@@ -391,13 +437,32 @@ const AddGoodiePage = () => {
                 </div>
               </div>
               {errors.promoPercentage && (
-                <p className="text-red-500 text-sm">{errors.promoPercentage.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.promoPercentage.message}
+                </p>
               )}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col space-y-2">
-              <div className="relative">
+              <div className="relative flex flex-col gap-y-2">
+                <div>Select your sizes</div>
+                {availableSizes.map((size: any, index) => (
+                  <div key={index}>
+                    <input
+                      type="checkbox"
+                      id={size._id}
+                      value={size._id} // Changed from size._id to size.size
+                      checked={selectSizesOptions.includes(size._id)}
+                      onChange={(e) => handleCheckboxChange(e)} // Added size.size as an argument
+                    />
+                    <span className="ml-3">{size.size}</span>
+                  </div>
+                ))}
+              </div>
+              {/* <div className="relative">
+
+
                 <Controller
                   name="sizes"
                   control={control}
@@ -405,6 +470,7 @@ const AddGoodiePage = () => {
                     <div className="relative">
                       <select
                         {...field}
+                        multiple
                         className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 appearance-none peer"
                         onChange={(e) =>
                           field.onChange(
@@ -414,7 +480,6 @@ const AddGoodiePage = () => {
                             )
                           )
                         }
-                        
                       >
                         <option value="" disabled hidden></option>
                         {availableSizes.map((size) => (
@@ -424,8 +489,12 @@ const AddGoodiePage = () => {
                         ))}
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--text)]">
-                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                        <svg
+                          className="fill-current h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                         </svg>
                       </div>
                     </div>
@@ -437,7 +506,7 @@ const AddGoodiePage = () => {
               </div>
               {errors.sizes && (
                 <p className="text-red-500 text-sm">{errors.sizes.message}</p>
-              )}
+              )} */}
             </div>
 
             <div className="flex items-center">
@@ -523,7 +592,9 @@ const AddGoodiePage = () => {
                 )}
               />
               {errors.mainImage && (
-                <p className="text-red-500 text-sm">{errors.mainImage.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.mainImage.message}
+                </p>
               )}
             </div>
             <div className="flex flex-col space-y-2">
@@ -585,7 +656,9 @@ const AddGoodiePage = () => {
               </label>
             </div>
             {errors.availableColors && (
-              <p className="text-red-500 text-sm">{errors.availableColors.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.availableColors.message}
+              </p>
             )}
           </div>
 
@@ -599,7 +672,8 @@ const AddGoodiePage = () => {
                     {...field}
                     className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
                   >
-                    {field.value || "Background colors will be extracted from images"}
+                    {field.value ||
+                      "Background colors will be extracted from images"}
                   </div>
                 )}
               />
@@ -608,7 +682,9 @@ const AddGoodiePage = () => {
               </label>
             </div>
             {errors.backgroundColors && (
-              <p className="text-red-500 text-sm">{errors.backgroundColors.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.backgroundColors.message}
+              </p>
             )}
           </div>
 
@@ -619,14 +695,30 @@ const AddGoodiePage = () => {
           >
             {isLoading ? (
               <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Adding Goodie...
               </span>
             ) : (
-              'Add Goodie'
+              "Add Goodie"
             )}
           </button>
         </form>
