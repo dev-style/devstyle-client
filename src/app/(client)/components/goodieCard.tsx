@@ -32,11 +32,11 @@ const GoodieCard = ({
         onClick={() => scrollToTop()}
       >
         <Box className="goodie-card-container">
-          <Box className="top" padding={1.25} 
+          <Box className="top"
           bgcolor={backgroundColors[0]}
           >
             {inPromo && <Box className="promo">-{promoPercentage}%</Box>}
-            <img src={mainImage.url} alt="goodie" className="image" />
+            <img src={mainImage.url} alt="goodie" className="image " />
           </Box>
           <Box className="bottom" paddingX={2} paddingY={1}>
             <Typography className="name">{name}</Typography>

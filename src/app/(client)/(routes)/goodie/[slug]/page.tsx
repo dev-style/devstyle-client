@@ -42,6 +42,7 @@ import myAxios from "@/app/(client)/lib/axios.config";
 import "./styles.scss";
 import Image from "next/image";
 import Spinner from "@/app/(client)/components/spinner";
+import PayementContainer from "@/app/(client)/components/PayementContainer";
 
 const Goodie = (props: any) => {
   const { cartDispatch } = useContext(CartContext);
@@ -183,11 +184,10 @@ const Goodie = (props: any) => {
 *Size:* ${goodie?.selectedSize} ;
 *Quantity:* ${goodie?.quantity} ;
 *Price:* ${goodie?.price} ;
-*PromoPrice:* ${
-        goodie?.inPromo
+*PromoPrice:* ${goodie?.inPromo
           ? calculatePromoPrice(goodie?.price, goodie?.promoPercentage)
           : "none"
-      } ;
+        } ;
 *PromoPercent:* ${goodie?.inPromo ? goodie?.promoPercentage : "none"} ;    
 `;
 
@@ -199,13 +199,11 @@ const Goodie = (props: any) => {
   };
 
   const getCartID = () => {
-    let text = ` ${goodie?._id}-${goodie?.name}-${
-      goodie?.fromCollection.title
-    }-${goodie?.selectedColor}-${goodie?.selectedSize}-${goodie?.price}-${
-      goodie?.inPromo
+    let text = ` ${goodie?._id}-${goodie?.name}-${goodie?.fromCollection.title
+      }-${goodie?.selectedColor}-${goodie?.selectedSize}-${goodie?.price}-${goodie?.inPromo
         ? calculatePromoPrice(goodie?.price, goodie?.promoPercentage)
         : "none"
-    }`;
+      }`;
     return text;
   };
 
@@ -295,7 +293,7 @@ const Goodie = (props: any) => {
 
   return (
     <React.Fragment>
-      <Box className="goodie-wrapper">
+      {!modalOpen ? <Box className="goodie-wrapper">
         <Box
           paddingX={match700 ? 3 : 12}
           paddingY={5}
@@ -371,24 +369,24 @@ const Goodie = (props: any) => {
                   style={
                     match700
                       ? {
-                          backgroundColor:
-                            goodie?.backgroundColors[
-                              goodie?.images.findIndex(
-                                (image) => image.url === goodie?.mainImage.url
-                              )
-                            ],
-                          width: "100%",
-                          margin: "0",
-                        }
+                        backgroundColor:
+                          goodie?.backgroundColors[
+                          goodie?.images.findIndex(
+                            (image) => image.url === goodie?.mainImage.url
+                          )
+                          ],
+                        width: "100%",
+                        margin: "0",
+                      }
                       : {
-                          backgroundColor:
-                            goodie?.backgroundColors[
-                              goodie?.images.findIndex(
-                                (image) => image.url === goodie?.mainImage.url
-                              )
-                            ],
-                          position: "relative",
-                        }
+                        backgroundColor:
+                          goodie?.backgroundColors[
+                          goodie?.images.findIndex(
+                            (image) => image.url === goodie?.mainImage.url
+                          )
+                          ],
+                        position: "relative",
+                      }
                   }
                 >
                   {goodie?.inPromo && (
@@ -504,56 +502,56 @@ const Goodie = (props: any) => {
                 </Box>
                 {(isLoadingGoodie ||
                   (goodie?.availableColors.length ?? 0) > 0) && (
-                  <Box className="colors">
-                    <Typography className="label">
-                      Disponible en couleur
-                    </Typography>
-                    <Box className="colors-wrapper">
-                      {isLoadingGoodie ? (
-                        <Skeleton
-                          animation="wave"
-                          variant="circular"
-                          height={40}
-                          width={40}
-                        />
-                      ) : (
-                        goodie?.availableColors.map((color, i) => (
-                          <ButtonBase
-                            key={"color-" + color + "-" + i}
-                            className="color"
-                            style={{
-                              boxShadow:
-                                goodie?.selectedColor === color
-                                  ? "0px 4px 10px #06C27033"
-                                  : "0px 4px 10px rgba(0, 0, 0, 0.15)",
-                            }}
-                            onClick={() => handleSelectedColorChange(color)}
-                          >
-                            <Box
+                    <Box className="colors">
+                      <Typography className="label">
+                        Disponible en couleur
+                      </Typography>
+                      <Box className="colors-wrapper">
+                        {isLoadingGoodie ? (
+                          <Skeleton
+                            animation="wave"
+                            variant="circular"
+                            height={40}
+                            width={40}
+                          />
+                        ) : (
+                          goodie?.availableColors.map((color, i) => (
+                            <ButtonBase
+                              key={"color-" + color + "-" + i}
+                              className="color"
                               style={{
-                                backgroundColor: color,
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: "50%",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                border:
+                                boxShadow:
                                   goodie?.selectedColor === color
-                                    ? "2px solid #06C27033"
-                                    : "",
+                                    ? "0px 4px 10px #06C27033"
+                                    : "0px 4px 10px rgba(0, 0, 0, 0.15)",
                               }}
+                              onClick={() => handleSelectedColorChange(color)}
                             >
-                              {goodie?.selectedColor === color && (
-                                <Check color="success" />
-                              )}
-                            </Box>
-                          </ButtonBase>
-                        ))
-                      )}
+                              <Box
+                                style={{
+                                  backgroundColor: color,
+                                  width: "100%",
+                                  height: "100%",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  border:
+                                    goodie?.selectedColor === color
+                                      ? "2px solid #06C27033"
+                                      : "",
+                                }}
+                              >
+                                {goodie?.selectedColor === color && (
+                                  <Check color="success" />
+                                )}
+                              </Box>
+                            </ButtonBase>
+                          ))
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                )}
+                  )}
                 {isLoadingGoodie ? (
                   <Box className="size">
                     <Typography className="label">
@@ -586,9 +584,9 @@ const Goodie = (props: any) => {
                               style={
                                 goodie?.selectedSize === size.size
                                   ? {
-                                      color: "#06C270",
-                                      borderColor: "#06C270",
-                                    }
+                                    color: "#06C270",
+                                    borderColor: "#06C270",
+                                  }
                                   : {}
                               }
                               className="button"
@@ -846,13 +844,17 @@ const Goodie = (props: any) => {
             </Grid>
           </Box>
         </Box>
-      </Box>
-      <OrderModal
+      </Box> :
+
+        <PayementContainer goodie={goodies} message={generateCartDescription} />
+      }
+
+      {/* <OrderModal
         goodie={goodies}
         open={modalOpen}
         handleClose={() => setModalOpen(false)}
         message={generateCartDescription}
-      />
+      /> */}
     </React.Fragment>
   );
 };
