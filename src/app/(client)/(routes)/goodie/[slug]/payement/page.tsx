@@ -1,4 +1,4 @@
-const PayementPage = () => {
+const Page = () => {
 
     return (
         <div>
@@ -8,4 +8,4 @@ const PayementPage = () => {
 
 }
 
-export default PayementPage
+export default Page

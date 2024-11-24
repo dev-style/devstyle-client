@@ -29,7 +29,10 @@
       overflow: hidden;
       .image {
         height: 100%;
-        max-width: inherit !important;
+        object-fit: cover;
+        
+        // max-width: inherit !important;
+        // max-height: inherit!important;
       }
       .promo {
         background-color: #ff3b3b;
