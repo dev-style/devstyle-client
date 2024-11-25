@@ -399,7 +399,7 @@ const Goodie = (props: any) => {
                       src={goodie?.mainImage.url as string}
                       alt="goodie"
                       fill={true}
-                      objectFit="contain"
+                      objectFit="cover"
                     />
                   </Box>
                 </Box>

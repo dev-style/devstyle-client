@@ -33,7 +33,7 @@ const GoodieCard = ({
       >
         <Box className="goodie-card-container">
           <Box className="top"
-          bgcolor={backgroundColors[0]}
+            bgcolor={backgroundColors[0]}
           >
             {inPromo && <Box className="promo">-{promoPercentage}%</Box>}
             <img src={mainImage.url} alt="goodie" className="image " />
@@ -42,7 +42,7 @@ const GoodieCard = ({
             <Typography className="name">{name}</Typography>
             <Box className="price-container">
               <Typography className="current-price">
-                {calculatePromoPrice(price, promoPercentage)} FCFA
+                {inPromo ? calculatePromoPrice(price, promoPercentage) : price} FCFA
               </Typography>{" "}
               {inPromo && (
                 <Typography
