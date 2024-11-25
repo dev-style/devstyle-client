@@ -169,53 +169,13 @@ const AddGoodiePage = () => {
   };
 
   const generateMatchingBackgroundColor = (fileName: string): string | null => {
-    const match = fileName.match(/_([0-9A-Fa-f]{6})_/);
+
+    const match = fileName.split("_")[3].match(/^(.{6})/)
+    console.log("match data", match)
     if (match) {
       const goodieColor = `#${match[1]}`;
-      const r = parseInt(match[1].substring(0, 2), 16);
-      const g = parseInt(match[1].substring(2, 4), 16);
-      const b = parseInt(match[1].substring(4, 6), 16);
-      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-      let backgroundColor = `#FFFFFF`; // Default to white
 
-      // Adjust background color based on brightness
-      if (brightness < 100) {
-        backgroundColor = `#000000`; // Black
-      } else if (brightness < 150) {
-        backgroundColor = `#333333`; // Dark Gray
-      } else if (brightness < 200) {
-        backgroundColor = `#555555`; // Gray
-      } else if (brightness < 250) {
-        backgroundColor = `#777777`; // Light Gray
-      }
-
-      // Adjust background color based on color hue
-      const hue = (r * 0.299 + g * 0.587 + b * 0.114) % 360;
-      if (hue < 30 || hue >= 330) {
-        backgroundColor = `#FF0000`; // Red
-      } else if (hue >= 30 && hue < 60) {
-        backgroundColor = `#FFA500`; // Orange
-      } else if (hue >= 60 && hue < 90) {
-        backgroundColor = `#FFFF00`; // Yellow
-      } else if (hue >= 90 && hue < 120) {
-        backgroundColor = `#008000`; // Green
-      } else if (hue >= 120 && hue < 150) {
-        backgroundColor = `#008080`; // Cyan
-      } else if (hue >= 150 && hue < 180) {
-        backgroundColor = `#0000FF`; // Blue
-      } else if (hue >= 180 && hue < 210) {
-        backgroundColor = `#800080`; // Magenta
-      } else if (hue >= 210 && hue < 240) {
-        backgroundColor = `#FF00FF`; // Pink
-      } else if (hue >= 240 && hue < 270) {
-        backgroundColor = `#008080`; // Cyan
-      } else if (hue >= 270 && hue < 300) {
-        backgroundColor = `#0000FF`; // Blue
-      } else if (hue >= 300 && hue < 330) {
-        backgroundColor = `#800080`; // Magenta
-      }
-
-      return backgroundColor;
+      return goodieColor;
     } else {
       return null;
     }
@@ -744,20 +704,20 @@ const AddGoodiePage = () => {
                 render={({ field }) => (
 
                   <div
-                  {...field}
-                  className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
-                >
-                  {/* {field.value || "Colors will be extracted from images"} */}
-                  {field.value.split(",").map((item, index) => (
+                    {...field}
+                    className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
+                  >
+                    {/* {field.value || "Colors will be extracted from images"} */}
+                    {field.value.split(",").map((item, index) => (
 
 
-                    <div className={`w-12 h-12 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}>
-                      {/* {field.value} */}
-                      {/* {item} */}
+                      <div className={`w-12 h-12 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}>
+                        {/* {field.value} */}
+                        {/* {item} */}
 
-                    </div>
-                  ))}
-                </div>
+                      </div>
+                    ))}
+                  </div>
 
                 )}
               />
