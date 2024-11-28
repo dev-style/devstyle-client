@@ -64,6 +64,8 @@ const Goodie = (props: any) => {
   const [isCopied, setIsCopied] = useState(false);
   const [userCountry, setUserCountry] = useState("");
 
+
+
   const changeMainImage = (image: IUrl) => {
     if (image.url) {
       setGoodie({ ...goodie, mainImage: image } as IGoodie);
@@ -281,7 +283,15 @@ const Goodie = (props: any) => {
 
   const handleOrderClick = () => {
     if (userCountry === "Cameroon") {
-      setModalOpen(true);
+      // setModalOpen(true);
+      const goodieData = JSON.stringify(goodies)
+      const message = generateCartDescription()
+      const messageData = JSON.stringify(message)
+
+      localStorage.setItem("goodiesData", goodieData)
+      localStorage.setItem("messageData", messageData)
+      router.push("/goodie/payement", { scroll: false })
+
     } else {
       if (goodie?.etsy) {
         window.open(goodie.etsy, "_blank");
