@@ -20,7 +20,7 @@ const Sidebar = (props: Props) => {
   };
 
   return (
-    <div className="top-[40px] bg-primary text-white p-4 rounded-lg shadow-lg ">
+    <div className=" bg-primary sticky top-8  text-white p-4 rounded-lg shadow-lg ">
       <div className="flex items-center gap-4 mb-5 border-b  pb-4">
         <Image
           className="rounded-full object-cover"
@@ -38,7 +38,7 @@ const Sidebar = (props: Props) => {
       <ul className="list-none space-y-2">
         {menuItems.map((item: any) => (
           <li key={item.title} className="mb-4">
-            <div 
+            <div
               className="flex justify-between items-center cursor-pointer hover:bg-gray-700 p-2 rounded"
               onClick={() => toggleSection(item.title)}
             >

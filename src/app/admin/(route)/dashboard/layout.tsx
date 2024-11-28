@@ -19,8 +19,8 @@ const Layout = async ({ children }: Props) => {
 
   return (
     <div className="flex">
-      <div className="flex-1 w-[300px] relative min-h-screen mx-auto">
-        <div className="fixed w-[300px] h-full p-5">
+      <div className="flex-1 w-[300px]  min-h-screen mx-auto sticky top-0">
+        <div className="w-[300px] h-full p-5">
           <Sidebar />
         </div>
       </div>
