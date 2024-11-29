@@ -106,6 +106,7 @@ const Goodie = (props: any) => {
         if (response.status === 200) {
           setGoodie({
             ...response.data.message,
+            mainImage:response.data.message.images[0].url,
             sizes: response.data.message.sizes.filter(
               (size: IGoodieSize) => size.size !== ""
             ),
