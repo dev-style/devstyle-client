@@ -218,17 +218,34 @@ export const addGoodie = async (formData: any) => {
         url: result.secure_url,
       };
     }
+    const start = Date.now();
+
+    // if (images) {
+    //   console.log("les image existe :", images);
+    //   for (const image of images) {
+    //     const result = await uploader(image);
+    //     uploadedImages.push({
+    //       public_id: result.public_id,
+    //       url: result.secure_url,
+    //     });
+    //   }
+    // }
 
     if (images) {
       console.log("les image existe :", images);
-      for (const image of images) {
+
+      const uploadPromisesImages = images.map(async (image: any) => {
         const result = await uploader(image);
-        uploadedImages.push({
+        return {
           public_id: result.public_id,
           url: result.secure_url,
-        });
-      }
+        };
+      });
+
+      uploadedImages = await Promise.all(uploadPromisesImages);
     }
+
+    console.log("code termine en", Date.now() - start, "ms");
 
     console.log("mainImageResult", uploadedMainImage);
     console.log("uploadedImages", uploadedImages);
