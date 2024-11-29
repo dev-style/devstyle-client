@@ -106,7 +106,7 @@ const Goodie = (props: any) => {
         if (response.status === 200) {
           setGoodie({
             ...response.data.message,
-            mainImage:response.data.message.images[0].url,
+            mainImage:response.data.message.images[0],
             sizes: response.data.message.sizes.filter(
               (size: IGoodieSize) => size.size !== ""
             ),
@@ -380,22 +380,26 @@ const Goodie = (props: any) => {
                   style={
                     match700
                       ? {
-                        backgroundColor:
-                          goodie?.backgroundColors[
-                          goodie?.images.findIndex(
-                            (image) => image.url === goodie?.mainImage.url
-                          )
-                          ],
+                        ...(goodie?.mainImage.url.endsWith('.png') ? {
+                          backgroundColor:
+                            goodie?.backgroundColors[
+                            goodie?.images.findIndex(
+                              (image) => image.url === goodie?.mainImage.url
+                            )
+                            ],
+                        } : {}),
                         width: "100%",
                         margin: "0",
                       }
                       : {
-                        backgroundColor:
-                          goodie?.backgroundColors[
-                          goodie?.images.findIndex(
-                            (image) => image.url === goodie?.mainImage.url
-                          )
-                          ],
+                        ...(goodie?.mainImage.url.endsWith('.png') ? {
+                          backgroundColor:
+                            goodie?.backgroundColors[
+                            goodie?.images.findIndex(
+                              (image) => image.url === goodie?.mainImage.url
+                            )
+                            ],
+                        } : {}),
                         position: "relative",
                       }
                   }
