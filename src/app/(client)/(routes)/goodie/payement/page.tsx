@@ -412,14 +412,14 @@ const Page = ({ }: payementProps) => {
                                                     <div className="flex justify-center items-start ">
 
                                                         <FormControlLabel value="delivery" control={
-                                                            
-                                                            
+
+
                                                             <Radio sx={{
-                                                            fontSize: 28,
-                                                            '&.Mui-checked': {
-                                                                color: '#E6600B',
-                                                            }
-                                                        }} className="" />
+                                                                fontSize: 28,
+                                                                '&.Mui-checked': {
+                                                                    color: '#E6600B',
+                                                                }
+                                                            }} className="" />
                                                         } label=" " className="" />
                                                         <div>
                                                             <h1 className="text-2xl font-semibold  text-[#E6600B]"> Paiement a la livraison</h1>
@@ -435,10 +435,16 @@ const Page = ({ }: payementProps) => {
                                         </div>
 
                                         <div>
-                                            <button disabled={isSending} className=" mt-3 group relative transition-all duration-200 ease-in-out  text-white bg-[#220f00] rounded-lg p-4 w-full">
+                                            <button disabled={isSending} className=" flex items-center justify-center  mt-3 group relative transition-all duration-200 ease-in-out  text-white bg-[#220f00] rounded-lg p-4 w-full">
 
                                                 {isSending ? (
-                                                    <Spinner size={25} thickness={3} color={"white"} />
+
+
+
+                                                    <span className="flex items-center justify-center z-10 gap-2 text-base ">
+                                                        <Spinner size={25} thickness={3} color={"white"} />
+                                                    </span>
+
                                                 ) : (
 
                                                     <span className="flex items-center justify-center z-10 gap-2 text-base ">
