@@ -12,6 +12,7 @@ import { toast } from "react-toastify"
 import myAxios from "@/app/(client)/lib/axios.config"
 import Spinner from "@/app/(client)/components/spinner"
 import { AnimatePresence, motion } from "framer-motion"
+import PrepaymentPolicyModal from "@/app/(client)/components/PrepaymentPolicyModal"
 
 interface payementProps {
 
@@ -187,8 +188,8 @@ const Page = ({ }: payementProps) => {
         }
 
 
-        localStorage.removeItem("goodiesData")
-        localStorage.removeItem("messageData")
+        // localStorage.removeItem("goodiesData")
+        // localStorage.removeItem("messageData")
 
 
     }, [])
@@ -227,6 +228,8 @@ const Page = ({ }: payementProps) => {
         setPayementMethod((event.target as HTMLInputElement).value)
 
     }
+
+    const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
 
     return (
         <Box paddingX={match700 ? 3 : 12} paddingY={5} style={{ width: "100%", height: "100%" }}  >
@@ -474,17 +477,22 @@ const Page = ({ }: payementProps) => {
 
                         <div className="  w-full   md:w-[30%] border rounded-lg  border-[#220f00]/3 h-full  ">
                             <div className="border-b-2 border-[#220f00]/3    pl-4 pr-4 pt-4 pb-3 overflow-hidden">
-
-                                <button disabled={isSending} className="  group relative transition-all duration-200 ease-in-out  text-white bg-[#220f00] rounded-lg p-4 w-full">
+                                <button disabled={isSending} className=" flex items-center justify-center  mt-3 group relative transition-all duration-200 ease-in-out  text-white bg-[#220f00] rounded-lg p-4 w-full">
 
                                     {isSending ? (
-                                        <Spinner size={25} thickness={3} color={"white"} />
+
+
+
+                                        <span className="flex items-center justify-center z-10 gap-2 text-base ">
+                                            <Spinner size={25} thickness={3} color={"white"} />
+                                        </span>
+
                                     ) : (
 
                                         <span className="flex items-center justify-center z-10 gap-2 text-base ">
                                             Commander maintenant
                                             {/* <Money className="inline-block size-[20px] group-hover:translate-x-3 transition-all duration-200 ease-in-out  " /> */}
-                                            <div className="absolute -left-[75px] -top-[60px]  bg-white opacity-20 w-7 h-[130px] rotate-[35deg] duration-200 transition-all group-hover:left-[110%] " />
+                                            <div className="absolute -left-[75px] -top-[60px]  bg-white opacity-20 w-4 h-[130px] rotate-[35deg] duration-200 transition-all group-hover:left-[110%] " />
                                         </span>
 
 
@@ -514,9 +522,12 @@ const Page = ({ }: payementProps) => {
                             <div className=" p-4 flex justify-center items-center  text-base border-t-2 border-[#220f00]/3">
 
 
-                                <button className="text-[#FF8800] underline" >
-
-                                    Politique de prepaiement
+                                <button
+                                    type="button"
+                                    onClick={() => setIsPolicyModalOpen(true)}
+                                    className="text-[#FF8800] hover:text-[#E67A00] underline transition-colors"
+                                >
+                                    Politique de prépaiement
                                 </button>
 
 
@@ -531,6 +542,10 @@ const Page = ({ }: payementProps) => {
                 </form>
             </div>
 
+            <PrepaymentPolicyModal
+                isOpen={isPolicyModalOpen}
+                onClose={() => setIsPolicyModalOpen(false)}
+            />
 
 
         </Box>
