@@ -46,6 +46,7 @@
     "googleapis": "^144.0.0",
     "html-react-parser": "^5.1.18",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.468.0",
     "mongoose": "^8.7.1",
     "next": "^14.2.13",
     "next-auth": "^4.24.5",
