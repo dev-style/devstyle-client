@@ -12,6 +12,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { addGoodie } from "@/app/admin/controllers/goodie";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import GooglePicker from "@/app/admin/ui/dashboard/google-picker/page";
 
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -583,7 +584,7 @@ const AddGoodiePage = () => {
               <label htmlFor="mainImage" className="mb-2 text-[var(--text)]">
                 Main Image
               </label>
-              <Controller
+              {/* <Controller
                 name="mainImage"
                 control={control}
                 render={({ field: { value, ...field } }) => (
@@ -620,7 +621,8 @@ const AddGoodiePage = () => {
                 <p className="text-red-500 text-sm">
                   {errors.mainImage.message}
                 </p>
-              )}
+              )} */}
+              <GooglePicker/>
             </div>
             <div className="flex flex-col space-y-2">
               <label htmlFor="images" className="mb-2 text-[var(--text)]">
