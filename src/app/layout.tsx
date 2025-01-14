@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import { Poppins, Roboto_Slab } from "next/font/google";
 import "./globals.css";
 import "animate.css";
-import { GoogleAnalytics } from '@next/third-parties/google'
 import AnalyticsWrapper from "./(client)/components/AnalyticsWrapper";
+import Script from 'next/script';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -11,103 +11,45 @@ const poppins = Poppins({
   variable: "--font-poppins",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
+
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
   variable: "--font-roboto-slab",
 });
 
 export const metadata: Metadata = {
-  title: {
-    template:
-      "%s | EXPRIME TA PASSION POUR LA TECH_ | La premiere boutique dedié aux amoureux de la Tech #TT237 Cameroun",
-    default:
-      "_DevStyle | EXPRIME TA PASSION POUR LA TECH_ | La premiere boutique dedié aux amoureux de la Tech #TT237",
-  },
-  description:
-    "Devstyle est une platforme de vente des Tshirts, Stickers, Hoodies, Mugs, Hats, Sweatshirts, Polos, Posters, et Bracelets pour les amoureux de la Tech #TT237 Cameroun",
-  keywords: [
-    "devstyle",
-    "developer",
-    "developpeur",
-    "cameroon",
-    "cameroun",
-    "douala",
-    "boutique",
-    "tshirt",
-    "hoodie",
-    "sticker",
-    "pulles",
-    "chapeau",
-    "boutique",
-    "mug",
-    "hat",
-    "sweatshirt",
-    "polo",
-  ],
-  openGraph: {
-    title: {
-      template:
-        "%s | EXPRIME TA PASSION POUR LA TECH_ | La premiere boutique dedié aux amoureux de la Tech #TT237 Cameroun",
-      default:
-        "_DevStyle | EXPRIME TA PASSION POUR LA TECH_ | La premiere boutique dedié aux amoureux de la Tech #TT237",
-    },
-    description:
-      "Devstyle est une platforme de vente des Tshirts, Stickers, Hoodies, Mugs, Hats, Sweatshirts, Polos, Posters, et Bracelets pour les amoureux de la Tech #TT237 Cameroun",
-    type: "website",
-    locale: "fr_FR",
-    alternateLocale: ["en_US"],
-    url: "https://dev-style.com",
-    siteName: "_DevStyle",
-    countryName: "Cameroun",
-    images: [
-      {
-        url: "https://dev-style.com/assets/images/metadata/devstyle.jpg",
-        width: 1280,
-        height: 720,
-        alt: "DevStyle",
-      },
-    ],
-  },
-  twitter: {
-    site: "https://dev-style.com",
-    creator: "@_devstyle",
-    description:
-      "Devstyle est une platforme de vente des Tshirts, Stickers, Hoodies, Mugs, Hats, Sweatshirts, Polos, Posters, et Bracelets pour les amoureux de la Tech #TT237 Cameroun. #EtreDeveloppeurPlusQu'unMetierC'estUnStyleDeVie #devStyle #devAttitude",
-    title: {
-      template:
-        "%s | EXPRIME TA PASSION POUR LA TECH_ | La premiere boutique dedié aux amoureux de la Tech #TT237 Cameroun",
-      default:
-        "_DevStyle | EXPRIME TA PASSION POUR LA TECH_ | La premiere boutique dedié aux amoureux de la Tech #TT237",
-    },
-    images: [
-      {
-        url: "https://dev-style.com/assets/images/metadata/devstyle.jpg",
-        width: 1280,
-        height: 720,
-        alt: "DevStyle",
-      },
-    ],
-    card: "summary_large_image",
-  },
+  // ... vos métadonnées ici
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
-  
+export default function RootLayout({ children }) {
+  const GA_MEASUREMENT_ID = 'G-56ZB7XCQHC'; // Remplacez par votre ID de mesure
 
   return (
     <html lang="en">
-      <body className={(poppins.className, robotoSlab.className)}>
+      <head>
+        <Script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+      </head>
+      <body className={`${poppins.className} ${robotoSlab.className}`}>
         <AnalyticsWrapper>
-
-        {children}
+          {children}
         </AnalyticsWrapper>
-        <GoogleAnalytics gaId="G-56ZB7XCQHC" />
-
       </body>
     </html>
   );
