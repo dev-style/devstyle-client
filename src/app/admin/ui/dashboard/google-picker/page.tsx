@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import useDrivePicker from 'react-google-drive-picker';
 import { gapi } from "gapi-script"
