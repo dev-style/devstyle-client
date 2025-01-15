@@ -5,8 +5,6 @@ import { useEffect } from 'react';
 
 const GooglePickerComponent = () => {
   // Remplacez ces valeurs par vos propres informations
-  const CLIENT_ID = '1024237376609-dup37589tds3gqe754clscp8lsga1k6g.apps.googleusercontent.com'; // Remplacez par votre ID client OAuth
-  const DEVELOPER_KEY = 'AIzaSyBnz_wG0mnhTPEJYv37qBHAepAY8uBhdyI'; // Remplacez par votre clé développeur
   const SCOPE = ['https://www.googleapis.com/auth/drive.file']; // Scopes nécessaires
 
   useEffect(() => {
@@ -27,7 +25,7 @@ const GooglePickerComponent = () => {
   const onAuthApiLoad = () => {
     window.gapi.auth.authorize(
       {
-        'client_id': CLIENT_ID,
+        'client_id': process.env.AUTH_CLIENT_ID,
         'scope': SCOPE,
         'immediate': false,
       },
@@ -47,7 +45,7 @@ const GooglePickerComponent = () => {
       const picker = new window.gapi.picker.PickerBuilder()
         .addView(window.gapi.picker.ViewId.DOCS)
         .setOAuthToken(accessToken)
-        .setDeveloperKey(DEVELOPER_KEY)
+        .setDeveloperKey(process.env.DEVELOPER_KEY)
         .setCallback(pickerCallback)
         .build();
       picker.setVisible(true);
