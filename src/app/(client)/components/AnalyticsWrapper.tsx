@@ -10,7 +10,7 @@ function AnalyticsContent() {
 
   useEffect(() => {
     if (pathname) {
-      // pageview(pathname + searchParams.toString())
+      pageview(pathname + searchParams.toString())
     }
   }, [pathname, searchParams])
 
