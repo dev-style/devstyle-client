@@ -27,6 +27,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+      <script async src="https://apis.google.com/js/api.js"></script>
         <Script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
