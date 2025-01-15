@@ -12,7 +12,6 @@ import { Editor } from "@tinymce/tinymce-react";
 import { addGoodie } from "@/app/admin/controllers/goodie";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import GooglePicker from "@/app/admin/ui/dashboard/google-picker/page";
 
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
