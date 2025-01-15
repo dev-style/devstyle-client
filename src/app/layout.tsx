@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   // ... vos métadonnées ici
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }:{children:React.ReactNode}) {
   const GA_MEASUREMENT_ID = 'G-56ZB7XCQHC'; // Remplacez par votre ID de mesure
 
   return (
     <html lang="en">
       <head>
-      <script async src="https://apis.google.com/js/api.js"></script>
+      {/* <script async src="https://apis.google.com/js/api.js"></script> */}
         <Script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

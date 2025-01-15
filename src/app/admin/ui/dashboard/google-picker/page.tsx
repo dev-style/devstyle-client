@@ -1,70 +1,77 @@
-// Indique que ce fichier doit être rendu côté client
-"use client";
+import React, { useState } from 'react';
+import useDrivePicker from 'react-google-drive-picker';
+import { gapi } from "gapi-script"
+const GooglePicker = () => {
 
-import { useEffect } from 'react';
+  const AUTH_CLIENT_ID="1024237376609-4upjfcofd7me4f88fj6b4liic1p1luct.apps.googleusercontent.com";
+  const DEVELOPER_KEY="AIzaSyBnz_wG0mnhTPEJYv37qBHAepAY8uBhdyI";
 
-const GooglePickerComponent = () => {
-  // Remplacez ces valeurs par vos propres informations
-  const SCOPE = ['https://www.googleapis.com/auth/drive.file']; // Scopes nécessaires
 
-  useEffect(() => {
-    // Fonction pour charger l'API Google Picker
-    const loadPickerApi = () => {
-      const script = document.createElement('script');
-      script.src = "https://apis.google.com/js/api.js";
-      script.onload = () => {
-        window.gapi.load('auth', { 'callback': onAuthApiLoad });
-        window.gapi.load('picker'); // Charge également l'API Picker
-      };
-      document.body.appendChild(script);
-    };
+  const [openPicker] = useDrivePicker();
 
-    loadPickerApi();
-  }, []);
-
-  const onAuthApiLoad = () => {
-    window.gapi.auth.authorize(
-      {
-        'client_id': process.env.AUTH_CLIENT_ID,
-        'scope': SCOPE,
-        'immediate': false,
-      },
-      handleAuthResult);
-  };
-
-  const handleAuthResult = (authResult: any) => {
-    if (authResult && !authResult.error) {
-      createPicker(authResult.access_token);
-    } else {
-      console.error("Erreur d'authentification", authResult.error);
-    }
-  };
-
-  const createPicker = (accessToken) => {
-    if (window.gapi && window.gapi.picker) {
-      const picker = new window.gapi.picker.PickerBuilder()
-        .addView(window.gapi.picker.ViewId.DOCS)
-        .setOAuthToken(accessToken)
-        .setDeveloperKey(process.env.DEVELOPER_KEY)
-        .setCallback(pickerCallback)
-        .build();
-      picker.setVisible(true);
-    }
-  };
-
-  const pickerCallback = (data) => {
-    if (data[window.gapi.picker.Response.ACTION] === window.gapi.picker.Action.PICKED) {
-      const doc = data[window.gapi.picker.Response.DOCUMENTS][0];
-      const url = doc[window.gapi.picker.Document.URL];
-      console.log('Vous avez sélectionné : ' + url);
-    }
+  const handleOpenPicker = () => {
+    gapi.load('client:auth2', () => {
+      gapi.client
+        .init({
+          apiKey: DEVELOPER_KEY,
+        })
+        .then(() => {
+          let tokenInfo = gapi.auth.getToken();
+          const pickerConfig: any = {
+            clientId: AUTH_CLIENT_ID,
+            developerKey: DEVELOPER_KEY,
+            viewId: 'DOCS',
+            viewMimeTypes: 'image/jpeg,image/png,image/gif',
+            token: tokenInfo ? tokenInfo.access_token : null,
+            showUploadView: true,
+            showUploadFolders: true,
+            supportDrives: true,
+            multiselect: true,
+            callbackFunction: (data: any) => {
+              const elements = Array.from(
+                document.getElementsByClassName(
+                  'picker-dialog'
+                ) as HTMLCollectionOf<HTMLElement>
+              );
+              for (let i = 0; i < elements.length; i++) {
+                elements[i].style.zIndex = '2000';
+              }
+              if (data.action === 'picked') {
+                //Add your desired workflow when choosing a file from the Google Picker popup
+                //In this below code, I'm attempting to get the file's information. 
+                if (!tokenInfo) {
+                  tokenInfo = gapi.auth.getToken();
+                }
+                const fetchOptions = {
+                  headers: {
+                    Authorization: `Bearer ${tokenInfo.access_token}`,
+                  },
+                };
+                const driveFileUrl = 'https://www.googleapis.com/drive';
+                data.docs.map(async (item: any) => {
+                  const response = await fetch(
+                    `${driveFileUrl}/${item.id}?alt=media`,
+                    fetchOptions
+                  );
+                });
+              }
+            },
+          };
+          openPicker(pickerConfig);
+        });
+    });
   };
 
   return (
     <div>
-      <button onClick={() => onAuthApiLoad()}>Ouvrir Google Picker</button>
+      <button
+        onClick={() => handleOpenPicker()}
+        color="primary"
+      >
+        Open Google Picker
+      </button>
     </div>
   );
 };
 
-export default GooglePickerComponent;
+export default GooglePicker;
