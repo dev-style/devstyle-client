@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
-// import { pageview } from '../lib/gtag'
+import { pageview } from '../lib/gtag'
 
 function AnalyticsContent() {
   const pathname = usePathname()
