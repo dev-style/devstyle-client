@@ -88,6 +88,7 @@ const Page = ({ }: payementProps) => {
             email: data.email,
             city: data.city,
             district: data.district,
+            paymentMethod:payementMethod
 
         }
         console.log("here is the order data", orderData)

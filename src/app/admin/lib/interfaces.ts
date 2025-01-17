@@ -64,6 +64,9 @@ export interface IOrder extends mongoose.Document {
   email: string;
   number?: number;
   initDate: Date;
+  city:string;
+  district:string;
+  paymentMethod:string;
 }
 export interface IUser extends mongoose.Document {
   username: string;
