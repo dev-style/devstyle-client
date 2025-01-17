@@ -23,6 +23,10 @@ type Order = {
   status: "initiate" | "processing" | "completed" | "cancelled";
   initDate: string;
   goodies: [{ name: string; price: number; quantity: number; total: number }];
+  city: string;
+  district: string;
+  paymentMethod: string;
+
 };
 
 const OrdersPageContent = () => {
@@ -50,6 +54,9 @@ const OrdersPageContent = () => {
             | "cancelled",
           initDate: order.initDate.toISOString(),
           goodies: order.goodies,
+          city: order.city,
+          district: order.district,
+          paymentMethod: order.paymentMethod,
         }));
         setOrders(formattedOrders);
         setCount(count);
@@ -83,6 +90,9 @@ const OrdersPageContent = () => {
           | "cancelled",
         initDate: order.initDate.toISOString(),
         goodies: order.goodies,
+        city: order.city,
+        district: order.district,
+        paymentMethod: order.paymentMethod,
       }));
 
       setOrders(formattedOrders);
@@ -125,6 +135,8 @@ const OrdersPageContent = () => {
               <td className="p-2.5">Number</td>
               <td className="p-2.5">Status</td>
               <td className="p-2.5">Date</td>
+              <td className="p-2.5">District</td>
+              <td className="p-2.5">PaymentMethod</td>
               <td className="p-2.5">Total</td>
               <td className="p-2.5">Actions</td>
             </tr>
@@ -142,6 +154,14 @@ const OrdersPageContent = () => {
                   <td className="p-2.5">
                     {new Date(order.initDate).toLocaleDateString()}
                   </td>
+                  <td className="p-2.5">
+                    {order.district}
+                  </td>
+                  <td className="p-2.5">
+                    {order.paymentMethod}
+                  </td>
+
+
                   <td className="p-2.5">
                     {order.goodies.reduce(
                       (total, item) => total + item.total,

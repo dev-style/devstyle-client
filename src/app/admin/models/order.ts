@@ -41,6 +41,21 @@ const orderSchema: Schema<IOrder> = new mongoose.Schema(
       type: Number,
       required: false,
     },
+    city:{
+      type:String,
+      required:true,
+      
+    },
+    district:{
+      type:String,
+      required:true,
+    },
+
+    paymentMethod:{
+      type:String,
+      required:true,
+    },
+ 
     initDate: { type: Date, default: Date.now() },
   },
   { timestamps: true }
