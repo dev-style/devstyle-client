@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -11,9 +12,10 @@ import { z } from "zod";
 interface AddDiscountModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSuccess: () => void;
 }
 
-const AddDiscountModal = ({ isOpen, onClose }: AddDiscountModalProps) => {
+const AddDiscountModal = ({ isOpen, onClose, onSuccess }: AddDiscountModalProps) => {
     const DiscountForm = z.object({
         code: z.string()
             .min(1, { message: "Le code du coupon est requis." })
@@ -25,6 +27,7 @@ const AddDiscountModal = ({ isOpen, onClose }: AddDiscountModalProps) => {
             .int({ message: "La limite doit être un nombre entier." })
             .min(1, { message: "Entrez une limite valide." })
     });
+    const router = useRouter()
 
     type DiscountFormData = z.infer<typeof DiscountForm>;
 
@@ -40,7 +43,10 @@ const AddDiscountModal = ({ isOpen, onClose }: AddDiscountModalProps) => {
         console.log("data", data);
 
         try {
-            await createDiscount(data);
+            const response = await createDiscount(data);
+            if (response.status == 200) {
+                onSuccess()
+            }
 
         } catch (error) {
 
@@ -48,7 +54,9 @@ const AddDiscountModal = ({ isOpen, onClose }: AddDiscountModalProps) => {
 
 
         } finally {
-            onClose()
+            router.push("/admin/dashboard/discount");
+
+            // onClose()
         }
 
         // Vous pouvez ajouter la logique pour envoyer les données au backend ici.

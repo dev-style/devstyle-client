@@ -88,7 +88,7 @@ const Page = ({ }: payementProps) => {
             email: data.email,
             city: data.city,
             district: data.district,
-            paymentMethod:payementMethod
+            paymentMethod: payementMethod
 
         }
         console.log("here is the order data", orderData)
@@ -178,11 +178,26 @@ const Page = ({ }: payementProps) => {
 
     useEffect(() => {
 
-        const storedGoodies = localStorage.getItem("goodiesData")
+        const storedGoodies = localStorage.getItem("goodiesData") ? JSON.parse(localStorage.getItem("goodiesData")!!) : null
         const storedMessage = localStorage.getItem("messageData")
 
-        if (storedGoodies) {
-            setGoodies(JSON.parse(storedGoodies))
+        const goodieWithDiscount = localStorage.getItem("goodieWithDiscount") ? JSON.parse(localStorage.getItem("goodieWithDiscount")!!) : null;
+
+        console.log("storedGoodie", storedGoodies)
+        console.log("goodieWithDiscount", goodieWithDiscount)
+        if (storedGoodies && goodieWithDiscount) {
+            const updatedGoodies = storedGoodies.map((goodie: any) => {
+                if (goodie._id == goodieWithDiscount._id) {
+                    console.log("test", goodieWithDiscount.price)
+
+                    return { ...goodie, price: goodieWithDiscount.price }
+                }
+                return goodie;
+            })
+            setGoodies(updatedGoodies)
+        } else {
+            setGoodies(storedGoodies)
+
         }
         if (storedMessage) {
             setMessage(JSON.parse(storedMessage))

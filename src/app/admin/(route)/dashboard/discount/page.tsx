@@ -3,7 +3,7 @@
 import AddDiscountModal from '@/app/(client)/components/addDiscountModal';
 import { fetchDiscounts } from '@/app/admin/controllers/discount';
 import Pagination from '@/app/admin/ui/dashboard/pagination/page'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 type Props = {}
 
@@ -11,25 +11,41 @@ const DiscountPage = ({ searchParams }: any) => {
 
     const [discouts, setDiscounts] = useState(null);
     const [openModal, setOpenModal] = useState(false)
-    const [countDiscount, setCountDiscount] = useState<number>(null)
+    const [countDiscount, setCountDiscount] = useState<number | null>(null)
 
     const q = searchParams?.q || "";
     const page = searchParams?.page || 1;
 
+    // useEffect(() => {
+
+    //     const fetchData = async () => {
+
+    //         const { count, discounts } = await fetchDiscounts(q, page)
+    //         console.log("discounts", discounts);
+    //         setDiscounts(discounts);
+    //         setCountDiscount(count);
+
+    //     }
+    //     fetchData()
+
+    // }, [])
+    const fetchDiscountData = useCallback(async () => {
+        const { count, discounts } = await fetchDiscounts(q, page)
+        console.log("discounts", discounts);
+        setDiscounts(discounts);
+        setCountDiscount(count);
+    }, [q, page])
+
     useEffect(() => {
+        fetchDiscountData()
+    }, [fetchDiscountData])
 
-        const fetchData = async () => {
 
-            const { count, discounts } = await fetchDiscounts(q, page)
-            console.log("discounts", discounts);
-            setDiscounts(discounts);
-            setCountDiscount(count);
+    const handleDiscountSuccess = async () => {
+        setOpenModal(false)
+        await fetchDiscountData()
 
-        }
-        fetchData()
-
-    }, [])
-
+    }
 
     return (
 
@@ -66,7 +82,7 @@ const DiscountPage = ({ searchParams }: any) => {
                                         <td className="p-2.5 pl-0">{discount.percent}</td>
                                         <td className="p-2.5 pl-0">{discount.limit}</td>
                                         <td className="p-2.5 pl-0">{discount.uses}</td>
-                                        <td className="p-2.5 pl-0">{discount.isActive}</td>
+                                        <td className="p-2.5 pl-0">{discount.isActive ? "true" : "false"}</td>
 
                                     </tr>
                                 ))
@@ -84,6 +100,7 @@ const DiscountPage = ({ searchParams }: any) => {
             <AddDiscountModal
                 isOpen={openModal}
                 onClose={() => setOpenModal(false)}
+                onSuccess={handleDiscountSuccess}
             />
         </div>
 

@@ -61,6 +61,7 @@ export async function createDiscount(formData: {
     });
     console.log("new discount", newDiscount);
     await newDiscount.save();
+    return { status: 200 };
   } catch (error) {
     console.error("Error in creatio of discount", error);
     throw new Error("Error in creation of the discount");
