@@ -13,6 +13,7 @@ import {
   Skeleton,
   Tooltip,
   ClickAwayListener,
+  Input,
 } from "@mui/material";
 import {
   ThumbUpTwoTone,
@@ -63,6 +64,7 @@ const Goodie = (props: any) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [userCountry, setUserCountry] = useState("");
+  const [discountValue, setDiscountValue] = useState<number | null>(0)
 
 
 
@@ -104,19 +106,28 @@ const Goodie = (props: any) => {
       .then((response) => {
         console.log("Le goodieee", response.data);
         if (response.status === 200) {
-          setGoodie({
-            ...response.data.message,
-            mainImage:response.data.message.images[0],
-            sizes: response.data.message.sizes.filter(
-              (size: IGoodieSize) => size.size !== ""
-            ),
-            quantity: 1,
-            selectedColor: response.data.message.availableColors[0],
-            selectedSize:
-              response.data.message.sizes[
-                Math.floor(response.data.message.sizes?.length ?? 0) / 2
-              ]?.size,
-          });
+
+          const goodieWithDiscount = localStorage.getItem("goodieWithDiscount") ? JSON.parse(localStorage.getItem("goodieWithDiscount")!!) : null;
+          if (goodieWithDiscount && goodieWithDiscount._id == response.data.message._id) {
+            console.log("goodie with discount", goodieWithDiscount)
+            setGoodie(goodieWithDiscount)
+          } else {
+            setGoodie({
+              ...response.data.message,
+              mainImage: response.data.message.images[0],
+              sizes: response.data.message.sizes.filter(
+                (size: IGoodieSize) => size.size !== ""
+              ),
+              quantity: 1,
+              selectedColor: response.data.message.availableColors[0],
+              selectedSize:
+                response.data.message.sizes[
+                  Math.floor(response.data.message.sizes?.length ?? 0) / 2
+                ]?.size,
+            });
+          }
+
+
           setIsLoadingGoodie(false);
 
           myAxios
@@ -277,6 +288,7 @@ const Goodie = (props: any) => {
       price: goodie?.price,
       quantity: goodie?.quantity,
       total: goodie ? (goodie.price || 0) * (goodie?.quantity || 0) : 0,
+      _id: goodie?._id,
     },
   ];
 
@@ -301,6 +313,58 @@ const Goodie = (props: any) => {
       }
     }
   };
+
+  const changeDiscountValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("discount data i pass", e.target.value)
+    const discount = Number(e.target.value)
+    setDiscountValue(discount)
+
+  }
+
+  const useDiscoundcode = () => {
+
+    myAxios.post("/discount", {
+      discount: discountValue
+    }).then((response) => {
+      console.log("response data", response)
+      if (response.status === 200) {
+
+        // setIsLoadingGoodie(true)
+
+
+        const discount = response.data.message
+        const discountPrice = Number(goodie?.price) - (Number(goodie?.price) * discount.percent / 100)
+        console.log("response message discount", goodie)
+        setGoodie({ ...goodie, price: discountPrice } as IGoodie)
+        const newGoodie = { ...goodie, price: discountPrice }
+
+        // setIsLoadingGoodie(false);
+
+        const goodieWithDiscount = JSON.stringify(newGoodie)
+
+        localStorage.setItem('goodieWithDiscount', goodieWithDiscount)
+
+
+
+        toast.success(
+          <div style={{ color: "#fff" }}>Discount fait</div>,
+          {
+            style: { textAlign: "center" },
+            icon: "🎉",
+          }
+        );
+
+      }
+    }).catch((error) => {
+      toast.error(<div style={{ color: "#fff" }}>Desole , votre code de discount n'est pas ou plus valide</div>, {
+        icon: "🌐",
+        style: { textAlign: "center" },
+      })
+
+      console.log(error)
+    })
+
+  }
 
   return (
     <React.Fragment>
@@ -567,6 +631,33 @@ const Goodie = (props: any) => {
                       </Box>
                     </Box>
                   )}
+                {isLoadingGoodie ? (
+                  <Box>
+                    <Typography>
+                      Entrer un code de discount
+                    </Typography>
+                    <Box className="size-wrapper">
+                      <Skeleton
+                        animation="wave"
+                        variant="rectangular"
+                        height={40}
+                        width={40}
+                      />
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box className="space-y-2 mb-1">
+                    <Typography>
+                      Entrer votre code de discount
+                    </Typography>
+                    <Box className="flex space-x-2">
+
+                      <TextField onChange={changeDiscountValue} id="outlined-basic" label="Discount" type="number" variant="outlined" />
+                      <Button onClick={useDiscoundcode} style={{ backgroundColor: "#220F00", color: "white" }} className="px-3">Valider</Button>
+                    </Box>
+                  </Box>
+
+                )}
                 {isLoadingGoodie ? (
                   <Box className="size">
                     <Typography className="label">

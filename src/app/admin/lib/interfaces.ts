@@ -96,3 +96,10 @@ export interface ICombo extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface IDiscount extends mongoose.Document{
+  code:string;
+  percent:number;
+  isActive:boolean;
+  limit:number;
+  uses:number;
+}

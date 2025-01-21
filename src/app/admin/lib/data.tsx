@@ -68,8 +68,8 @@ export const menuItems = [
       title: "User",
       list: [
         {
-          title: "Settings",
-          path: "/admin/dashboard/settings",
+          title: "Discounts",
+          path: "/admin/dashboard/discount",
           icon: <MdOutlineSettings />,
         },
         {
