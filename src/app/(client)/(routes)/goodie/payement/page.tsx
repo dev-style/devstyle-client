@@ -534,6 +534,40 @@ const Page = ({ }: payementProps) => {
                                 </div>
 
                             </div>
+                            <div className="p-4 border-t-2 border-[#220f00]/3 overflow-x-auto w-full flex justify-start items-center gap-x-3 gap-y-1 flex-wrap:wrap  ">
+                                {goodies.map((goodie, key) => {
+                                    return (
+                                        <div key={key} className="border flex flex-col gap-y-1 border-px border-[#220f00]/3 rounded-sm p-6  ">
+                                            <div className="border-b-px p-2 border-[#220f00] bg-[#220f00]">
+                                                <h1 className="text-white">
+                                                    <span className="">Name : </span>
+                                                    {goodie.name}
+                                                </h1>
+                                            </div>
+
+                                            <p>
+                                                <span>
+                                                    Price :
+                                                </span> {goodie.price} Fcfa
+                                            </p>
+                                            <p>
+                                                <span>
+                                                    Qnt :
+                                                </span>
+                                                {goodie.quantity} Items
+                                            </p>
+                                            <p>
+                                                <span>
+                                                    Total :
+                                                </span> {goodie.total} Fcfa
+                                            </p>
+
+
+                                        </div>
+                                    )
+                                })}
+
+                            </div>
 
                             <div className=" p-4 flex justify-center items-center  text-base border-t-2 border-[#220f00]/3">
 

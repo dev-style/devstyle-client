@@ -36,13 +36,19 @@ import { ErrorMessage } from "@hookform/error-message";
 import myAxios from "../../lib/axios.config";
 import { toast } from "react-toastify";
 import { IOrderData } from "@/app/lib/interfaces";
+import { useRouter } from "next/navigation";
 
 const Checkout = () => {
+  const [userCountry, setUserCountry] = useState("");
+
   const [modalOpen, setModalOpen] = useState(false);
   const [orderData, setOrderData] = useState<IOrderData>();
   const match900 = useMediaQuery("(max-width:900px)");
   const match500 = useMediaQuery("(max-width:500px)");
   const { cartDispatch, cartContent } = useContext(CartContext);
+
+  const router = useRouter();
+
   const createData = (
     image: JSX.Element,
     name: JSX.Element,
@@ -70,9 +76,9 @@ const Checkout = () => {
       <Box
         bgcolor={
           goodie.backgroundColors[
-            goodie.images.findIndex(
-              (image) => image.url === goodie.mainImage.url
-            )
+          goodie.images.findIndex(
+            (image) => image.url === goodie.mainImage.url
+          )
           ] ?? goodie.backgroundColors[0]
         }
         height="144px"
@@ -188,11 +194,10 @@ const Checkout = () => {
 *Size:* ${goodie.selectedSize} ;
 *Quantity:* ${goodie.quantity} ;
 *Price:* ${goodie.price} ;
-*PromoPrice:* ${
-          goodie.inPromo
+*PromoPrice:* ${goodie.inPromo
             ? calculatePromoPrice(goodie.price, goodie.promoPercentage)
             : "none"
-        } ;
+          } ;
 *PromoPercent:* ${goodie.inPromo ? goodie.promoPercentage : "none"} ;
 
 ------------------------------------
@@ -218,7 +223,7 @@ const Checkout = () => {
     formState: { errors },
   } = useForm<IOrderFormSchema>({ resolver: zodResolver(orderFormSchema) });
 
-  const submit = () => {};
+  const submit = () => { };
 
   const propertiesToSelect = ["name", "price", "quantity", "total"];
 
@@ -237,6 +242,50 @@ const Checkout = () => {
       return selectedProperty;
     }
   );
+  console.log("list of goodies in checkout page", goodies)
+
+
+  useEffect(() => {
+
+
+    // Fetch user's country
+    fetch(
+      "https://api.ipgeolocation.io/ipgeo?apiKey=faf527222d2a46c8a4ba42da7d2ab1d8"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("country location", data);
+        setUserCountry(data.country_name);
+      })
+      .catch((error) => {
+        console.error("Error fetching country:", error);
+        setUserCountry("Unknown"); // Set a default value in case of error
+      });
+
+  }, [])
+
+
+  const handleOrderClick = () => {
+    if (userCountry === "Cameroon") {
+      // setModalOpen(true);
+      const goodieData = JSON.stringify(goodies)
+      const message = generateCartDescription()
+      const messageData = JSON.stringify(message)
+
+      localStorage.setItem("goodiesData", goodieData)
+      localStorage.setItem("messageData", messageData)
+      router.push("/goodie/payement", { scroll: false })
+
+    } else {
+      toast.error("Commande impossible en ce pays. Veuillez vous rendre à votre pays d'origine.");
+      // if (goodie?.etsy) {
+      //   window.open(goodie.etsy, "_blank");
+      // } else {
+      //   toast.error("Le lien Etsy n'est pas disponible pour ce produit.");
+      // }
+    }
+  };
+
 
   return (
     <Fragment>
@@ -338,9 +387,10 @@ const Checkout = () => {
           type="submit"
           className="button mx-auto "
           style={{ backgroundColor: "#220F00", color: "white" }}
-          onClick={() =>
-            getTotalPrice(cartContent) ? setModalOpen(true) : null
-          }
+          // onClick={() =>
+          //   getTotalPrice(cartContent) ? setModalOpen(true) : null
+          // }
+          onClick={handleOrderClick}
         >
           Commander(
           <Image
@@ -372,8 +422,8 @@ const Checkout = () => {
         goodie={goodies}
         open={modalOpen}
         handleClose={() => setModalOpen(false)}
-        message={()=>generateCartDescription()}
-        // order={orderData}
+        message={() => generateCartDescription()}
+      // order={orderData}
       />
     </Fragment>
   );
