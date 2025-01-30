@@ -9,9 +9,11 @@ import "./footer.scss";
 const Footer = () => {
   return (
     <Box className="footer-wrapper" position={"relative"}>
-      <Box paddingY={5} zIndex={2}>
-        <Grid container className="footer-container">
-          <Grid item xs={12} lg={4} height={"100%"} position={"relative"}>
+      <Box paddingY={5} zIndex={2} className="">
+        {/* please center the container of this grid */}
+
+        <Grid container className="footer-container mx-auto max-w-screen-2xl w-full">
+          <Grid item xs={12} lg={2} height={"100%"} position={"relative"} className="flex items-center justify-center" >
             <Image
               src={"/assets/images/devstyle-white-logo.png"}
               style={{ marginBottom: 40 }}
@@ -21,24 +23,24 @@ const Footer = () => {
               height={50}
             />
           </Grid>
-          <Grid container item xs={12} lg={8}>
+          <Grid container item xs={12} lg={10} className="flex items-center justify-end">
             <Grid item xs={12} lg={4}>
               <Typography className="footer-title">Nos pages</Typography>
               <Box className="footer-links-wrapper">
                 <Link href="/">Accueil</Link>
                 <Link
                   href="/#our-collections-section"
-                  // onClick={() => {
-                  //   try {
-                  //     if (document.querySelector("#our-collections-section")) {
-                  //       document
-                  //         .querySelector("#our-collections-section")
-                  //         ?.scrollIntoView(true);
-                  //     }
-                  //   } catch (error) {
-                  //     console.log(error);
-                  //   }
-                  // }}
+                // onClick={() => {
+                //   try {
+                //     if (document.querySelector("#our-collections-section")) {
+                //       document
+                //         .querySelector("#our-collections-section")
+                //         ?.scrollIntoView(true);
+                //     }
+                //   } catch (error) {
+                //     console.log(error);
+                //   }
+                // }}
                 >
                   Shop
                 </Link>
@@ -46,10 +48,10 @@ const Footer = () => {
                 <Link href="/our-ambassadors">Nos Ambassadeurs</Link>
               </Box>
             </Grid>
-            <Grid item xs={12} lg={4}>
+            {/* <Grid item xs={12} lg={4}>
               <Typography className="footer-title">Nos partenaires</Typography>
               <ListPartners />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} lg={4}>
               <Typography className="footer-title">Suivez nous</Typography>
               <Box className="footer-links-wrapper">
@@ -166,17 +168,17 @@ const Footer = () => {
                   <Box>
                     <a
                       href="tel:+237692650993"
-                      // onClick={() => {
-                      //   // analyticsEventTracker("CONTACT")("Orange Number");
-                      // }}
+                    // onClick={() => {
+                    //   // analyticsEventTracker("CONTACT")("Orange Number");
+                    // }}
                     >
                       (+237) 692 650 993
                     </a>
                     <a
                       href="tel:+237654456264"
-                      // onClick={() => {
-                      //   // analyticsEventTracker("CONTACT")("Mtn Number");
-                      // }}
+                    // onClick={() => {
+                    //   // analyticsEventTracker("CONTACT")("Mtn Number");
+                    // }}
                     >
                       {" "}
                       / 654 456 264
@@ -198,9 +200,9 @@ const Footer = () => {
                   &nbsp;&nbsp;
                   <a
                     href="mailto:contact.devstyle@gmail.com"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("CONTACT")("Email");
-                    // }}
+                  // onClick={() => {
+                  //   // analyticsEventTracker("CONTACT")("Email");
+                  // }}
                   >
                     contact.devstyle@gmail.com
                   </a>

@@ -563,7 +563,7 @@ const Goodie = (props: any) => {
                   </div>
                 </Box>
                 <Box className="quantity">
-                  <Typography className="label">Quantité</Typography>
+                  <Typography className="label">Quantité.</Typography>
                   <TextField
                     variant="outlined"
                     size="small"
