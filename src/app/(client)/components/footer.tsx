@@ -44,7 +44,7 @@ const Footer = () => {
                 >
                   Shop
                 </Link>
-                <Link href="/about-us">Qui sommes-Nous ?</Link>
+                <Link href="/about-us">Qui sommes-Nous ??</Link>
                 <Link href="/our-ambassadors">Nos Ambassadeurs</Link>
               </Box>
             </Grid>
