@@ -15,6 +15,13 @@ export const DiscountSchema = new Schema<IDiscount>(
       type: Number,
       default: 0,
     },
+    goodies: [
+      {
+        type: mongoose.Schema.Types.ObjectId, // Tableau d'ObjectId
+        ref: "Goodie", // Référence à la collection Goodie
+        required: false ,
+      },
+    ],
   },
   { timestamps: true }
 );

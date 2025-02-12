@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { IDiscount } from "../lib/interfaces";
 import { connectToDB } from "../lib/utils";
 import DiscountModel from "../models/discount";
+import GoodieModel from "../models/goodie";
 
 export const fetchDiscounts = async (q: string, page: number) => {
   console.log("Query:", q);
@@ -21,8 +22,9 @@ export const fetchDiscounts = async (q: string, page: number) => {
     const discounts = await DiscountModel.find({ code: { $regex: regex } })
       .limit(ITEM_PER_PAGE)
       .skip(ITEM_PER_PAGE * (page - 1))
-
+      .populate("goodies")
       .sort({ createdAt: -1 })
+
       .lean();
 
     console.log("Number of discount found:", count);
@@ -48,20 +50,32 @@ export async function createDiscount(formData: {
   code: string;
   percent: number;
   limit: number;
+  goodies: Array<string>;
 }) {
-  console.log("form");
+  console.log("form", formData);
   try {
     await connectToDB();
 
-    const newDiscount = new DiscountModel({
-      code: formData.code,
-      percent: formData.limit,
-      limit: formData.percent,
-      isActive: true,
+    const hasDiscount = await DiscountModel.find({
+      goodies: { $in: formData.goodies },
     });
-    console.log("new discount", newDiscount);
-    await newDiscount.save();
-    return { status: 200 };
+
+    console.log("hasDiscount", hasDiscount);
+
+    if (hasDiscount.length > 0){
+      throw new Error("Error in creation of the discount");
+    } else {
+      const newDiscount = new DiscountModel({
+        code: formData.code,
+        percent: formData.limit,
+        limit: formData.percent,
+        isActive: true,
+        goodies: formData.goodies,
+      });
+      console.log("new discount", newDiscount);
+      await newDiscount.save();
+      return { status: 200 };
+    }
   } catch (error) {
     console.error("Error in creatio of discount", error);
     throw new Error("Error in creation of the discount");

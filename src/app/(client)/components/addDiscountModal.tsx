@@ -1,21 +1,44 @@
 "use client";
 import { createDiscount } from "@/app/admin/controllers/discount";
+import { getGoodiesWithoutDiscount } from "@/app/admin/controllers/goodie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
+import { IGoodie } from "@/app/admin/lib/interfaces";
 
 interface AddDiscountModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    onFailure: () => void;
+
 }
 
-const AddDiscountModal = ({ isOpen, onClose, onSuccess }: AddDiscountModalProps) => {
+
+const GoodieCard = ({ goodie, isSelected, onSelect }: { goodie: IGoodie, isSelected: boolean, onSelect: (id: string) => void }) => (
+    <div
+        className={`border rounded-lg p-4 cursor-pointer transition-all ${isSelected ? 'border-teal-500 bg-teal-100' : 'border-gray-300 hover:border-teal-300'
+            }`}
+        onClick={() => onSelect(goodie._id)}
+    >
+        <img src={goodie.mainImage.url} alt={goodie.name} className="w-full h-32 object-cover rounded-md mb-2" />
+        <h3 className="text-sm font-semibold text-center">{goodie.name}</h3>
+    </div>
+);
+
+const AddDiscountModal = ({ isOpen, onClose, onSuccess, onFailure }: AddDiscountModalProps) => {
+
+    const [goodies, setGoodies] = useState<IGoodie[]>([]);
+
+    const [selectedGoodies, setSelectedGoodies] = useState<string[]>([]);
+
+
     const DiscountForm = z.object({
         code: z.string()
             .min(1, { message: "Le code du coupon est requis." })
@@ -25,7 +48,10 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess }: AddDiscountModalProps)
             .min(1, { message: "Le pourcentage doit être supérieur à 0." }),
         limit: z.number()
             .int({ message: "La limite doit être un nombre entier." })
-            .min(1, { message: "Entrez une limite valide." })
+            .min(1, { message: "Entrez une limite valide." }),
+        goodies: z.array(
+            z.string()
+        )
     });
     const router = useRouter()
 
@@ -35,6 +61,7 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess }: AddDiscountModalProps)
         register,
         handleSubmit,
         formState: { errors },
+        setValue
     } = useForm<DiscountFormData>({
         resolver: zodResolver(DiscountForm),
     });
@@ -42,25 +69,64 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess }: AddDiscountModalProps)
     const onSubmit = async (data: DiscountFormData) => {
         console.log("data", data);
 
-        try {
-            const response = await createDiscount(data);
-            if (response.status == 200) {
-                onSuccess()
+        if (selectedGoodies.length >= 1) {
+
+            try {
+                const response = await createDiscount(data);
+                if (response.status == 200) {
+                    onSuccess()
+                }
+
+            } catch (error) {
+
+                onFailure()
+
+                toast.error("An error occurred while adding the goodie. , Please Check if a discount is already associated with one of the selected goodies");
+
+
+            } finally {
+                router.push("/admin/dashboard/discount");
+
+                // onClose()
             }
 
-        } catch (error) {
+            // Vous pouvez ajouter la logique pour envoyer les données au backend ici.
 
-            toast.error("An error occurred while adding the goodie.");
+        } else {
+            console.log('Please select at least one ')
+            toast.error("Please select at least one goodie.");
 
-
-        } finally {
-            router.push("/admin/dashboard/discount");
-
-            // onClose()
         }
 
-        // Vous pouvez ajouter la logique pour envoyer les données au backend ici.
+
     };
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const { goodies } = await getGoodiesWithoutDiscount();
+            console.log("Fetched goodies", goodies);
+            setGoodies(goodies);
+        }
+
+        fetchData()
+
+
+    }, [])
+
+
+
+    const handleGoodieSelection = (goodieId: string) => {
+        setSelectedGoodies(prev => {
+            const newSelection = prev.includes(goodieId)
+                ? prev.filter(id => id !== goodieId)
+                : [...prev, goodieId];
+            setValue("goodies", newSelection)
+            return newSelection;
+        });
+    };
+
 
     return (
         <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
@@ -108,6 +174,31 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess }: AddDiscountModalProps)
                                 className="w-full p-3 rounded-xl border border-black/10"
                             />
                             {errors.limit && <span className="text-red-600">{errors.limit.message}</span>}
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-lg border">
+                            <h3 className="text-lg font-semibold mb-2">Select the goodie</h3>
+                            {/* <input
+                                {...register("limit", { valueAsNumber: true })} // Conversion automatique en nombre
+                                type="number"
+                                min={1}
+                                className="w-full p-3 rounded-xl border border-black/10"
+                            />
+                            {errors.limit && <span className="text-red-600">{errors.limit.message}</span>} */}
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                {goodies.map((goodie) => (
+                                    <GoodieCard
+                                        key={goodie._id}
+                                        goodie={goodie}
+                                        isSelected={selectedGoodies.includes(goodie._id)}
+                                        onSelect={handleGoodieSelection}
+                                    />
+                                ))}
+                            </div>
+
+                            {errors.goodies && <span className="text-red-600">Select at least one goodie</span>}
+
+
                         </div>
                         <button type="submit" className="p-3 text-white bg-orange-700 rounded-xl">Create Discount</button>
                     </form>

@@ -115,6 +115,7 @@ const AddGoodiePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const { collections } = await fetchCollections();
+      console.log("my collections", collections);
       setCollections(collections);
 
       const { sizes } = await fetchSizes();

@@ -15,6 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { ChangeEvent, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ICollectionForCart, IGoodie } from "@/app/lib/interfaces";
+import { stripHtmlTags } from "../lib/utils-script";
 
 interface ISearchBar {
   collections: ICollectionForCart[] | null;
@@ -28,13 +29,28 @@ const SearchBar = ({ goodies }: any) => {
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log("here is the goodies", goodies)
     if (inputValue) {
+
+
+
       const filteredSuggestions =
         goodies
-          ?.filter((goodie: IGoodie) =>
-            goodie.name.toLowerCase().includes(inputValue.toLowerCase())
+          ?.filter((goodie: IGoodie) => {
+
+            const descriptionText = stripHtmlTags(goodie.description)
+
+
+            return (goodie.name.toLowerCase().includes(inputValue.toLowerCase()) || descriptionText.toLowerCase().includes(inputValue.toLowerCase()))
+
+
+
+          }
           )
           .map((goodie: IGoodie) => goodie.name) || [];
+
+
+
       setSuggestions(filteredSuggestions);
     } else {
       setSuggestions([]);
@@ -43,9 +59,9 @@ const SearchBar = ({ goodies }: any) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchContainerRef.current && 
-          !searchContainerRef.current.contains(event.target as Node) &&
-          !(event.target as Element).closest('.suggestions-list')) {
+      if (searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node) &&
+        !(event.target as Element).closest('.suggestions-list')) {
         handleClose();
       }
     };

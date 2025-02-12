@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Money } from "@mui/icons-material"
-import { Box, Checkbox, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, useMediaQuery } from "@mui/material"
+import { Box, Checkbox, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, useMediaQuery } from "@mui/material"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
 import { toast } from "react-toastify"
@@ -13,6 +13,7 @@ import myAxios from "@/app/(client)/lib/axios.config"
 import Spinner from "@/app/(client)/components/spinner"
 import { AnimatePresence, motion } from "framer-motion"
 import PrepaymentPolicyModal from "@/app/(client)/components/PrepaymentPolicyModal"
+import { cityList } from "@/app/(client)/lib/cityList"
 
 interface payementProps {
 
@@ -33,11 +34,11 @@ const Page = ({ }: payementProps) => {
         phone: z.string().refine(value => !isNaN(Number(value)), { message: "Invalid phone number" }),
         email: z.string().email({ message: "Invalid email address" }),
         city: z.string().min(1, { message: "Add your city" }),
-        district: z.string().min(1, { message: "Add your district" })
+        district: z.string().optional()
 
     })
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schema>>({
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema)
     })
 
@@ -247,6 +248,12 @@ const Page = ({ }: payementProps) => {
 
     const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
 
+    const selectedCity = watch("city") || cityList[0].name
+
+    const selectedCityData = cityList.find((c) => c.name === selectedCity)
+
+    const districts = selectedCityData ? selectedCityData.district : []
+
     return (
         <Box paddingX={match700 ? 3 : 12} paddingY={5} style={{ width: "100%", height: "100%" }}  >
             <div className="w-full">
@@ -356,13 +363,66 @@ const Page = ({ }: payementProps) => {
 
                                             <div className="w-full  gap-3 flex mt-4 flex-col">
                                                 <label htmlFor="tset">Ville</label>
-                                                <input {...register("city")} type="text" placeholder="Entrez votre localisation" className="border rounded-lg border-[#220f007e] text-lg pl-3 pt-2 pb-2 pr-3 focus:outline-none focus:border-[#220f00]      " />
-                                                {errors.city && <p className="text-base text-red-500 tracking-tight font-medium ">{errors.city.message}</p>}
+                                                <FormControl fullWidth>
+
+                                                    {/* <InputLabel id="ville">Ville</InputLabel> */}
+
+                                                    <Select
+                                                        labelId="city"
+                                                        id="city"
+                                                        value={selectedCity}
+                                                        {...register("city")}
+                                                        onChange={(e) => setValue("city", e.target.value)}>
+                                                        {cityList.map((city) => {
+                                                            return <MenuItem key={city.code} value={city.name}>{city.name}</MenuItem>
+                                                        })}
+                                                    </Select>                                                    {/* <input {...register("city")} type="text" placeholder="Entrez votre localisation" className="border rounded-lg border-[#220f007e] text-lg pl-3 pt-2 pb-2 pr-3 focus:outline-none focus:border-[#220f00]      " /> */}
+
+
+                                                    {errors.city && <p className="text-base text-red-500 tracking-tight font-medium ">{errors.city.message}</p>}
+                                                </FormControl>
+
                                             </div>
                                             <div className="w-full gap-3 flex mt-4 flex-col">
-                                                <label htmlFor="text">Quartier</label>
-                                                <input {...register("district")} type="text" placeholder="Email" className="border rounded-lg border-[#220f007e] text-lg pl-3 pt-2 pb-2 pr-3 focus:outline-none focus:border-[#220f00]      " />
-                                                {errors.district && <p className="text-base text-red-500 tracking-tight font-medium ">{errors.district.message}</p>}
+
+                                                <label htmlFor="tset">Quartier</label>
+
+                                                <FormControl fullWidth>
+
+                                                    {/* <InputLabel id="ville">Ville</InputLabel> */}
+
+                                                    <Select
+                                                        labelId="district"
+                                                        id="district"
+                                                        value={districts.length>0 ? districts[0]?.name :"Empty"}
+                                                        {...register("district")}
+                                                        onChange={(e) => setValue("district", e.target.value)}>
+
+                                                        {districts.length > 0 ?
+
+                                                            (
+
+
+                                                                districts.map((city) => {
+                                                                    return <MenuItem key={city.code} value={city.name}>{city.name}</MenuItem>
+                                                                })
+                                                            )
+
+
+                                                            :
+
+                                                            <MenuItem disabled>Aucun quartier disponible</MenuItem>
+
+                                                        }
+
+
+                                                    </Select>                                                    {/* <input {...register("city")} type="text" placeholder="Entrez votre localisation" className="border rounded-lg border-[#220f007e] text-lg pl-3 pt-2 pb-2 pr-3 focus:outline-none focus:border-[#220f00]      " /> */}
+
+
+                                                    {errors.district && <p className="text-base text-red-500 tracking-tight font-medium ">{errors.district.message}</p>}
+                                                </FormControl>
+
+
 
                                             </div>
                                         </div>
@@ -590,7 +650,7 @@ const Page = ({ }: payementProps) => {
 
                     </div>
                 </form>
-            </div>
+            </div >
 
             <PrepaymentPolicyModal
                 isOpen={isPolicyModalOpen}
@@ -598,7 +658,7 @@ const Page = ({ }: payementProps) => {
             />
 
 
-        </Box>
+        </Box >
     )
 
 }

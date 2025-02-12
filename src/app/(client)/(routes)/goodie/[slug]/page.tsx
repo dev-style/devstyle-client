@@ -65,6 +65,7 @@ const Goodie = (props: any) => {
   const [isCopied, setIsCopied] = useState(false);
   const [userCountry, setUserCountry] = useState("");
   const [discountValue, setDiscountValue] = useState<number | null>(0)
+  const [discounts, setDiscounts] = useState([])
 
 
 
@@ -129,6 +130,22 @@ const Goodie = (props: any) => {
 
 
           setIsLoadingGoodie(false);
+
+          myAxios
+            .get(
+              `/discount/${response.data.message._id}`
+            )
+            .then((response) => {
+              if (response.status === 200) {
+                console.log("discount response", response.data.message)
+                console.log("goodies", goodie)
+                setDiscounts(response.data.message)
+              } else {
+                // console.log(response.data.message);
+
+              }
+            })
+            .catch((error) => console.log("error", error));
 
           myAxios
             .get(
@@ -324,7 +341,7 @@ const Goodie = (props: any) => {
   const useDiscoundcode = () => {
 
     myAxios.post("/discount", {
-      discount: discountValue
+      data: { discountValue: discountValue, goodieId: goodie?._id }
     }).then((response) => {
       console.log("response data", response)
       if (response.status === 200) {
@@ -365,6 +382,8 @@ const Goodie = (props: any) => {
     })
 
   }
+
+
 
   return (
     <React.Fragment>
@@ -631,33 +650,42 @@ const Goodie = (props: any) => {
                       </Box>
                     </Box>
                   )}
-                {isLoadingGoodie ? (
-                  <Box>
-                    <Typography>
-                      Entrer un code de discount
-                    </Typography>
-                    <Box className="size-wrapper">
-                      <Skeleton
-                        animation="wave"
-                        variant="rectangular"
-                        height={40}
-                        width={40}
-                      />
-                    </Box>
-                  </Box>
-                ) : (
-                  <Box className="space-y-2 mb-1">
-                    <Typography>
-                      Entrer votre code de discount
-                    </Typography>
-                    <Box className="flex space-x-2">
 
-                      <TextField onChange={changeDiscountValue} id="outlined-basic" label="Discount" type="number" variant="outlined" />
-                      <Button onClick={useDiscoundcode} style={{ backgroundColor: "#220F00", color: "white" }} className="px-3">Valider</Button>
-                    </Box>
-                  </Box>
+                {discounts.length > 0 &&
+                  <>
 
-                )}
+                    {isLoadingGoodie ? (
+                      <Box>
+                        <Typography>
+                          Entrer un code de discount
+                        </Typography>
+                        <Box className="size-wrapper">
+                          <Skeleton
+                            animation="wave"
+                            variant="rectangular"
+                            height={40}
+                            width={40}
+                          />
+                        </Box>
+                      </Box>
+                    ) : (
+                      <Box className="space-y-2 mb-1">
+                        <Typography>
+                          Entrer votre code de discount
+                        </Typography>
+                        <Box className="flex space-x-2">
+
+                          <TextField onChange={changeDiscountValue} id="outlined-basic" label="Discount" type="number" variant="outlined" />
+                          <Button onClick={useDiscoundcode} style={{ backgroundColor: "#220F00", color: "white" }} className="px-3">Valider</Button>
+                        </Box>
+                      </Box>
+
+                    )}
+
+
+                  </>
+
+                }
                 {isLoadingGoodie ? (
                   <Box className="size">
                     <Typography className="label">
