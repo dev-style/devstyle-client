@@ -25,11 +25,11 @@ export const scrollToTop = () => {
 export const getTotalPrice = (cart: ICart) => {
   let total = Object.values(cart).reduce(
     (acc, goodie, i) =>
-      (acc +=
-        goodie.quantity *
-        (goodie.inPromo
-          ? calculatePromoPrice(goodie.price, goodie.promoPercentage)
-          : goodie.price)),
+    (acc +=
+      goodie.quantity *
+      (goodie.inPromo
+        ? calculatePromoPrice(goodie.price, goodie.promoPercentage)
+        : goodie.price)),
     0
   );
 
@@ -40,3 +40,9 @@ export const getCartCount = (cart: ICart) => {
   let count = Object.entries(cart).length;
   return count;
 };
+
+export const stripHtmlTags = (html: string): string => {
+
+  if (!html) return "";
+  return html.replace(/<[^>]*>/g, ""); // Supprime toutes les balises HTML
+}

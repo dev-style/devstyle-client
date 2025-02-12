@@ -7,6 +7,7 @@ import { connectToDB } from "../lib/utils";
 import CollectionModel from "../models/collection";
 import GoodieModel from "../models/goodie";
 import SizeModel from "../models/size";
+import DiscountModel from "../models/discount";
 
 export const fetchGoodie = async (id: string) => {
   try {
@@ -320,3 +321,42 @@ const uploader = async (path: any) =>
       },
     ],
   });
+
+
+
+export async function getGoodiesWithoutDiscount() {
+  try {
+
+    const discount  =await DiscountModel.find({},"goodies");
+
+    const discountedGoodiesIds  = discount.flatMap(d=>d.goodies)
+
+    
+
+    const goodies = await GoodieModel.find({
+      _id:{$nin:discountedGoodiesIds}
+    })
+      .populate({
+        path: "sizes",
+        model: SizeModel,
+      })
+      .populate({
+        path: "fromCollection",
+        model: CollectionModel,
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    console.log(" all goodeis:", goodies);
+
+    if (!goodies || goodies.length === 0) {
+      console.log("No goodies found");
+      return { count: 0, goodies: [] };
+    }
+
+    return { goodies };
+  } catch (error) {
+    console.error("Failed to fetch collections:", error);
+    throw new Error("Failed to fetch collections. Please try again later.");
+  }
+}
