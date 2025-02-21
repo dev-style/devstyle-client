@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { IGoodie } from "@/app/admin/lib/interfaces";
+import Spinner from "./spinner";
 
 interface AddDiscountModalProps {
     isOpen: boolean;
@@ -34,7 +35,7 @@ const GoodieCard = ({ goodie, isSelected, onSelect }: { goodie: IGoodie, isSelec
 
 const AddDiscountModal = ({ isOpen, onClose, onSuccess, onFailure }: AddDiscountModalProps) => {
 
-    const [goodies, setGoodies] = useState<IGoodie[]>([]);
+    const [goodies, setGoodies] = useState<IGoodie[] | null>(null);
 
     const [selectedGoodies, setSelectedGoodies] = useState<string[]>([]);
 
@@ -186,14 +187,25 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess, onFailure }: AddDiscount
                             {errors.limit && <span className="text-red-600">{errors.limit.message}</span>} */}
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                                {goodies.map((goodie) => (
-                                    <GoodieCard
-                                        key={goodie._id}
-                                        goodie={goodie}
-                                        isSelected={selectedGoodies.includes(goodie._id)}
-                                        onSelect={handleGoodieSelection}
-                                    />
-                                ))}
+                                {goodies ? (<>
+
+                                    {goodies.map((goodie) => (
+                                        <GoodieCard
+                                            key={goodie._id}
+                                            goodie={goodie}
+                                            isSelected={selectedGoodies.includes(goodie._id)}
+                                            onSelect={handleGoodieSelection}
+                                        />
+                                    ))}
+
+                                </>) : (
+
+                                    <div>
+                                        <Spinner size={100} thickness={10} color={"#220f0055"} />
+                                    </div>
+
+                                )}
+
                             </div>
 
                             {errors.goodies && <span className="text-red-600">Select at least one goodie</span>}
