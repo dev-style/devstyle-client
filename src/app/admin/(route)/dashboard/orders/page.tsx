@@ -25,6 +25,7 @@ type Order = {
   goodies: [{ name: string; price: number; quantity: number; total: number }];
   city: string;
   district: string;
+  expeditionAdresse:string;
   paymentMethod: string;
 
 };
@@ -56,6 +57,7 @@ const OrdersPageContent = () => {
           goodies: order.goodies,
           city: order.city,
           district: order.district,
+          expeditionAdresse: order.expeditionAdresse,
           paymentMethod: order.paymentMethod,
         }));
         setOrders(formattedOrders);
@@ -92,6 +94,7 @@ const OrdersPageContent = () => {
         goodies: order.goodies,
         city: order.city,
         district: order.district,
+        expeditionAdresse:order.expeditionAdresse,
         paymentMethod: order.paymentMethod,
       }));
 
@@ -135,8 +138,9 @@ const OrdersPageContent = () => {
               <td className="p-2.5">Number</td>
               <td className="p-2.5">Status</td>
               <td className="p-2.5">Date</td>
+              <td className="p-2.5">City</td>
               <td className="p-2.5">District</td>
-              <td className="p-2.5">PaymentMethod</td>
+              <td className="p-2.5">ExpeditionAdresse</td>
               <td className="p-2.5">Total</td>
               <td className="p-2.5">Actions</td>
             </tr>
@@ -155,7 +159,13 @@ const OrdersPageContent = () => {
                     {new Date(order.initDate).toLocaleDateString()}
                   </td>
                   <td className="p-2.5">
+                    {order.city}
+                  </td>
+                  <td className="p-2.5">
                     {order.district}
+                  </td>
+                  <td className="p-2.5">
+                    {order.expeditionAdresse}
                   </td>
                   <td className="p-2.5">
                     {order.paymentMethod}

@@ -66,6 +66,7 @@ export interface IOrder extends mongoose.Document {
   initDate: Date;
   city:string;
   district:string;
+  expeditionAdresse:string;
   paymentMethod:string;
 }
 export interface IUser extends mongoose.Document {
