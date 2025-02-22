@@ -305,6 +305,7 @@ const Goodie = (props: any) => {
       price: goodie?.price,
       quantity: goodie?.quantity,
       total: goodie ? (goodie.price || 0) * (goodie?.quantity || 0) : 0,
+      image: goodie?.mainImage,
       _id: goodie?._id,
     },
   ];

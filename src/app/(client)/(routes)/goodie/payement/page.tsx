@@ -27,11 +27,12 @@ import PrepaymentPolicyModal from "@/app/(client)/components/PrepaymentPolicyMod
 import { cityList } from "@/app/(client)/lib/cityList";
 import { useRouter } from "next/navigation";
 import SuccessPaymentModal from "@/app/(client)/components/SuccessPaymentModal";
+import Image from "next/image";
 
 interface payementProps { }
 const Page = ({ }: payementProps) => {
   const [goodies, setGoodies] = useState<
-    { name: string; price: number; quantity: number; total: number }[]
+    { name: string; image: { url: string }; price: number; quantity: number; total: number }[]
   >([]);
   const [message, setMessage] = useState<string>("");
   const [infoChecked, setInfoChecked] = useState<boolean>(false);
@@ -213,6 +214,7 @@ const Page = ({ }: payementProps) => {
         }
         return goodie;
       });
+      console.log("here is the goodie", updatedGoodies)
       setGoodies(updatedGoodies);
     } else {
       setGoodies(storedGoodies);
@@ -628,13 +630,18 @@ const Page = ({ }: payementProps) => {
                   </p>
                 </div>
               </div>
-              <div className="p-4 border-t-2 border-[#220f00]/3 overflow-x-auto w-full flex justify-start items-center gap-x-3 gap-y-1 flex-wrap:wrap  ">
+              <div className="p-4 border-t-2 overflow-x-auto border-[#220f00]/3 overflow-x-auto w-full flex justify-start items-center gap-x-3 gap-y-1 flex-wrap:wrap  ">
                 {goodies.map((goodie, key) => {
                   return (
                     <div
                       key={key}
-                      className="border flex flex-col gap-y-1 border-px border-[#220f00]/3 rounded-sm p-6  "
+                      className="border flex flex-col w-[200px] gap-y-1 border-px border-[#220f00]/3 rounded-sm p-2 relative  "
                     >
+                      <div className="rounded-sm w-full ">
+
+                        <img src={goodie.image.url} alt="goodie image" className="w-full h-[50] rounded-sm" />
+
+                      </div>
                       <div className="border-b-px p-2 border-[#220f00] bg-[#220f00]">
                         <h1 className="text-white">
                           <span className="">Name : </span>
