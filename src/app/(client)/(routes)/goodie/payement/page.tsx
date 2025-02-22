@@ -25,15 +25,20 @@ import Spinner from "@/app/(client)/components/spinner";
 import { AnimatePresence, motion } from "framer-motion";
 import PrepaymentPolicyModal from "@/app/(client)/components/PrepaymentPolicyModal";
 import { cityList } from "@/app/(client)/lib/cityList";
+import { useRouter } from "next/navigation";
+import SuccessPaymentModal from "@/app/(client)/components/SuccessPaymentModal";
 
-interface payementProps {}
-const Page = ({}: payementProps) => {
+interface payementProps { }
+const Page = ({ }: payementProps) => {
   const [goodies, setGoodies] = useState<
     { name: string; price: number; quantity: number; total: number }[]
   >([]);
   const [message, setMessage] = useState<string>("");
   const [infoChecked, setInfoChecked] = useState<boolean>(false);
   const [locationChecked, setLocationChecked] = useState<boolean>(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState<boolean>(false);
+
+
 
   const [isSending, setIsSending] = useState(false);
 
@@ -47,8 +52,7 @@ const Page = ({}: payementProps) => {
     email: z.string().email({ message: "Invalid email address" }),
     city: z.string().min(1, { message: "Add your city" }),
     expeditionAdresse: z
-      .string()
-      .min(1, { message: "Add your expedition adresse" }),
+      .string().optional(),
     district: z.string().optional(),
   });
 
@@ -123,34 +127,30 @@ const Page = ({}: payementProps) => {
       .then((response: any) => {
         if (response.status === 200) {
           if (infoChecked) {
-            window.localStorage.setItem(
-              "_devStyle-order-number",
-              String(orderData.number)
+            window.localStorage.removeItem(
+              "_devStyle-order-number"
             );
-            window.localStorage.setItem(
+            window.localStorage.removeItem(
               "_devStyle-order-name",
-              String(orderData.name)
             );
-            window.localStorage.setItem(
+            window.localStorage.removeItem(
               "_devStyle-order-email",
-              String(orderData.email)
             );
           }
 
           if (locationChecked) {
-            window.localStorage.setItem(
+            window.localStorage.removeItem(
               "_devStyle-order-city",
-              String(orderData.city)
             );
-            window.localStorage.setItem(
+            window.localStorage.removeItem(
               "_devStyle-order-district",
-              String(orderData.district)
             );
-            window.localStorage.setItem(
+            window.localStorage.removeItem(
               "_devStyle-order-expeditionAdresse",
-              String(orderData.expeditionAdresse)
             );
           }
+
+          setOpenSuccessModal(true)
 
           toast.success(
             <div style={{ color: "#fff" }}>Commande bien reçu</div>,
@@ -348,11 +348,10 @@ const Page = ({}: payementProps) => {
                       </div>
                       <div>
                         <button
-                          className={`rounded-lg py-3 px-6 text-white ${
-                            !openLocationSection
-                              ? "bg-[#220f00]"
-                              : "bg-gray-500 cursor-not-allowed"
-                          }`}
+                          className={`rounded-lg py-3 px-6 text-white ${!openLocationSection
+                            ? "bg-[#220f00]"
+                            : "bg-gray-500 cursor-not-allowed"
+                            }`}
                           onClick={() => ChangeStep(1)}
                           disabled={openLocationSection}
                         >
@@ -494,11 +493,10 @@ const Page = ({}: payementProps) => {
                       </div>
                       <div>
                         <button
-                          className={`rounded-lg py-3 px-6 text-white ${
-                            !openPayementSection
-                              ? "bg-[#220f00]"
-                              : "bg-gray-500 cursor-not-allowed"
-                          }`}
+                          className={`rounded-lg py-3 px-6 text-white ${!openPayementSection
+                            ? "bg-[#220f00]"
+                            : "bg-gray-500 cursor-not-allowed"
+                            }`}
                           onClick={() => ChangeStep(2)}
                           disabled={openPayementSection}
                         >
@@ -676,6 +674,10 @@ const Page = ({}: payementProps) => {
       <PrepaymentPolicyModal
         isOpen={isPolicyModalOpen}
         onClose={() => setIsPolicyModalOpen(false)}
+      />
+      <SuccessPaymentModal
+        isOpen={openSuccessModal}
+
       />
     </Box>
   );
