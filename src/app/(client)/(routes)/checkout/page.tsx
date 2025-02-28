@@ -225,8 +225,8 @@ const Checkout = () => {
 
   const submit = () => { };
 
-  const propertiesToSelect = ["name", "price", "quantity", "total"];
-
+  const propertiesToSelect = ["name", "price", "quantity", "total", "image", "_id"];
+  console.log("here is the cartContent", cartContent)
   const goodies = Object.values(cartContent).map(
     (child: Record<string, any>) => {
       const selectedProperty: Record<string, string | number> = {};
@@ -235,6 +235,7 @@ const Checkout = () => {
 
       propertiesToSelect.forEach((property) => {
         selectedProperty["total"] = total;
+        selectedProperty["image"] = child.mainImage.url;
         if (child.hasOwnProperty(property)) {
           selectedProperty[property] = child[property];
         }

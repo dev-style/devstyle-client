@@ -89,6 +89,8 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess, onFailure }: AddDiscount
                 router.push("/admin/dashboard/discount");
 
                 // onClose()
+
+        
             }
 
             // Vous pouvez ajouter la logique pour envoyer les données au backend ici.
