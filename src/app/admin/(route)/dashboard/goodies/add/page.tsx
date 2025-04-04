@@ -24,7 +24,7 @@ const goodieSchema = z.object({
   inPromo: z.boolean(),
   promoPercentage: z.coerce.number().min(0).max(100).optional(),
   sizes: z.array(z.string()).min(1, "At least one size is required"),
-  availableColors: z.string().min(1, "At least one color is required"),
+  availableColors: z.string().optional(),
   backgroundColors: z
     .string()
     .min(1, "At least one background color is required"),
@@ -172,7 +172,8 @@ const AddGoodiePage = () => {
 
   const generateMatchingBackgroundColor = (fileName: string): string | null => {
 
-    const match = fileName.split("_")[3].match(/^(.{6})/)
+    console.log("here is file name")
+    const match = fileName.split("_")?.at(-1)?.match(/^(.{6})/)
     console.log("match data", match)
     if (match) {
       const goodieColor = `#${match[1]}`;
