@@ -221,16 +221,7 @@ export const addGoodie = async (formData: any) => {
     }
     const start = Date.now();
 
-    // if (images) {
-    //   console.log("les image existe :", images);
-    //   for (const image of images) {
-    //     const result = await uploader(image);
-    //     uploadedImages.push({
-    //       public_id: result.public_id,
-    //       url: result.secure_url,
-    //     });
-    //   }
-    // }
+
 
     if (images) {
       console.log("les image existe :", images);
