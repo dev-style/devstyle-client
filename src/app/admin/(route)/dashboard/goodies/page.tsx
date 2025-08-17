@@ -1,21 +1,46 @@
+"use client";
+
 import Search from "@/app/admin/ui/dashboard/search/page";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { fetchGoodies } from "@/app/admin/controllers/goodie";
 import Pagination from "@/app/admin/ui/dashboard/pagination/page";
 import parse from "html-react-parser";
+import { UserRefreshClient } from "google-auth-library";
+import { IGoodie } from "@/app/admin/lib/interfaces";
+import DeleteGoodieModal from "@/app/components/DeleteGoodieModal";
 
 type Props = {};
 
-const GoodiesPage = async ({ searchParams }: any) => {
+const GoodiesPage = ({ searchParams }: any) => {
   const q = searchParams?.q || "";
   const page = searchParams?.page || 1;
-  const { count, goodies } = await fetchGoodies(q, page);
-  console.log("all goodies", goodies);
+
+  const [goodies, setGoodies] = useState<any[]>([]);
+  const [goodieId, setGoodieId] = useState<string>("");
+  const [count, setCount] = useState<any>();
+
+  const [modal, setModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchGoodiesFeature = async () => {
+      const { count, goodies } = await fetchGoodies(q, page);
+      setGoodies(goodies);
+      setCount(count);
+      console.log("all goodies", goodies);
+    };
+    fetchGoodiesFeature();
+  }, []);
+
+  const handleDeleteGoodie = (goodieId: string) => {
+    console.log("goodieId", goodieId);
+    setModal(true);
+    setGoodieId(goodieId);
+  };
 
   return (
-    <div className="bg-[var(--bgSoft)] p-5 rounded-lg mt-5">
+    <div className="bg-[var(--bgSoft)] p-5 rounded-lg mt-5 relative">
       <div className="flex items-center justify-between mb-5">
         <Search placeholder="Search for a goodie..." />
         <Link href="/admin/dashboard/goodies/add">
@@ -44,7 +69,7 @@ const GoodiesPage = async ({ searchParams }: any) => {
             </tr>
           </thead>
           <tbody>
-            {goodies.map((goodie) => (
+            {goodies!!.map((goodie) => (
               <tr key={goodie.id}>
                 <td className="p-2.5">
                   <div className="flex items-center gap-2.5">
@@ -95,20 +120,35 @@ const GoodiesPage = async ({ searchParams }: any) => {
                 </td>
                 <td className="p-2.5">{goodie.likes}</td>
                 <td className="p-2.5">{goodie.show ? "Yes" : "No"}</td>
-                <td className="p-2.5">
+                <td className="p-2.5 cursor-pointer">
                   {" "}
                   <Link href={`/admin/dashboard/goodies/${goodie._id}`}>
                     {" "}
                     Edit
                   </Link>
                 </td>
-                <td className="p-2.5">Delete</td>
+                <td className="p-2.5">
+                  <button
+                    className="cursor-pointer rounded-md px-6 py-2 bg-red-600 text-white hover:bg-red-800 "
+                    onClick={() => handleDeleteGoodie(goodie._id)}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
         <Pagination count={count} />
       </div>
+
+      {modal && (
+        <DeleteGoodieModal
+          modal={modal}
+          setModal={setModal}
+          goodieId={goodieId}
+        />
+      )}
     </div>
   );
 };

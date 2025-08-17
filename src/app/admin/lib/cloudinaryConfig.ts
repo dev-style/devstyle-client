@@ -7,7 +7,11 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUD_SECRET_KEY,
 });
 
-const uploadToCloudinary = (file: any, folder: any, optionsOnUpload = {}) => {
+export const uploadToCloudinary = (
+  file: any,
+  folder: any,
+  optionsOnUpload = {},
+) => {
   return new Promise((resolve) => {
     cloudinary.v2.uploader.upload(
       file,
@@ -21,9 +25,20 @@ const uploadToCloudinary = (file: any, folder: any, optionsOnUpload = {}) => {
           url: result?.url,
           secure_url: result?.secure_url,
         });
-      }
+      },
     );
   });
 };
 
-export default uploadToCloudinary;
+export const deleteImageFromCloudinary = (public_id: string) => {
+  return new Promise((resolve, reject) => {
+    console.log("publicId", public_id);
+    cloudinary.v2.uploader.destroy(public_id, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};

@@ -13,9 +13,9 @@ type Props = {
 const Layout = async ({ children }: Props) => {
   const session = await getServerSession(authOptions);
 
-  // if (!session) {
-  //   redirect("/admin/login");
-  // }
+  if (!session) {
+    redirect("/admin/login");
+  }
 
   return (
     <div className="flex">
