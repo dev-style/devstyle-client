@@ -64,7 +64,7 @@ const goodieSchema: Schema<IGoodie> = new mongoose.Schema(
     },
     availableColors: {
       type: [String],
-      required:false,
+      required: false,
     },
     backgroundColors: {
       type: [String],
@@ -84,9 +84,10 @@ const goodieSchema: Schema<IGoodie> = new mongoose.Schema(
     },
   },
 
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const GoodieModel: Model<IGoodie> = mongoose.models.Goodie || mongoose.model("Goodie", goodieSchema);
+const GoodieModel: Model<IGoodie> =
+  mongoose.models.Goodie || mongoose.model("Goodie", goodieSchema);
 
 export default GoodieModel;

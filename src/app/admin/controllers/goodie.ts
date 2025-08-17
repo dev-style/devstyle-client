@@ -1,13 +1,16 @@
 "use server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import uploadToCloudinary from "../lib/cloudinaryConfig";
 import { ICloudinaryUploadResponse } from "../lib/interfaces";
 import { connectToDB } from "../lib/utils";
 import CollectionModel from "../models/collection";
 import GoodieModel from "../models/goodie";
 import SizeModel from "../models/size";
 import DiscountModel from "../models/discount";
+import {
+  deleteImageFromCloudinary,
+  uploadToCloudinary,
+} from "../lib/cloudinaryConfig";
 
 export const fetchGoodie = async (id: string) => {
   try {
@@ -101,7 +104,7 @@ export const updateGoodie = async (id: string, data: any) => {
             public_id: result.public_id,
             url: result.secure_url,
           };
-        })
+        }),
       );
     }
 
@@ -119,7 +122,7 @@ export const updateGoodie = async (id: string, data: any) => {
             });
           }
           return Promise.resolve(); // Skip non-base64 strings
-        })
+        }),
       );
     }
 
@@ -213,7 +216,10 @@ export const addGoodie = async (formData: any) => {
     let uploadedImages = [];
 
     if (mainImage) {
-      const result = await uploader(mainImage);
+      const result = (await uploader(mainImage)) as {
+        public_id: string;
+        secure_url: string;
+      };
       uploadedMainImage = {
         public_id: result.public_id,
         url: result.secure_url,
@@ -221,13 +227,14 @@ export const addGoodie = async (formData: any) => {
     }
     const start = Date.now();
 
-
-
     if (images) {
       console.log("les image existe :", images);
 
       const uploadPromisesImages = images.map(async (image: any) => {
-        const result = await uploader(image);
+        const result = (await uploader(image)) as {
+          public_id: string;
+          secure_url: string;
+        };
         return {
           public_id: result.public_id,
           url: result.secure_url,
@@ -284,6 +291,33 @@ export const addGoodie = async (formData: any) => {
   redirect("/admin/dashboard/goodies");
 };
 
+export const deleteGoodie = async (id: string) => {
+  try {
+    await connectToDB();
+    const deletedGoodie = await GoodieModel.findById(id);
+
+    // const { mainImage, images } = deletedGoodie;
+    // const deletionPromises = [mainImage, ...images].map(async (image) => {
+    //   const public_id = image.url.split("/").pop().split(".")[0];
+    //   // console.log("publicId", public_id);
+    //   await deleteFromCloudinary(public_id);
+    // });
+
+    // await Promise.all(deletionPromises);
+
+    await GoodieModel.findByIdAndDelete(id);
+  } catch (err) {
+    console.error("Error deleting goodie:", err);
+    throw new Error("Failed to delete goodie!");
+  }
+  redirect("/admin/dashboard/goodies");
+  revalidatePath("/admin/dashboard/goodies");
+};
+
+const deleteFromCloudinary = async (public_id: string) => {
+  await deleteImageFromCloudinary(public_id);
+};
+
 const uploader = async (path: any) =>
   await uploadToCloudinary(path, `DevStyle/Goodies`, {
     transformation: [
@@ -313,19 +347,14 @@ const uploader = async (path: any) =>
     ],
   });
 
-
-
 export async function getGoodiesWithoutDiscount() {
   try {
+    const discount = await DiscountModel.find({}, "goodies");
 
-    const discount  =await DiscountModel.find({},"goodies");
-
-    const discountedGoodiesIds  = discount.flatMap(d=>d.goodies)
-
-    
+    const discountedGoodiesIds = discount.flatMap((d) => d.goodies);
 
     const goodies = await GoodieModel.find({
-      _id:{$nin:discountedGoodiesIds}
+      _id: { $nin: discountedGoodiesIds },
     })
       .populate({
         path: "sizes",
