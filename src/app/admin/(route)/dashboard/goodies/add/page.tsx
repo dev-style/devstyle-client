@@ -9,11 +9,15 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { fetchCollections } from "@/app/admin/controllers/collection";
 import { fetchSizes } from "@/app/admin/controllers/size";
 import { Editor } from "@tinymce/tinymce-react";
-import { addGoodie } from "@/app/admin/controllers/goodie";
+import { addGoodie } from "@/app/admin/controllers/goodie"; // Votre Server Action principale d'ajout de goodie
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-// import GooglePicker from "@/app/admin/ui/dashboard/google-picker/page";
+import { uploadGoodieImage } from "@/app/admin/controllers/imageUpload";
 
+// Définition de l'interface pour les informations d'image que nous stockerons
+type GoodieImageInfo = { url: string; public_id?: string };
+
+// Mise à jour du schéma Zod pour mainImage et images
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -31,15 +35,61 @@ const goodieSchema = z.object({
   show: z.boolean(),
   views: z.number().default(0),
   likes: z.number().default(0),
-  mainImage: z.string().min(1, "Main image is required"),
-  images: z.array(z.string()).optional(),
+  // mainImage est maintenant une chaîne JSON de l'objet { url, public_id }
+  mainImage: z
+    .string()
+    .min(1, "Main image is required")
+    .refine(
+      (val) => {
+        try {
+          const parsed = JSON.parse(val);
+          return (
+            typeof parsed.url === "string" 
+            // typeof parsed.public_id === "string"
+          );
+        } catch {
+          return false;
+        }
+      },
+      { message: "Main image data is invalid or missing URL/public_id." },
+    ),
+  // images est un tableau de chaînes JSON d'objets { url, public_id }
+  images: z
+    .array(z.string())
+    .optional()
+    .refine(
+      (arr) => {
+        if (!arr) return true;
+        return arr.every((val) => {
+          try {
+            const parsed = JSON.parse(val);
+            return (
+              typeof parsed.url === "string" 
+              // typeof parsed.public_id === "string"
+            );
+          } catch {
+            return false;
+          }
+        });
+      },
+      {
+        message:
+          "Additional images data contains invalid or missing URL/public_id.",
+      },
+    ),
   etsy: z.string().url("Invalid URL").optional(),
 });
 
 type GoodieFormData = z.infer<typeof goodieSchema>;
 
+// Définition du type pour le formulaire après parsing JSON pour `addGoodie`
+type GoodieFormDataParsed = Omit<GoodieFormData, "mainImage" | "images"> & {
+  mainImage: GoodieImageInfo;
+  images?: GoodieImageInfo[];
+};
+
 const ImagePreview = ({
-  imageData,
+  imageData, // C'est maintenant l'URL de l'image pour l'affichage
   index,
   moveImage,
 }: {
@@ -85,6 +135,7 @@ const AddGoodiePage = () => {
     watch,
     setValue,
   } = useForm<GoodieFormData>({
+    // Le type ici reste GoodieFormData car c'est ce que react-hook-form manipule
     resolver: zodResolver(goodieSchema),
     defaultValues: {
       inPromo: false,
@@ -96,11 +147,13 @@ const AddGoodiePage = () => {
       availableColors: "",
       backgroundColors: "",
       etsy: "",
+      mainImage: "", // Valeur par défaut vide pour le string JSON
+      images: [], // Valeur par défaut tableau vide de strings JSON
     },
   });
 
   const [selectSizesOptions, setSelectSizesOptions] = useState<string[]>([]);
-
+  // additionalImages affiche les URLs, donc reste string[]
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
@@ -110,170 +163,237 @@ const AddGoodiePage = () => {
   const [availableSizes, setAvailableSizes] = useState<
     { _id: string; size: string }[]
   >([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Gère l'état de chargement global du formulaire
+  const [isUploadingImages, setIsUploadingImages] = useState(false); // Gère l'état de chargement de l'image principale ou additionnelle
+  const [isUploadingMainImage, setIsUploadingMainImage] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const { collections } = await fetchCollections();
-      console.log("my collections", collections);
-      setCollections(collections);
+      try {
+        const { collections } = await fetchCollections();
+        console.log("my collections", collections);
+        setCollections(collections);
 
-      const { sizes } = await fetchSizes();
-      setAvailableSizes(sizes);
-      console.log("my sizes", sizes);
+        const { sizes } = await fetchSizes();
+        setAvailableSizes(sizes);
+        console.log("my sizes", sizes);
+      } catch (err) {
+        toast.error("Failed to load collections or sizes.");
+        console.error("Fetch error:", err);
+      }
     };
     fetchData();
   }, []);
 
   const onSubmit = async (data: GoodieFormData) => {
     setIsLoading(true);
-    console.log("data i want to add", data);
+    console.log("Raw form data before parsing:", data); // Les images sont encore des chaînes JSON ici
+
     try {
-      await addGoodie(data);
+      // Parse les chaînes JSON des images en objets JavaScript
+      const parsedData: GoodieFormDataParsed = {
+        ...data,
+        mainImage: JSON.parse(data.mainImage),
+        images: (data.images || []).map((imgStr) => JSON.parse(imgStr)),
+      };
+
+      console.log("Data to send to addGoodie after parsing:", parsedData);
+
+      await addGoodie(parsedData); // Appelle la Server Action principale avec les objets image
+      toast.success("Goodie ajouté avec succès !");
       router.push("/admin/dashboard/goodies");
     } catch (error) {
+      console.error("Error adding goodie:", error);
       toast.error("An error occurred while adding the goodie.");
     } finally {
-      router.push("/admin/dashboard/goodies");
       setIsLoading(false);
+      // La redirection est déjà faite en cas de succès, pas besoin de la dupliquer ici.
     }
   };
 
   const moveImage = (fromIndex: number, toIndex: number) => {
+    // Récupère les valeurs actuelles des images du formulaire (qui sont des chaînes JSON)
+    const currentFormImages = watch("images") || [];
+    const newFormImages = [...currentFormImages];
+    const [movedImage] = newFormImages.splice(fromIndex, 1);
+    newFormImages.splice(toIndex, 0, movedImage);
+
+    // Met à jour l'état local pour l'affichage (qui sont les URLs directement)
     setAdditionalImages((prevImages) => {
-      const newImages = [...prevImages];
-      const [movedImage] = newImages.splice(fromIndex, 1);
-      newImages.splice(toIndex, 0, movedImage);
-      return newImages;
+      const newDisplayImages = [...prevImages];
+      const [movedDisplayImage] = newDisplayImages.splice(fromIndex, 1);
+      newDisplayImages.splice(toIndex, 0, movedDisplayImage);
+      return newDisplayImages;
     });
+
+    // Met à jour la valeur du formulaire avec les nouvelles chaînes JSON réorganisées
+    setValue("images", newFormImages);
   };
 
-  const mainImageFile = watch("mainImage");
+  // mainImageFile pour l'affichage est l'URL stockée dans le formulaire
+  const mainImageFile = watch("mainImage")
+    ? JSON.parse(watch("mainImage")).url
+    : "";
 
-  const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // MODIFIÉ: Gère l'upload de l'image principale
+  const handleMainImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setValue("mainImage", base64String);
-      };
-      reader.readAsDataURL(file);
+      setIsUploadingMainImage(true); // Active le spinner
+      const formData = new FormData();
+      formData.append("file", file); // Ajoute le fichier au FormData
+
+      try {
+        const result = await uploadGoodieImage(formData); // Appelle la Server Action d'upload Cloudinary
+
+        if (result.success) {
+          // Stocke l'objet { url, public_id } sous forme de chaîne JSON dans le champ mainImage
+          setValue(
+            "mainImage",
+            JSON.stringify({
+              url: result.imageUrl,
+              public_id: result.publicId,
+            }),
+          );
+          toast.success("Image principale uploadée avec succès !");
+        } else {
+          toast.error(
+            result.message || "Erreur lors de l'upload de l'image principale.",
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Erreur inattendue lors de l'upload de l'image principale:",
+          error,
+        );
+        toast.error(
+          "Erreur inattendue lors de l'upload de l'image principale.",
+        );
+      } finally {
+        setIsUploadingMainImage(false); // Désactive le spinner
+        if (mainImageInputRef.current) {
+          mainImageInputRef.current.value = ""; // Réinitialise le champ de fichier
+        }
+      }
     }
   };
 
-
-
   const extractColorFromFileName = (fileName: string): string | null => {
     const match = fileName.match(/_([0-9A-Fa-f]{6})_/);
-    console.log("match data of retreive color", match)
+    console.log("match data of retrieve color", match);
     return match ? `#${match[1]}` : null;
   };
 
   const generateMatchingBackgroundColor = (fileName: string): string | null => {
-
-    const match = fileName.split("_")[3].match(/^(.{6})/)
-    console.log("match data", match)
-    if (match) {
-      const goodieColor = `#${match[1]}`;
-
-      return goodieColor;
-    } else {
-      return null;
+    const parts = fileName.split("_");
+    if (parts.length > 3) {
+      const match = parts[3].match(/^(.{6})/);
+      console.log("match data", match);
+      if (match) {
+        const goodieColor = `#${match[1]}`;
+        return goodieColor;
+      }
     }
+    return null;
   };
 
-  const getBackgroundColor = (imageData: string): Promise<string> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0, img.width, img.height);
-        const imageData = ctx?.getImageData(0, 0, 1, 1);
-        if (imageData) {
-          const [r, g, b] = imageData.data;
-          resolve(
-            `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`
-          );
-        } else {
-          resolve("#FFFFFF"); // Default to white if we can't get the color
-        }
-      };
-      img.src = imageData;
-    });
-  };
+  // La fonction getBackgroundColor n'est plus nécessaire si les couleurs sont extraites des noms de fichiers.
+  // Elle serait utile si vous vouliez analyser les pixels de l'image.
+  // const getBackgroundColor = (imageData: string): Promise<string> => { /* ... */ };
 
+  // MODIFIÉ: Gère l'upload des images additionnelles
   const handleAdditionalImagesChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = Array.from(e.target.files || []);
-    const newImages: string[] = [];
+    if (files.length === 0) return;
+
+    setIsUploadingImages(true); // Active le spinner
+    const newGoodieImagesData: GoodieImageInfo[] = []; // Pour stocker les objets {url, public_id}
+    const newDisplayUrls: string[] = []; // Pour l'affichage des aperçus
     const newColors: string[] = [];
     const newBackgroundColors: string[] = [];
 
     for (const file of files) {
-      console.log("here is the file nane", file)
-      const reader = new FileReader();
-      const base64String = await new Promise<string>((resolve) => {
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      });
+      const formData = new FormData();
+      formData.append("file", file);
 
-      newImages.push(base64String);
+      try {
+        const result = (await uploadGoodieImage(formData)) as {
+          success: boolean;
+          imageUrl: string;
+          publicId: string;
+        }; // Appelle la Server Action pour chaque image
 
-      const color = extractColorFromFileName(file.name);
-      if (color) {
-        newColors.push(color);
-      }
+        if (result.success) {
+          newGoodieImagesData.push({
+            url: result.imageUrl,
+            public_id: result.publicId,
+          });
+          newDisplayUrls.push(result.imageUrl); // Pour l'affichage immédiat
 
-      // const backgroundColor = await getBackgroundColor(base64String);
-      // newBackgroundColors.push(backgroundColor);
-      const backgroundColor = generateMatchingBackgroundColor(file.name);
-      if (backgroundColor) {
-        console.log("backgroundColor", backgroundColor)
-
-        newBackgroundColors.push(backgroundColor);
+          // Extrait les couleurs des noms de fichiers APRES l'upload réussi
+          const color = extractColorFromFileName(file.name);
+          if (color) {
+            newColors.push(color);
+          }
+          const backgroundColor = generateMatchingBackgroundColor(file.name);
+          if (backgroundColor) {
+            newBackgroundColors.push(backgroundColor);
+          }
+        } else {
+          toast.error(`Échec de l'upload pour ${file.name}: ${result.message}`);
+        }
+      } catch (error) {
+        console.error(
+          `Erreur inattendue lors de l'upload de ${file.name}:`,
+          error,
+        );
+        toast.error(`Erreur inattendue pour ${file.name}.`);
       }
     }
 
-    setAdditionalImages((prev) => [...prev, ...newImages]);
-    setValue("images", [...additionalImages, ...newImages]);
+    setAdditionalImages((prev) => [...prev, ...newDisplayUrls]); // Met à jour l'état local pour les aperçus (URLs)
 
-    // Update availableColors
+    // Met à jour le champ 'images' du formulaire avec les chaînes JSON d'objets {url, public_id}
+    const currentFormImages = watch("images") || [];
+    const serializedNewImages = newGoodieImagesData.map((img) =>
+      JSON.stringify(img),
+    );
+    setValue("images", [...currentFormImages, ...serializedNewImages]);
+
+    // Met à jour les couleurs (logique existante)
     const currentColors = watch("availableColors").split(",").filter(Boolean);
     const uniqueColors = Array.from(new Set([...currentColors, ...newColors]));
     setValue("availableColors", uniqueColors.join(","));
 
-    // Update backgroundColors
     const currentBackgroundColors = watch("backgroundColors")
       .split(",")
       .filter(Boolean);
     const uniqueBackgroundColors = Array.from(
-      new Set([...currentBackgroundColors, ...newBackgroundColors])
+      new Set([...currentBackgroundColors, ...newBackgroundColors]),
     );
     setValue("backgroundColors", uniqueBackgroundColors.join(","));
+
+    setIsUploadingImages(false); // Désactive le spinner
+    if (additionalImagesInputRef.current) {
+      additionalImagesInputRef.current.value = ""; // Réinitialise le champ de fichier
+    }
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
-    console.log("value and checked", value, checked);
-    console.log("selected size", selectSizesOptions);
-    // setSelectSizesOptions(checked ? [...selectSizesOptions, value] : selectSizesOptions.filter(option => option !== value));
     if (checked) {
-      setSelectSizesOptions((selectSizesOptions) => {
-        const result = [...selectSizesOptions, value];
-        console.log("sizes data ", result);
-        setValue("sizes", [...selectSizesOptions, value]);
+      setSelectSizesOptions((prevSizes) => {
+        const result = [...prevSizes, value];
+        setValue("sizes", result);
         return result;
       });
     } else {
-      setSelectSizesOptions((selectSizesOptions) => {
-        const result = selectSizesOptions.filter((option) => option !== value);
-        console.log("sizes data ", result);
-
+      setSelectSizesOptions((prevSizes) => {
+        const result = prevSizes.filter((option) => option !== value);
         setValue("sizes", result);
         return result;
       });
@@ -287,7 +407,7 @@ const AddGoodiePage = () => {
           Add New Goodie
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* ... (previous form fields remain unchanged) ... */}
+          {/* ... (Your existing form fields for name, description, collection, price, promo, etc.) ... */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col space-y-2">
@@ -365,8 +485,8 @@ const AddGoodiePage = () => {
                         field.onChange(
                           Array.from(
                             e.target.selectedOptions,
-                            (option) => option.value
-                          )
+                            (option) => option.value,
+                          ),
                         )
                       }
                     >
@@ -472,68 +592,19 @@ const AddGoodiePage = () => {
             <div className="flex flex-col space-y-2">
               <div className="relative flex flex-col gap-y-2">
                 <div>Select your sizes</div>
-
-
                 {availableSizes.map((size: any, index) => (
                   <div key={index}>
                     <input
                       type="checkbox"
                       id={size._id}
-                      value={size._id} // Changed from size._id to size.size
+                      value={size._id}
                       checked={selectSizesOptions.includes(size._id)}
-                      onChange={(e) => handleCheckboxChange(e)} // Added size.size as an argument
+                      onChange={(e) => handleCheckboxChange(e)}
                     />
                     <span className="ml-3">{size.size}</span>
                   </div>
                 ))}
               </div>
-              {/* <div className="relative">
-
-
-                <Controller
-                  name="sizes"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="relative">
-                      <select
-                        {...field}
-                        multiple
-                        className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 appearance-none peer"
-                        onChange={(e) =>
-                          field.onChange(
-                            Array.from(
-                              e.target.selectedOptions,
-                              (option) => option.value
-                            )
-                          )
-                        }
-                      >
-                        <option value="" disabled hidden></option>
-                        {availableSizes.map((size) => (
-                          <option key={size._id} value={size._id}>
-                            {size.size}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--text)]">
-                        <svg
-                          className="fill-current h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-                />
-                <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                  Sizes
-                </label>
-              </div>
-              {errors.sizes && (
-                <p className="text-red-500 text-sm">{errors.sizes.message}</p>
-              )} */}
             </div>
 
             <div className="flex items-center">
@@ -590,31 +661,59 @@ const AddGoodiePage = () => {
                 control={control}
                 render={({ field: { value, ...field } }) => (
                   <div className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus-within:ring-2 focus-within:ring-teal-500">
-                    <input
-                      {...field}
-                      type="file"
-                      id="mainImage"
-                      accept="image/*"
-                      onChange={handleMainImageChange}
-                      className="hidden"
-                      ref={mainImageInputRef}
-                    />
-                    <label
-                      htmlFor="mainImage"
-                      className="cursor-pointer flex items-center justify-center"
-                    >
-                      {mainImageFile ? (
-                        <img
-                          src={mainImageFile}
-                          alt="Main preview"
-                          className="max-w-full max-h-48 object-contain"
+                    {isUploadingMainImage ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        <input
+                          {...field}
+                          type="file"
+                          id="mainImage"
+                          accept="image/*"
+                          onChange={handleMainImageChange} // <--- Appel de la fonction modifiée
+                          className="hidden"
+                          ref={mainImageInputRef}
                         />
-                      ) : (
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-                          <p>Click to upload main image</p>
-                        </div>
-                      )}
-                    </label>
+                        <label
+                          htmlFor="mainImage"
+                          className="cursor-pointer flex items-center justify-center"
+                        >
+                          {/* mainImageFile est maintenant une URL */}
+                          {mainImageFile ? (
+                            <img
+                              src={mainImageFile}
+                              alt="Main preview"
+                              className="max-w-full max-h-48 object-contain"
+                            />
+                          ) : (
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+                              <p>Click to upload main image</p>
+                            </div>
+                          )}
+                        </label>
+                      </>
+                    )}
                   </div>
                 )}
               />
@@ -623,7 +722,6 @@ const AddGoodiePage = () => {
                   {errors.mainImage.message}
                 </p>
               )}
-              {/* <GooglePicker/> */}
             </div>
             <div className="flex flex-col space-y-2">
               <label htmlFor="images" className="mb-2 text-[var(--text)]">
@@ -634,32 +732,60 @@ const AddGoodiePage = () => {
                 control={control}
                 render={({ field: { value, ...field } }) => (
                   <div className="w-full p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg focus-within:ring-2 focus-within:ring-teal-500">
-                    <input
-                      {...field}
-                      type="file"
-                      id="images"
-                      accept="image/*"
-                      multiple
-                      onChange={handleAdditionalImagesChange}
-                      className="hidden"
-                      ref={additionalImagesInputRef}
-                    />
-                    <label
-                      htmlFor="images"
-                      className="cursor-pointer flex flex-wrap items-center"
-                    >
-                      {additionalImages.map((imageData, index) => (
-                        <ImagePreview
-                          key={index}
-                          imageData={imageData}
-                          index={index}
-                          moveImage={moveImage}
+                    {isUploadingImages ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        <input
+                          {...field}
+                          type="file"
+                          id="images"
+                          accept="image/*"
+                          multiple
+                          onChange={handleAdditionalImagesChange} // <--- Appel de la fonction modifiée
+                          className="hidden"
+                          ref={additionalImagesInputRef}
                         />
-                      ))}
-                      <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center m-2">
-                        <p>+</p>
-                      </div>
-                    </label>
+                        <label
+                          htmlFor="images"
+                          className="cursor-pointer flex flex-wrap items-center"
+                        >
+                          {/* additionalImages contient déjà les URLs pour l'affichage */}
+                          {additionalImages.map((imageData, index) => (
+                            <ImagePreview
+                              key={index}
+                              imageData={imageData}
+                              index={index}
+                              moveImage={moveImage}
+                            />
+                          ))}
+                          <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center m-2">
+                            <p>+</p>
+                          </div>
+                        </label>
+                      </>
+                    )}
                   </div>
                 )}
               />
@@ -673,18 +799,18 @@ const AddGoodiePage = () => {
                 render={({ field }) => (
                   <div
                     {...field}
-                    className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
+                    className="w-full flex items-center gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
                   >
-                    {/* {field.value || "Colors will be extracted from images"} */}
-                    {field.value.split(",").map((item, index) => (
-
-
-                      <div className={`w-12 h-12 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}>
-                        {/* {field.value} */}
-                        {/* {item} */}
-
-                      </div>
-                    ))}
+                    {field.value
+                      .split(",")
+                      .filter(Boolean)
+                      .map((item, index) => (
+                        <div
+                          className={`w-12 h-12 rounded-full`}
+                          style={{ backgroundColor: `${item}` }}
+                          key={index}
+                        ></div>
+                      ))}
                   </div>
                 )}
               />
@@ -705,23 +831,21 @@ const AddGoodiePage = () => {
                 name="backgroundColors"
                 control={control}
                 render={({ field }) => (
-
                   <div
                     {...field}
-                    className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
+                    className="w-full flex items-center gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
                   >
-                    {/* {field.value || "Colors will be extracted from images"} */}
-                    {field.value.split(",").map((item, index) => (
-
-
-                      <div className={`w-12 h-12 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}>
-                        {/* {field.value} */}
-                        {/* {item} */}
-
-                      </div>
-                    ))}
+                    {field.value
+                      .split(",")
+                      .filter(Boolean)
+                      .map((item, index) => (
+                        <div
+                          className={`w-12 h-12 rounded-full`}
+                          style={{ backgroundColor: `${item}` }}
+                          key={index}
+                        ></div>
+                      ))}
                   </div>
-
                 )}
               />
               <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 left-1">

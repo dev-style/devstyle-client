@@ -9,8 +9,28 @@ import SizeModel from "../models/size";
 import DiscountModel from "../models/discount";
 import {
   deleteImageFromCloudinary,
+  uploader,
   uploadToCloudinary,
 } from "../lib/cloudinaryConfig";
+
+type GoodieImageInfo = { url: string; public_id?: string };
+interface GoodieDataForDB {
+  name: string;
+  description: string;
+  fromCollection: string[];
+  price: number;
+  inPromo: boolean;
+  promoPercentage?: number; // Optional car `undefined` si non en promo
+  sizes: string[];
+  availableColors: string;
+  backgroundColors: string;
+  show: boolean;
+  views: number;
+  likes: number;
+  mainImage: GoodieImageInfo; // Reçoit l'objet direct { url, public_id }
+  images?: GoodieImageInfo[]; // Reçoit le tableau d'objets { url, public_id }
+  etsy?: string;
+}
 
 export const fetchGoodie = async (id: string) => {
   try {
@@ -173,7 +193,12 @@ export const updateGoodie = async (id: string, data: any) => {
   revalidatePath("/admin/dashboard/goodies");
 };
 
-export const addGoodie = async (formData: any) => {
+// Définition de l'interface pour les informations d'image
+
+// Définition du type pour les données que cette Server Action attend,
+// après le parsing JSON qui est fait côté client.
+
+export const addGoodie = async (data: GoodieDataForDB) => {
   const {
     name,
     description,
@@ -187,72 +212,44 @@ export const addGoodie = async (formData: any) => {
     show,
     views,
     likes,
-    mainImage,
-    images,
+    mainImage, // Maintenant un objet GoodieImageInfo
+    images, // Maintenant un tableau d'objets GoodieImageInfo
     etsy,
-  } = formData;
+  } = data;
 
-  console.log("Données du goodie à envoyer:", {
-    name,
-    description,
-    fromCollection,
-    price,
-    inPromo,
-    promoPercentage,
-    sizes,
-    availableColors,
-    backgroundColors,
-    show,
-    views,
-    likes,
-    etsy,
-  });
+  console.log(
+    "Données du goodie à envoyer (avec objets image déjà uploadés):",
+    {
+      name,
+      description,
+      fromCollection,
+      price,
+      inPromo,
+      promoPercentage,
+      sizes,
+      availableColors,
+      backgroundColors,
+      show,
+      views,
+      likes,
+      etsy,
+      mainImage,
+      images, // Ces logs montreront maintenant les objets image
+    },
+  );
 
   try {
     await connectToDB();
 
-    // Upload main image and additional images sequentially to maintain order
-    let uploadedMainImage = { public_id: "", url: "" };
-    let uploadedImages = [];
+    // --- LOGIQUE D'UPLOAD RETIRÉE ---
+    // Les images (mainImage et images) sont déjà uploadées sur Cloudinary
+    // et leurs URLs ainsi que public_id sont déjà disponibles dans 'data'.
+    // Plus besoin d'appeler 'uploader' ici.
 
-    if (mainImage) {
-      const result = (await uploader(mainImage)) as {
-        public_id: string;
-        secure_url: string;
-      };
-      uploadedMainImage = {
-        public_id: result.public_id,
-        url: result.secure_url,
-      };
-    }
-    const start = Date.now();
-
-    if (images) {
-      console.log("les image existe :", images);
-
-      const uploadPromisesImages = images.map(async (image: any) => {
-        const result = (await uploader(image)) as {
-          public_id: string;
-          secure_url: string;
-        };
-        return {
-          public_id: result.public_id,
-          url: result.secure_url,
-        };
-      });
-
-      uploadedImages = await Promise.all(uploadPromisesImages);
-    }
-
-    console.log("code termine en", Date.now() - start, "ms");
-
-    console.log("mainImageResult", uploadedMainImage);
-    console.log("uploadedImages", uploadedImages);
-
-    // Generate unique slug
+    // Générer le slug unique
     const collection = await CollectionModel.findById(fromCollection);
     if (!collection) {
-      throw new Error("Collection not found");
+      throw new Error("Collection non trouvée");
     }
     const slug = `${collection.slug}-${name
       .toLowerCase()
@@ -263,10 +260,11 @@ export const addGoodie = async (formData: any) => {
       description,
       slug,
       fromCollection,
-      price: Number(price),
+      price: price, // 'price' est déjà un nombre grâce à z.coerce.number() côté client
       inPromo,
-      promoPercentage: promoPercentage ? Number(promoPercentage) : undefined,
+      promoPercentage: promoPercentage, // 'promoPercentage' est déjà un nombre ou undefined
       sizes: sizes,
+      // Ces champs sont maintenant des chaînes comma-separated, convertissez-les en tableaux si votre modèle les attend ainsi.
       availableColors: (availableColors as string)
         .split(",")
         .map((color: string) => color.trim()),
@@ -274,19 +272,20 @@ export const addGoodie = async (formData: any) => {
         .split(",")
         .map((color: string) => color.trim()),
       show,
-      views: Number(views),
-      likes: Number(likes),
-      mainImage: uploadedMainImage,
-      images: uploadedImages,
+      views: views, // 'views' est déjà un nombre
+      likes: likes, // 'likes' est déjà un nombre
+      mainImage: mainImage, // Stocke directement l'objet { url, public_id }
+      images: images || [], // Stocke directement le tableau d'objets { url, public_id }
       etsy,
     });
 
     await newGoodie.save();
-  } catch (err) {
-    console.error("Error creating goodie:", err);
-    throw new Error("Failed to create goodie!");
+  } catch (err: any) {
+    console.error("Erreur lors de la création du goodie:", err);
+    throw new Error(err.message || "Échec de la création du goodie !");
   }
 
+  // Ces appels doivent être après le try/catch pour s'assurer que l'opération est réussie.
   revalidatePath("/admin/dashboard/goodies");
   redirect("/admin/dashboard/goodies");
 };
@@ -317,35 +316,6 @@ export const deleteGoodie = async (id: string) => {
 const deleteFromCloudinary = async (public_id: string) => {
   await deleteImageFromCloudinary(public_id);
 };
-
-const uploader = async (path: any) =>
-  await uploadToCloudinary(path, `DevStyle/Goodies`, {
-    transformation: [
-      {
-        overlay: "devstyle_watermark",
-        opacity: 10,
-        gravity: "north_west",
-        x: 5,
-        y: 5,
-        width: "0.5",
-      },
-      {
-        overlay: "devstyle_watermark",
-        opacity: 6.5,
-        gravity: "center",
-        width: "1.0",
-        angle: 45,
-      },
-      {
-        overlay: "devstyle_watermark",
-        opacity: 10,
-        gravity: "south_east",
-        x: 5,
-        y: 5,
-        width: "0.5",
-      },
-    ],
-  });
 
 export async function getGoodiesWithoutDiscount() {
   try {

@@ -7,6 +7,35 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUD_SECRET_KEY,
 });
 
+export const uploader = async (path: any) =>
+  await uploadToCloudinary(path, `DevStyle/Goodies`, {
+    transformation: [
+      {
+        overlay: "devstyle_watermark",
+        opacity: 10,
+        gravity: "north_west",
+        x: 5,
+        y: 5,
+        width: "0.5",
+      },
+      {
+        overlay: "devstyle_watermark",
+        opacity: 6.5,
+        gravity: "center",
+        width: "1.0",
+        angle: 45,
+      },
+      {
+        overlay: "devstyle_watermark",
+        opacity: 10,
+        gravity: "south_east",
+        x: 5,
+        y: 5,
+        width: "0.5",
+      },
+    ],
+  });
+
 export const uploadToCloudinary = (
   file: any,
   folder: any,
