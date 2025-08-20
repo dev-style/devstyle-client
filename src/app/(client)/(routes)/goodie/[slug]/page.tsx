@@ -44,6 +44,7 @@ import "./styles.scss";
 import Image from "next/image";
 import Spinner from "@/app/(client)/components/spinner";
 import PayementContainer from "@/app/(client)/components/PayementContainer";
+import Link from "next/link";
 
 const Goodie = (props: any) => {
   const { cartDispatch } = useContext(CartContext);
@@ -771,21 +772,32 @@ const Goodie = (props: any) => {
                     className="buttons"
                   >
                     <Grid item xs={12} md={6} style={{ width: "100%" }}>
-                      <Button
-                        style={{ backgroundColor: "#220F00", color: "white" }}
-                        disabled={isLoadingGoodie}
-                        onClick={handleOrderClick}
-                      >
-                        Commander maintenant
-                        {userCountry === "Cameroon" && (
-                          <Image
-                            src={"/assets/icons/whatsapp-green.png"}
-                            alt="whatsapp devstyle"
-                            width={18}
-                            height={18}
-                          />
-                        )}
-                      </Button>
+                      {userCountry === "Cameroon" ? (
+                        <Button
+                          style={{ backgroundColor: "#220F00", color: "white" }}
+                          disabled={isLoadingGoodie}
+                          onClick={handleOrderClick}
+                        >
+                          Commander maintenant
+                          {userCountry === "Cameroon" && (
+                            <Image
+                              src={"/assets/icons/whatsapp-green.png"}
+                              alt="whatsapp devstyle"
+                              width={18}
+                              height={18}
+                            />
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          style={{ backgroundColor: "#220F00", color: "white" }}
+                          disabled={isLoadingGoodie}
+                        >
+                          <Link href={goodie.etsy!!} target="_blank">
+                            Voir sur Etsy
+                          </Link>
+                        </Button>
+                      )}
                     </Grid>
                     <Grid item xs={12} md={6} style={{ width: "100%" }}>
                       <Button
