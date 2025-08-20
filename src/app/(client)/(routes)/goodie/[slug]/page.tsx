@@ -315,15 +315,14 @@ const Goodie = (props: any) => {
   console.log(goodies);
 
   const handleOrderClick = () => {
-      // setModalOpen(true);
-      const goodieData = JSON.stringify(goodies);
-      const message = generateCartDescription();
-      const messageData = JSON.stringify(message);
+    // setModalOpen(true);
+    const goodieData = JSON.stringify(goodies);
+    const message = generateCartDescription();
+    const messageData = JSON.stringify(message);
 
-      localStorage.setItem("goodiesData", goodieData);
-      localStorage.setItem("messageData", messageData);
-      router.push("/goodie/payement", { scroll: false });
-  
+    localStorage.setItem("goodiesData", goodieData);
+    localStorage.setItem("messageData", messageData);
+    router.push("/goodie/payement", { scroll: false });
   };
 
   const changeDiscountValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -783,7 +782,7 @@ const Goodie = (props: any) => {
                         </Button>
                       ) : (
                         <>
-                          {goodie ? (
+                          {goodie && goodie.etsy ? (
                             <Button
                               style={{
                                 backgroundColor: "#220F00",
@@ -791,7 +790,11 @@ const Goodie = (props: any) => {
                               }}
                               disabled={isLoadingGoodie}
                             >
-                              <Link href={goodie.etsy} target="_blank">
+                              <Link
+                                href={`https:${goodie.etsy}`}
+                                target="_blank"
+                                className="text-white"
+                              >
                                 Voir sur Etsy
                               </Link>
                             </Button>
