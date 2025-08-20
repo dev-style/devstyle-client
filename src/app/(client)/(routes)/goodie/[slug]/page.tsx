@@ -315,7 +315,6 @@ const Goodie = (props: any) => {
   console.log(goodies);
 
   const handleOrderClick = () => {
-    if (userCountry === "Cameroon") {
       // setModalOpen(true);
       const goodieData = JSON.stringify(goodies);
       const message = generateCartDescription();
@@ -324,13 +323,7 @@ const Goodie = (props: any) => {
       localStorage.setItem("goodiesData", goodieData);
       localStorage.setItem("messageData", messageData);
       router.push("/goodie/payement", { scroll: false });
-    } else {
-      if (goodie?.etsy) {
-        window.open(`https://${goodie.etsy}`, "_blank");
-      } else {
-        toast.error("Le lien Etsy n'est pas disponible pour ce produit.");
-      }
-    }
+  
   };
 
   const changeDiscountValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -789,14 +782,36 @@ const Goodie = (props: any) => {
                           )}
                         </Button>
                       ) : (
-                        <Button
-                          style={{ backgroundColor: "#220F00", color: "white" }}
-                          disabled={isLoadingGoodie}
-                        >
-                          <Link href={goodie.etsy!!} target="_blank">
-                            Voir sur Etsy
-                          </Link>
-                        </Button>
+                        <>
+                          {goodie ? (
+                            <Button
+                              style={{
+                                backgroundColor: "#220F00",
+                                color: "white",
+                              }}
+                              disabled={isLoadingGoodie}
+                            >
+                              <Link href={goodie.etsy} target="_blank">
+                                Voir sur Etsy
+                              </Link>
+                            </Button>
+                          ) : (
+                            <Button
+                              style={{
+                                backgroundColor: "#220F00",
+                                color: "white",
+                              }}
+                              disabled={isLoadingGoodie}
+                              onClick={() =>
+                                toast.error(
+                                  "Le lien Etsy n'est pas disponible pour ce produit.",
+                                )
+                              }
+                            >
+                              Voir sur Etsy
+                            </Button>
+                          )}
+                        </>
                       )}
                     </Grid>
                     <Grid item xs={12} md={6} style={{ width: "100%" }}>
