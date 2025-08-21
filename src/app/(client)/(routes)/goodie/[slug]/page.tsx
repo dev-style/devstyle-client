@@ -790,13 +790,14 @@ const Goodie = (props: any) => {
                               }}
                               disabled={isLoadingGoodie}
                             >
-                              <Link
-                                href="https:onepiece.com"
+                              <a
+                                href={goodie.etsy}
                                 target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-white"
                               >
                                 Voir sur Etsy
-                              </Link>
+                              </a>
                             </Button>
                           ) : (
                             <Button
