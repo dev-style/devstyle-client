@@ -791,7 +791,7 @@ const Goodie = (props: any) => {
                               disabled={isLoadingGoodie}
                             >
                               <Link
-                                href={`https:${goodie.etsy}`}
+                                href="https:onepiece.com"
                                 target="_blank"
                                 className="text-white"
                               >
