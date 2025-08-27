@@ -80,7 +80,7 @@ const goodieSchema: Schema<IGoodie> = new mongoose.Schema(
     },
     etsy: {
       type: String,
-      required: true,
+      required: false,
     },
   },
 

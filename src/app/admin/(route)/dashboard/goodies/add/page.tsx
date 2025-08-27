@@ -1,4 +1,5 @@
 "use client";
+require("dotenv").config();
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +21,7 @@ type GoodieImageInfo = { url: string; public_id?: string };
 // Mise à jour du schéma Zod pour mainImage et images
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string(),
   fromCollection: z
     .array(z.string())
     .min(1, "At least one collection is required"),
@@ -28,10 +29,8 @@ const goodieSchema = z.object({
   inPromo: z.boolean(),
   promoPercentage: z.coerce.number().min(0).max(100).optional(),
   sizes: z.array(z.string()).min(1, "At least one size is required"),
-  availableColors: z.string().min(1, "At least one color is required"),
-  backgroundColors: z
-    .string()
-    .min(1, "At least one background color is required"),
+  availableColors: z.string(),
+  backgroundColors: z.string(),
   show: z.boolean(),
   views: z.number().default(0),
   likes: z.number().default(0),
@@ -77,7 +76,7 @@ const goodieSchema = z.object({
           "Additional images data contains invalid or missing URL/public_id.",
       },
     ),
-  etsy: z.string().url("Invalid URL").optional(),
+  etsy: z.string(),
 });
 
 type GoodieFormData = z.infer<typeof goodieSchema>;
@@ -92,10 +91,12 @@ const ImagePreview = ({
   imageData, // C'est maintenant l'URL de l'image pour l'affichage
   index,
   moveImage,
+  removeImage
 }: {
   imageData: string;
   index: number;
   moveImage: (fromIndex: number, toIndex: number) => void;
+  removeImage: (index: number) => void;
 }) => {
   const [, ref] = useDrag({
     type: "IMAGE",
@@ -119,9 +120,19 @@ const ImagePreview = ({
         alt={`Preview ${index}`}
         className="w-full h-full object-cover rounded-lg"
       />
-      <span className="absolute top-0 right-0 bg-white rounded-full p-1">
+      <span className="absolute top-0 right-0 bg-white rounded-full p-1 text-black h-6 w-6 flex items-center justify-center font-bold">
         {index + 1}
       </span>
+      <button
+        type="button"
+        className="absolute bottom-0 right-0 bg-red-500 rounded-full p-1 text-white h-6 w-6 flex items-center justify-center font-bold"
+        onClick={(e) => {
+          e.preventDefault();
+          removeImage(index);
+        }}
+      >
+        &times;
+      </button>
     </div>
   );
 };
@@ -131,7 +142,7 @@ const AddGoodiePage = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, dirtyFields },
     watch,
     setValue,
   } = useForm<GoodieFormData>({
@@ -234,6 +245,14 @@ const AddGoodiePage = () => {
   const mainImageFile = watch("mainImage")
     ? JSON.parse(watch("mainImage")).url
     : "";
+    
+  const removeImage = (index: number) => {
+    setAdditionalImages((prevImages) => {
+      const newImages = [...prevImages];
+      newImages.splice(index, 1);
+      return newImages;
+    });
+  };
 
   // MODIFIÉ: Gère l'upload de l'image principale
   const handleMainImageChange = async (
@@ -440,7 +459,7 @@ const AddGoodiePage = () => {
                   control={control}
                   render={({ field }) => (
                     <Editor
-                      apiKey="88rw7imkx4lg0r7qxqpnl6avup60lw6uyuqij8zm9j8h5owv"
+                      apiKey={"88rw7imkx4lg0r7qxqpnl6avup60lw6uyuqij8zm9j8h5owv"}
                       init={{
                         height: 300,
                         menubar: false,
@@ -455,7 +474,7 @@ const AddGoodiePage = () => {
                           "alignright alignjustify | bullist numlist outdent indent | " +
                           "removeformat | help",
                         content_style:
-                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px}",
                       }}
                       onEditorChange={(content) => field.onChange(content)}
                     />
@@ -756,109 +775,161 @@ const AddGoodiePage = () => {
                         </svg>
                       </>
                     ) : (
-                      <>
-                        <input
-                          {...field}
-                          type="file"
-                          id="images"
-                          accept="image/*"
-                          multiple
-                          onChange={handleAdditionalImagesChange} // <--- Appel de la fonction modifiée
-                          className="hidden"
-                          ref={additionalImagesInputRef}
+                    <>
+                    <input
+                      {...field}
+                      type="file"
+                      id="images"
+                      accept="image/*"
+                      multiple
+                      onChange={handleAdditionalImagesChange}
+                      className="hidden"
+                      ref={additionalImagesInputRef}
+                    />
+                    <label
+                      htmlFor="images"
+                      className="cursor-pointer flex flex-wrap items-center"
+                    >
+                      {additionalImages.map((imageData, index) => (
+                        <ImagePreview
+                          key={index}
+                          imageData={imageData}
+                          index={index}
+                          moveImage={moveImage}
+                          removeImage={removeImage}                            
                         />
-                        <label
-                          htmlFor="images"
-                          className="cursor-pointer flex flex-wrap items-center"
+                      ))}
+                      <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center m-2">
+                        <p>+</p>
+                      </div>
+                    </label>
+                    </>)}
+                  </div>
+                  )}
+                  />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <div className="relative">
+                <Controller
+                  name="availableColors"
+                  control={control}
+                  render={({ field }) => (
+                    <div
+                      {...field}
+                      className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70"
+                    >
+                      {/* {field.value || "Colors will be extracted from images"} */}
+                      {field.value.split(",").map((item, index) => <>
+                        <div className={`w-4 h-4 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}></div>
+                        <input
+                          type="text"
+                          value={item}
+                          className="text-[var(--text)] bg-[var(--bg)] border border-gray-300 p-2 w-20 h-8"
+                          style = {{ borderRadius: "4px" }}
+                          onChange={(e) => {
+                            const newColors = field.value.split(",").map((color, i) => i === index ? e.target.value : color);
+                            field.onChange(newColors.join(","));
+                          }} 
+                        />
+                        <button
+                          type="button"
+                          className="ml-1 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                          onClick={() => {
+                            const newColors = field.value
+                              .split(",")
+                              .filter((_, i) => i !== index);
+                            field.onChange(newColors.join(","));
+                          }}
+                          aria-label="Remove color"
                         >
-                          {/* additionalImages contient déjà les URLs pour l'affichage */}
-                          {additionalImages.map((imageData, index) => (
-                            <ImagePreview
-                              key={index}
-                              imageData={imageData}
-                              index={index}
-                              moveImage={moveImage}
-                            />
-                          ))}
-                          <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center m-2">
-                            <p>+</p>
-                          </div>
-                        </label>
-                      </>
-                    )}
-                  </div>
-                )}
-              />
+                          &times;
+                        </button>
+                      </>)}
+                      <button
+                        type="button"
+                        className="ml-2 px-3 py-1 bg-teal-500 text-white rounded hover:bg-teal-600"
+                        onClick={() => {
+                          const colors = field.value.split(",").filter(Boolean);
+                          field.onChange([...colors, "#FFFFFF"].join(","));
+                        }}
+                      >
+                        Add Color
+                      </button>
+                    </div>
+                  )}
+                />
+                <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 left-1">
+                  Available Colors (extracted from images)
+                </label>
+              </div>
+              {errors.availableColors && (
+                <p className="text-red-500 text-sm">
+                  {errors.availableColors.message}
+                </p>
+              )}
             </div>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <div className="relative">
-              <Controller
-                name="availableColors"
-                control={control}
-                render={({ field }) => (
-                  <div
-                    {...field}
-                    className="w-full flex items-center gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
-                  >
-                    {field.value
-                      .split(",")
-                      .filter(Boolean)
-                      .map((item, index) => (
-                        <div
-                          className={`w-12 h-12 rounded-full`}
-                          style={{ backgroundColor: `${item}` }}
-                          key={index}
-                        ></div>
-                      ))}
-                  </div>
-                )}
-              />
-              <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 left-1">
-                Available Colors (extracted from images)
-              </label>
-            </div>
-            {errors.availableColors && (
-              <p className="text-red-500 text-sm">
-                {errors.availableColors.message}
-              </p>
-            )}
-          </div>
 
-          <div className="flex flex-col space-y-2">
-            <div className="relative">
-              <Controller
-                name="backgroundColors"
-                control={control}
-                render={({ field }) => (
-                  <div
-                    {...field}
-                    className="w-full flex items-center gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70 cursor-not-allowed"
-                  >
-                    {field.value
-                      .split(",")
-                      .filter(Boolean)
-                      .map((item, index) => (
-                        <div
-                          className={`w-12 h-12 rounded-full`}
-                          style={{ backgroundColor: `${item}` }}
-                          key={index}
-                        ></div>
-                      ))}
-                  </div>
-                )}
-              />
-              <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 left-1">
-                Background Colors (extracted from images)
-              </label>
+            <div className="flex flex-col space-y-2">
+              <div className="relative">
+                <Controller
+                  name="backgroundColors"
+                  control={control}
+                  render={({ field }) => (
+                    <div
+                      {...field}
+                      className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70"
+                    >
+                      {/* {field.value || "Colors will be extracted from images"} */}
+                      {field.value.split(",").map((item, index) => <>
+                        <div className={`w-4 h-4 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}></div>
+                        <input
+                          type="text"
+                          value={item}
+                          className="text-[var(--text)] bg-[var(--bg)] border border-gray-300 p-2 w-20 h-8"
+                          style = {{ borderRadius: "4px" }}
+                          onChange={(e) => {
+                            const newColors = field.value.split(",").map((color, i) => i === index ? e.target.value : color);
+                            field.onChange(newColors.join(","));
+                          }} 
+                        />
+                        <button
+                          type="button"
+                          className="ml-1 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                          onClick={() => {
+                            const newColors = field.value
+                              .split(",")
+                              .filter((_, i) => i !== index);
+                            field.onChange(newColors.join(","));
+                          }}
+                          aria-label="Remove color"
+                        >
+                          &times;
+                        </button>
+                      </>)}
+                      <button
+                        type="button"
+                        className="ml-2 px-3 py-1 bg-teal-500 text-white rounded hover:bg-teal-600"
+                        onClick={() => {
+                          const colors = field.value.split(",").filter(Boolean);
+                          field.onChange([...colors, "#FFFFFF"].join(","));
+                        }}
+                      >
+                        Add Color
+                      </button>
+                    </div>
+                  )}
+                />
+                <label className="absolute text-sm text-[var(--text)] dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[var(--bg)] px-2 left-1">
+                  Background Colors (extracted from images)
+                </label>
+              </div>
+              {errors.backgroundColors && (
+                <p className="text-red-500 text-sm">
+                  {errors.backgroundColors.message}
+                </p>
+              )}
             </div>
-            {errors.backgroundColors && (
-              <p className="text-red-500 text-sm">
-                {errors.backgroundColors.message}
-              </p>
-            )}
           </div>
-
           <button
             type="submit"
             className="w-full p-4 bg-teal-500 text-white font-bold border-none rounded-lg cursor-pointer hover:bg-teal-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
