@@ -45,6 +45,7 @@ import Image from "next/image";
 import Spinner from "@/app/(client)/components/spinner";
 import PayementContainer from "@/app/(client)/components/PayementContainer";
 import Link from "next/link";
+import { Number } from "mongoose";
 
 const Goodie = (props: any) => {
   const { cartDispatch } = useContext(CartContext);
@@ -122,6 +123,7 @@ const Goodie = (props: any) => {
               sizes: response.data.message.sizes.filter(
                 (size: IGoodieSize) => size.size !== "",
               ),
+              availableColors: response.data.message.availableColors.map((color: string)=> color != ""? 1 : 0).reduce((a: number, b: number) => a + b, 0) == 0? [] :  response.data.message.availableColors,
               quantity: 1,
               selectedColor: response.data.message.availableColors[0],
               selectedSize:
@@ -582,7 +584,7 @@ const Goodie = (props: any) => {
                     </div>
                   </Box>
                   <Box className="quantity">
-                    <Typography className="label">Quantité.</Typography>
+                    <Typography className="label">Quantité</Typography>
                     <TextField
                       variant="outlined"
                       size="small"
@@ -613,7 +615,7 @@ const Goodie = (props: any) => {
                             width={40}
                           />
                         ) : (
-                          goodie?.availableColors.map((color, i) => (
+                          goodie?.availableColors.map((color, i) => color != ""? (
                             <ButtonBase
                               key={"color-" + color + "-" + i}
                               className="color"
@@ -645,7 +647,7 @@ const Goodie = (props: any) => {
                                 )}
                               </Box>
                             </ButtonBase>
-                          ))
+                          ): <></>)
                         )}
                       </Box>
                     </Box>
@@ -750,6 +752,9 @@ const Goodie = (props: any) => {
                     />
                   ) : (
                     <Box className="description">
+                      <Typography className="label">
+                          Description
+                        </Typography>
                       <div
                         dangerouslySetInnerHTML={{
                           __html: goodie?.description || "",
@@ -771,14 +776,12 @@ const Goodie = (props: any) => {
                           onClick={handleOrderClick}
                         >
                           Commander maintenant
-                          {userCountry === "Cameroon" && (
                             <Image
                               src={"/assets/icons/whatsapp-green.png"}
                               alt="whatsapp devstyle"
                               width={18}
                               height={18}
                             />
-                          )}
                         </Button>
                       ) : (
                         <>
@@ -796,7 +799,7 @@ const Goodie = (props: any) => {
                                 rel="noopener noreferrer"
                                 className="text-white"
                               >
-                                Voir sur Etsy
+                                Commander sur Etsy
                               </a>
                             </Button>
                           ) : (
@@ -812,7 +815,7 @@ const Goodie = (props: any) => {
                                 )
                               }
                             >
-                              Voir sur Etsy
+                              Commander sur Etsy
                             </Button>
                           )}
                         </>

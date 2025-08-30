@@ -10,7 +10,7 @@ const goodieSchema: Schema<IGoodie> = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
+      required: false,
     },
     slug: {
       type: String,

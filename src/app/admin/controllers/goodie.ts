@@ -16,12 +16,12 @@ import {
 type GoodieImageInfo = { url: string; public_id?: string };
 interface GoodieDataForDB {
   name: string;
-  description: string;
+  description?: string;
   fromCollection: string[];
   price: number;
-  inPromo: boolean;
+  inPromo?: boolean;
   promoPercentage?: number; // Optional car `undefined` si non en promo
-  sizes: string[];
+  sizes?: string[];
   availableColors: string;
   backgroundColors: string;
   show: boolean;

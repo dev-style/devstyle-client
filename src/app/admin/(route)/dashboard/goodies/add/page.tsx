@@ -14,6 +14,7 @@ import { addGoodie } from "@/app/admin/controllers/goodie"; // Votre Server Acti
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { uploadGoodieImage } from "@/app/admin/controllers/imageUpload";
+import { color } from "framer-motion";
 
 // Définition de l'interface pour les informations d'image que nous stockerons
 type GoodieImageInfo = { url: string; public_id?: string };
@@ -21,16 +22,16 @@ type GoodieImageInfo = { url: string; public_id?: string };
 // Mise à jour du schéma Zod pour mainImage et images
 const goodieSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string(),
+  description: z.string().optional(),
   fromCollection: z
     .array(z.string())
     .min(1, "At least one collection is required"),
   price: z.coerce.number().min(0, "Price must be a positive number"),
   inPromo: z.boolean(),
   promoPercentage: z.coerce.number().min(0).max(100).optional(),
-  sizes: z.array(z.string()).min(1, "At least one size is required"),
-  availableColors: z.string(),
-  backgroundColors: z.string(),
+  sizes: z.array(z.string()),
+  availableColors: z.array(z.string()),
+  backgroundColors: z.array(z.string()),
   show: z.boolean(),
   views: z.number().default(0),
   likes: z.number().default(0),
@@ -82,12 +83,14 @@ const goodieSchema = z.object({
 type GoodieFormData = z.infer<typeof goodieSchema>;
 
 // Définition du type pour le formulaire après parsing JSON pour `addGoodie`
-type GoodieFormDataParsed = Omit<GoodieFormData, "mainImage" | "images"> & {
+type GoodieFormDataParsed = Omit<GoodieFormData, "mainImage" | "images" | "availableColors" | "backgroundColors"> & {
+  availableColors: string,
+  backgroundColors: string,
   mainImage: GoodieImageInfo;
   images?: GoodieImageInfo[];
 };
 
-const ImagePreview = ({
+export function ImagePreview ({
   imageData, // C'est maintenant l'URL de l'image pour l'affichage
   index,
   moveImage,
@@ -97,7 +100,7 @@ const ImagePreview = ({
   index: number;
   moveImage: (fromIndex: number, toIndex: number) => void;
   removeImage: (index: number) => void;
-}) => {
+}){
   const [, ref] = useDrag({
     type: "IMAGE",
     item: { index },
@@ -155,8 +158,8 @@ const AddGoodiePage = () => {
       likes: 0,
       fromCollection: [],
       sizes: [],
-      availableColors: "",
-      backgroundColors: "",
+      availableColors: [],
+      backgroundColors: [],
       etsy: "",
       mainImage: "", // Valeur par défaut vide pour le string JSON
       images: [], // Valeur par défaut tableau vide de strings JSON
@@ -204,6 +207,8 @@ const AddGoodiePage = () => {
       // Parse les chaînes JSON des images en objets JavaScript
       const parsedData: GoodieFormDataParsed = {
         ...data,
+        availableColors: data.availableColors.join(","),
+        backgroundColors: data.backgroundColors.join(","),
         mainImage: JSON.parse(data.mainImage),
         images: (data.images || []).map((imgStr) => JSON.parse(imgStr)),
       };
@@ -301,7 +306,6 @@ const AddGoodiePage = () => {
 
   const extractColorFromFileName = (fileName: string): string | null => {
     const match = fileName.match(/_([0-9A-Fa-f]{6})_/);
-    console.log("match data of retrieve color", match);
     return match ? `#${match[1]}` : null;
   };
 
@@ -309,7 +313,6 @@ const AddGoodiePage = () => {
     const parts = fileName.split("_");
     if (parts.length > 3) {
       const match = parts[3].match(/^(.{6})/);
-      console.log("match data", match);
       if (match) {
         const goodieColor = `#${match[1]}`;
         return goodieColor;
@@ -317,7 +320,6 @@ const AddGoodiePage = () => {
     }
     return null;
   };
-
   // La fonction getBackgroundColor n'est plus nécessaire si les couleurs sont extraites des noms de fichiers.
   // Elle serait utile si vous vouliez analyser les pixels de l'image.
   // const getBackgroundColor = (imageData: string): Promise<string> => { /* ... */ };
@@ -384,17 +386,15 @@ const AddGoodiePage = () => {
     setValue("images", [...currentFormImages, ...serializedNewImages]);
 
     // Met à jour les couleurs (logique existante)
-    const currentColors = watch("availableColors").split(",").filter(Boolean);
+    const currentColors = watch("availableColors") || [];
     const uniqueColors = Array.from(new Set([...currentColors, ...newColors]));
-    setValue("availableColors", uniqueColors.join(","));
+    setValue("availableColors", uniqueColors);
 
-    const currentBackgroundColors = watch("backgroundColors")
-      .split(",")
-      .filter(Boolean);
+    const currentBackgroundColors = watch("backgroundColors") || [];
     const uniqueBackgroundColors = Array.from(
       new Set([...currentBackgroundColors, ...newBackgroundColors]),
     );
-    setValue("backgroundColors", uniqueBackgroundColors.join(","));
+    setValue("backgroundColors", uniqueBackgroundColors);
 
     setIsUploadingImages(false); // Désactive le spinner
     if (additionalImagesInputRef.current) {
@@ -815,42 +815,47 @@ const AddGoodiePage = () => {
                   control={control}
                   render={({ field }) => (
                     <div
-                      {...field}
                       className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70"
                     >
-                      {/* {field.value || "Colors will be extracted from images"} */}
-                      {field.value.split(",").map((item, index) => <>
-                        <div className={`w-4 h-4 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}></div>
-                        <input
-                          type="text"
-                          value={item}
-                          className="text-[var(--text)] bg-[var(--bg)] border border-gray-300 p-2 w-20 h-8"
-                          style = {{ borderRadius: "4px" }}
-                          onChange={(e) => {
-                            const newColors = field.value.split(",").map((color, i) => i === index ? e.target.value : color);
-                            field.onChange(newColors.join(","));
-                          }} 
-                        />
-                        <button
-                          type="button"
-                          className="ml-1 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                          onClick={() => {
-                            const newColors = field.value
-                              .split(",")
-                              .filter((_, i) => i !== index);
-                            field.onChange(newColors.join(","));
-                          }}
-                          aria-label="Remove color"
-                        >
-                          &times;
-                        </button>
-                      </>)}
+                     {field.value.map((item: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: item }}
+                          ></div>
+                          <input
+                            type="text"
+                            value={item}
+                            className="text-[var(--text)] bg-[var(--bg)] border border-gray-300 p-2 w-20 h-8"
+                            style={{ borderRadius: "4px" }}
+                            onChange={(e) => {
+                              const newColors = field.value.map(
+                                (color: string, i: number) =>
+                                  i === index ? e.target.value : color,
+                              );
+                              field.onChange(newColors);
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="ml-1 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                            onClick={() => {
+                              const newColors = field.value.filter(
+                                (_: string, i: number) => i !== index,
+                              );
+                              field.onChange(newColors);
+                            }}
+                            aria-label="Remove color"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
                       <button
                         type="button"
                         className="ml-2 px-3 py-1 bg-teal-500 text-white rounded hover:bg-teal-600"
                         onClick={() => {
-                          const colors = field.value.split(",").filter(Boolean);
-                          field.onChange([...colors, "#FFFFFF"].join(","));
+                          field.onChange([...field.value, "#FFFFFF"]);
                         }}
                       >
                         Add Color
@@ -876,42 +881,47 @@ const AddGoodiePage = () => {
                   control={control}
                   render={({ field }) => (
                     <div
-                      {...field}
                       className="w-full flex items-center  gap-3 justify-start p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded-lg opacity-70"
                     >
-                      {/* {field.value || "Colors will be extracted from images"} */}
-                      {field.value.split(",").map((item, index) => <>
-                        <div className={`w-4 h-4 rounded-full `} style={{ backgroundColor: `${item}` }} key={index}></div>
-                        <input
-                          type="text"
-                          value={item}
-                          className="text-[var(--text)] bg-[var(--bg)] border border-gray-300 p-2 w-20 h-8"
-                          style = {{ borderRadius: "4px" }}
-                          onChange={(e) => {
-                            const newColors = field.value.split(",").map((color, i) => i === index ? e.target.value : color);
-                            field.onChange(newColors.join(","));
-                          }} 
-                        />
-                        <button
-                          type="button"
-                          className="ml-1 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                          onClick={() => {
-                            const newColors = field.value
-                              .split(",")
-                              .filter((_, i) => i !== index);
-                            field.onChange(newColors.join(","));
-                          }}
-                          aria-label="Remove color"
-                        >
-                          &times;
-                        </button>
-                      </>)}
+                      {field.value.map((item: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: item }}
+                          ></div>
+                          <input
+                            type="text"
+                            value={item}
+                            className="text-[var(--text)] bg-[var(--bg)] border border-gray-300 p-2 w-20 h-8"
+                            style={{ borderRadius: "4px" }}
+                            onChange={(e) => {
+                              const newColors = field.value.map(
+                                (color: string, i: number) =>
+                                  i === index ? e.target.value : color,
+                              );
+                              field.onChange(newColors);
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="ml-1 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                            onClick={() => {
+                              const newColors = field.value.filter(
+                                (_: string, i: number) => i !== index,
+                              );
+                              field.onChange(newColors);
+                            }}
+                            aria-label="Remove color"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
                       <button
                         type="button"
                         className="ml-2 px-3 py-1 bg-teal-500 text-white rounded hover:bg-teal-600"
                         onClick={() => {
-                          const colors = field.value.split(",").filter(Boolean);
-                          field.onChange([...colors, "#FFFFFF"].join(","));
+                          field.onChange([...field.value, "#FFFFFF"]);
                         }}
                       >
                         Add Color
