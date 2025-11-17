@@ -307,7 +307,7 @@ const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
                   control={control}
                   render={({ field }) => (
                     <Editor
-                      apiKey={process.env.TINYMCE_API_KEY}
+                      apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
                       init={{
                         height: 300,
                         menubar: false,
