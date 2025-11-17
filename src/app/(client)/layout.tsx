@@ -15,7 +15,6 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("test")
   return (
     <CartContextProvider>
       <ThemeProvider theme={theme}>
