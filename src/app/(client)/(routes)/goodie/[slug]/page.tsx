@@ -1,4 +1,5 @@
 "use client";
+require("dotenv").config();
 /* eslint-disable react/no-unescaped-entities */
 import React, { useState, useEffect, useContext } from "react";
 import {
