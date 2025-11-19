@@ -118,19 +118,34 @@ const Goodie = (props: any) => {
             console.log("goodie with discount", goodieWithDiscount);
             setGoodie(goodieWithDiscount);
           } else {
+            const sizes = response.data.message.sizes ?? [];
+            const order = ["S", "M", "L", "XL"];
+            const sortedSizes = [...sizes].sort((a: any, b: any) => {
+              const aKey = String(a?.size ?? a).toUpperCase();
+              const bKey = String(b?.size ?? b).toUpperCase();
+              const ai = order.indexOf(aKey);
+              const bi = order.indexOf(bKey);
+              if (ai !== -1 || bi !== -1) {
+                if (ai === -1) return 1;
+                if (bi === -1) return -1;
+                return ai - bi;
+              }
+              return aKey.localeCompare(bKey);
+            });
+
             setGoodie({
               ...response.data.message,
               mainImage: response.data.message.images[0],
-              sizes: response.data.message.sizes.filter(
-                (size: IGoodieSize) => size.size !== "",
-              ),
-              availableColors: response.data.message.availableColors.map((color: string)=> color != ""? 1 : 0).reduce((a: number, b: number) => a + b, 0) == 0? [] :  response.data.message.availableColors,
+              sizes: sortedSizes,
+              availableColors:
+                response.data.message.availableColors
+                  .map((color: string) => (color != "" ? 1 : 0))
+                  .reduce((a: number, b: number) => a + b, 0) == 0
+                  ? []
+                  : response.data.message.availableColors,
               quantity: 1,
               selectedColor: response.data.message.availableColors[0],
-              selectedSize:
-                response.data.message.sizes[
-                  Math.floor(response.data.message.sizes?.length ?? 0) / 2
-                ]?.size,
+              selectedSize: sortedSizes[Math.floor(sortedSizes.length / 2)]?.size,
             });
           }
 

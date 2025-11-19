@@ -42,10 +42,10 @@ const Footer = () => {
                 //   }
                 // }}
                 >
-                  Shop
+                  Nos Collections
                 </Link>
                 <Link href="/about-us">Qui sommes-Nous ??</Link>
-                <Link href="/our-ambassadors">Nos Ambassadeurs</Link>
+                {/* <Link href="/our-ambassadors">Nos Ambassadeurs</Link> */}
               </Box>
             </Grid>
             {/* <Grid item xs={12} lg={4}>
