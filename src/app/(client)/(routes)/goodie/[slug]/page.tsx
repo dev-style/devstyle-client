@@ -631,39 +631,43 @@ const Goodie = (props: any) => {
                             width={40}
                           />
                         ) : (
-                          goodie?.availableColors.map((color, i) => color != ""? (
-                            <ButtonBase
-                              key={"color-" + color + "-" + i}
-                              className="color"
-                              style={{
-                                boxShadow:
-                                  goodie?.selectedColor === color
-                                    ? "0px 4px 10px #06C27033"
-                                    : "0px 4px 10px rgba(0, 0, 0, 0.15)",
-                              }}
-                              onClick={() => handleSelectedColorChange(color)}
-                            >
-                              <Box
+                          goodie?.availableColors.map((color, i) =>
+                            color != "" ? (
+                              <ButtonBase
+                                key={"color-" + color + "-" + i}
+                                className="color"
                                 style={{
-                                  backgroundColor: color,
-                                  width: "100%",
-                                  height: "100%",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  border:
+                                  boxShadow:
                                     goodie?.selectedColor === color
-                                      ? "2px solid #06C27033"
-                                      : "",
+                                      ? "0px 4px 10px #06C27033"
+                                      : "0px 4px 10px rgba(0, 0, 0, 0.15)",
                                 }}
+                                onClick={() => handleSelectedColorChange(color)}
                               >
-                                {goodie?.selectedColor === color && (
-                                  <Check color="success" />
-                                )}
-                              </Box>
-                            </ButtonBase>
-                          ): <></>)
+                                <Box
+                                  style={{
+                                    backgroundColor: color,
+                                    width: "100%",
+                                    height: "100%",
+                                    borderRadius: "50%",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    border:
+                                      goodie?.selectedColor === color
+                                        ? "2px solid #06C27033"
+                                        : "",
+                                  }}
+                                >
+                                  {goodie?.selectedColor === color && (
+                                    <Check color="success" />
+                                  )}
+                                </Box>
+                              </ButtonBase>
+                            ) : (
+                              <></>
+                            ),
+                          )
                         )}
                       </Box>
                     </Box>
@@ -768,9 +772,7 @@ const Goodie = (props: any) => {
                     />
                   ) : (
                     <Box className="description">
-                      <Typography className="label">
-                          Description
-                        </Typography>
+                      <Typography className="label">Description</Typography>
                       <div
                         dangerouslySetInnerHTML={{
                           __html: goodie?.description || "",
@@ -792,49 +794,62 @@ const Goodie = (props: any) => {
                           onClick={handleOrderClick}
                         >
                           Commander maintenant
-                            <Image
-                              src={"/assets/icons/whatsapp-green.png"}
-                              alt="whatsapp devstyle"
-                              width={18}
-                              height={18}
-                            />
+                          <Image
+                            src={"/assets/icons/whatsapp-green.png"}
+                            alt="whatsapp devstyle"
+                            width={18}
+                            height={18}
+                          />
                         </Button>
                       ) : (
-                        <>
-                          {goodie && goodie.etsy ? (
-                            <Button
-                              style={{
-                                backgroundColor: "#220F00",
-                                color: "white",
-                              }}
-                              disabled={isLoadingGoodie}
-                            >
-                              <a
-                                href={goodie.etsy}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white"
-                              >
-                                Commander sur Etsy
-                              </a>
-                            </Button>
-                          ) : (
-                            <Button
-                              style={{
-                                backgroundColor: "#220F00",
-                                color: "white",
-                              }}
-                              disabled={isLoadingGoodie}
-                              onClick={() =>
-                                toast.error(
-                                  "Le lien Etsy n'est pas disponible pour ce produit.",
-                                )
-                              }
-                            >
-                              Commander sur Etsy
-                            </Button>
-                          )}
-                        </>
+                        <Button
+                          style={{ backgroundColor: "#220F00", color: "white" }}
+                          disabled={isLoadingGoodie}
+                          onClick={handleOrderClick}
+                        >
+                          Commander maintenant
+                          <Image
+                            src={"/assets/icons/whatsapp-green.png"}
+                            alt="whatsapp devstyle"
+                            width={18}
+                            height={18}
+                          />
+                        </Button>
+                        // <>
+                        //   {goodie && goodie.etsy ? (
+                        //     <Button
+                        //       style={{
+                        //         backgroundColor: "#220F00",
+                        //         color: "white",
+                        //       }}
+                        //       disabled={isLoadingGoodie}
+                        //     >
+                        //       <a
+                        //         href={goodie.etsy}
+                        //         target="_blank"
+                        //         rel="noopener noreferrer"
+                        //         className="text-white"
+                        //       >
+                        //         Commander sur Etsy
+                        //       </a>
+                        //     </Button>
+                        //   ) : (
+                        //     <Button
+                        //       style={{
+                        //         backgroundColor: "#220F00",
+                        //         color: "white",
+                        //       }}
+                        //       disabled={isLoadingGoodie}
+                        //       onClick={() =>
+                        //         toast.error(
+                        //           "Le lien Etsy n'est pas disponible pour ce produit.",
+                        //         )
+                        //       }
+                        //     >
+                        //       Commander sur Etsy
+                        //     </Button>
+                        //   )}
+                        // </>
                       )}
                     </Grid>
                     <Grid item xs={12} md={6} style={{ width: "100%" }}>
