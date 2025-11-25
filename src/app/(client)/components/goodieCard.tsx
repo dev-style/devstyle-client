@@ -19,6 +19,7 @@ const GoodieCard = ({
   promoPercentage,
   inPromo,
   backgroundColors,
+  availableColors,
   slug,
 }: IGoodie) => {
   return (
@@ -32,9 +33,7 @@ const GoodieCard = ({
         onClick={() => scrollToTop()}
       >
         <Box className="goodie-card-container">
-          <Box className="top"
-            bgcolor={backgroundColors[0]}
-          >
+          <Box className="top" bgcolor={backgroundColors[0]}>
             {inPromo && <Box className="promo">-{promoPercentage}%</Box>}
             <img src={mainImage.url} alt="goodie" className="image " />
           </Box>
@@ -42,7 +41,8 @@ const GoodieCard = ({
             <Typography className="name">{name}</Typography>
             <Box className="price-container">
               <Typography className="current-price">
-                {inPromo ? calculatePromoPrice(price, promoPercentage) : price} FCFA
+                {inPromo ? calculatePromoPrice(price, promoPercentage) : price}{" "}
+                FCFA
               </Typography>{" "}
               {inPromo && (
                 <Typography
@@ -58,6 +58,13 @@ const GoodieCard = ({
               >
                 <ArrowForwardIosRounded />
               </Box>
+            </Box>
+            <Box className="colors-container">
+              {/* <Typography className="colors-label">Colors</Typography> */}
+
+              {availableColors.map((color, index) => (
+                <Box key={index} className="color-circle" bgcolor={color}></Box>
+              ))}
             </Box>
           </Box>
         </Box>

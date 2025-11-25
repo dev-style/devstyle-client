@@ -48,6 +48,30 @@
       }
     }
     .bottom {
+      
+      .colors-container{
+
+        margin-top: 5px;
+        margin-bottom: 20px;
+
+        .colors-label{
+          font-family: Poppins;
+          font-style: normal;
+          font-weight: 500;
+          font-size: 12px;
+          color: #220f00;
+          margin-right: 8px;
+        }
+
+        .color-circle{
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          border: .5px solid #220f00;
+          display: inline-block;
+          margin-right: 4px;
+        }
+      }
       color: #220f00;
       .name {
         font-family: Poppins;
