@@ -775,6 +775,7 @@ const Goodie = (props: any) => {
                         dangerouslySetInnerHTML={{
                           __html: goodie?.description || "",
                         }}
+                        style={{fontSize: '18px'}}
                       />
                     </Box>
                   )}

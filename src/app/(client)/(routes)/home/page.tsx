@@ -574,16 +574,14 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
                   lg={i === collections.length - 1 ? 12 : 6}
                   key={i + "" + collection._id}
                 >
-                  <Link
-                    href={`/collection/${collection.slug}`}
-                    style={{ textDecoration: "none" }}
-                  >
+                  {i === collections.length - 1 ? (
                     <Grid
                       container
                       style={{
                         background: `linear-gradient(90deg, ${
                           collection.colors.split("-")[0]
                         } 0%, ${collection.colors.split("-")[1]} 100%)`,
+                        cursor: "default",
                       }}
                       className={`collection-item animate__animated ${
                         i % 2 === 0
@@ -600,32 +598,30 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
                         justifyItems={"center"}
                         alignContent={"center"}
                         zIndex={3}
+                        className="collection-text-container"
                       >
                         <Typography
-                          className={`collection-item-title  ${
+                          className={`collection-item-title  
+                            ${
                             i === collections.length - 1 && !match1000
                               ? "large"
-                              : ""
-                          }`}
+                              :
+                              ""
+                            }`}
                           component={"h2"}
                         >
-                          {i === collections.length - 1 ? (
-                            <>
-                              {collection.title.split(" ")[0]} <br />
-                              {collection.title.split(" ")[1]}
-                            </>
-                          ) : (
-                            collection.title
-                          )}
+                          {collection.title.split(" ")[0]} {collection.title.split(" ")[1]} <br />
+                          {collection.title.split(" ")[2]}
                         </Typography>
-                        <Button
+                        <Button 
                           className={`button ${
                             i === collections.length - 1 && !match1000
                               ? "large"
                               : ""
                           }`}
+                          disabled={true}
                         >
-                          this.shop.now()
+                          Coming Soon⏳
                         </Button>
                       </Grid>
                       <Grid item xs={2} className="collection-image-container">
@@ -637,7 +633,56 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
                         />
                       </Grid>
                     </Grid>
-                  </Link>
+                  ) : (
+                    <Link
+                      href={`/collection/${collection.slug}`}
+                      style={{ textDecoration: "none" }}
+                    >
+                      <Grid
+                        container
+                        style={{
+                          background: `linear-gradient(90deg, ${
+                            collection.colors.split("-")[0]
+                          } 0%, ${collection.colors.split("-")[1]} 100%)`,
+                        }}
+                        className={`collection-item animate__animated ${
+                          i % 2 === 0
+                            ? "animate__fadeInLeft"
+                            : "animate__fadeInRight"
+                        }`}
+                      >
+                        <Grid
+                          item
+                          xs={10}
+                          paddingX={4}
+                          justifyItems={"center"}
+                          alignContent={"center"}
+                          zIndex={3}
+                          className="collection-text-container"
+                        >
+                          <Typography
+                            className="collection-item-title"
+                            component={"h2"}
+                          >
+                            {collection.title}
+                          </Typography>
+                          <Button
+                            className="button"
+                          >
+                            this.shop.now()
+                          </Button>
+                        </Grid>
+                        <Grid item xs={2} className="collection-image-container">
+                          {/*eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            className="collection-image"
+                            src={collection.image.url}
+                            alt={collection.title + " image"}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Link>
+                  )}
                 </Grid>
               ))
             )}
