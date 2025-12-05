@@ -192,9 +192,9 @@ const Nav = () => {
                 }
               }}
             >
-              Shop
+              Nos Collections
             </Link>
-            <Link
+            {/* <Link
               href={"/our-ambassadors"}
               style={{
                 padding: `0px ${theme.spacing(2)}`,
@@ -202,7 +202,7 @@ const Nav = () => {
               }}
             >
               Nos Ambassadeurs
-            </Link>
+            </Link> */}
             <Link
               href={"/about-us"}
               style={{

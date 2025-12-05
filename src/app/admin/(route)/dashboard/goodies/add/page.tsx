@@ -459,7 +459,7 @@ const AddGoodiePage = () => {
                   control={control}
                   render={({ field }) => (
                     <Editor
-                      apiKey={"88rw7imkx4lg0r7qxqpnl6avup60lw6uyuqij8zm9j8h5owv"}
+                      apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
                       init={{
                         height: 300,
                         menubar: false,

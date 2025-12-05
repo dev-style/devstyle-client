@@ -143,7 +143,12 @@
             max-width: initial;
           }
         }
-
+        .collection-text-container {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+        }
         .collection-item-title {
           font-family: Poppins;
           font-style: normal;
@@ -155,7 +160,7 @@
           margin-bottom: 20px;
           &.large {
             color: #220f00 !important;
-            font-size: 96px;
+            font-size: 80px; //TODO: change to 96px if new collections are available
           }
         }
         .button {
