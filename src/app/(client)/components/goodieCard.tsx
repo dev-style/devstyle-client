@@ -22,6 +22,9 @@ const GoodieCard = ({
   availableColors,
   slug,
 }: IGoodie) => {
+  const shouldDisplayColors =
+    availableColors.length > 0 &&
+    availableColors.some((color) => color.trim().length > 0);
   return (
     <Box
       className="goodie-card-wrapper animate__animated animate__fadeIn"
@@ -59,13 +62,19 @@ const GoodieCard = ({
                 <ArrowForwardIosRounded />
               </Box>
             </Box>
-            <Box className="colors-container">
-              {/* <Typography className="colors-label">Colors</Typography> */}
+            {shouldDisplayColors && (
+              <Box className="colors-container">
+                {/* <Typography className="colors-label">Colors</Typography> */}
 
-              {availableColors.map((color, index) => (
-                <Box key={index} className="color-circle" bgcolor={color}></Box>
-              ))}
-            </Box>
+                {availableColors.map((color, index) => (
+                  <Box
+                    key={index}
+                    className="color-circle"
+                    bgcolor={color}
+                  ></Box>
+                ))}
+              </Box>
+            )}
           </Box>
         </Box>
       </Link>
