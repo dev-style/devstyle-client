@@ -57,7 +57,7 @@ const Checkout = () => {
     size: JSX.Element,
     unitPrice: JSX.Element,
     quantity: JSX.Element,
-    actions: JSX.Element
+    actions: JSX.Element,
   ) => {
     return {
       image,
@@ -76,9 +76,9 @@ const Checkout = () => {
       <Box
         bgcolor={
           goodie.backgroundColors[
-          goodie.images.findIndex(
-            (image) => image.url === goodie.mainImage.url
-          )
+            goodie.images.findIndex(
+              (image) => image.url === goodie.mainImage.url,
+            )
           ] ?? goodie.backgroundColors[0]
         }
         height="144px"
@@ -177,8 +177,8 @@ const Checkout = () => {
         >
           <DeleteForeverOutlined />
         </IconButton>
-      </Box>
-    )
+      </Box>,
+    ),
   );
 
   const generateCartDescription = () => {
@@ -194,17 +194,18 @@ const Checkout = () => {
 *Size:* ${goodie.selectedSize} ;
 *Quantity:* ${goodie.quantity} ;
 *Price:* ${goodie.price} ;
-*PromoPrice:* ${goodie.inPromo
+*PromoPrice:* ${
+          goodie.inPromo
             ? calculatePromoPrice(goodie.price, goodie.promoPercentage)
             : "none"
-          } ;
+        } ;
 *PromoPercent:* ${goodie.inPromo ? goodie.promoPercentage : "none"} ;
 
 ------------------------------------
 
 `);
       },
-      ""
+      "",
     );
 
     return encodeURIComponent(cartDescription);
@@ -223,10 +224,17 @@ const Checkout = () => {
     formState: { errors },
   } = useForm<IOrderFormSchema>({ resolver: zodResolver(orderFormSchema) });
 
-  const submit = () => { };
+  const submit = () => {};
 
-  const propertiesToSelect = ["name", "price", "quantity", "total", "image", "_id"];
-  console.log("here is the cartContent", cartContent)
+  const propertiesToSelect = [
+    "name",
+    "price",
+    "quantity",
+    "total",
+    "image",
+    "_id",
+  ];
+  console.log("here is the cartContent", cartContent);
   const goodies = Object.values(cartContent).map(
     (child: Record<string, any>) => {
       const selectedProperty: Record<string, string | number> = {};
@@ -241,17 +249,14 @@ const Checkout = () => {
         }
       });
       return selectedProperty;
-    }
+    },
   );
-  console.log("list of goodies in checkout page", goodies)
-
+  console.log("list of goodies in checkout page", goodies);
 
   useEffect(() => {
-
-
     // Fetch user's country
     fetch(
-      "https://api.ipgeolocation.io/ipgeo?apiKey=faf527222d2a46c8a4ba42da7d2ab1d8"
+      "https://api.ipgeolocation.io/ipgeo?apiKey=faf527222d2a46c8a4ba42da7d2ab1d8",
     )
       .then((response) => response.json())
       .then((data) => {
@@ -262,31 +267,34 @@ const Checkout = () => {
         console.error("Error fetching country:", error);
         setUserCountry("Unknown"); // Set a default value in case of error
       });
-
-  }, [])
-
+  }, []);
 
   const handleOrderClick = () => {
     if (userCountry === "Cameroon") {
+
       // setModalOpen(true);
-      const goodieData = JSON.stringify(goodies)
-      const message = generateCartDescription()
-      const messageData = JSON.stringify(message)
+      const goodieData = JSON.stringify(goodies);
+      const message = generateCartDescription();
+      const messageData = JSON.stringify(message);
 
-      localStorage.setItem("goodiesData", goodieData)
-      localStorage.setItem("messageData", messageData)
-      router.push("/goodie/payement", { scroll: false })
+      localStorage.setItem("goodiesData", goodieData);
+      localStorage.setItem("messageData", messageData);
+      router.push("/goodie/payement", { scroll: false });
 
+      
     } else {
-      toast.error("Commande impossible en ce pays. Veuillez vous rendre à votre pays d'origine.");
-      // if (goodie?.etsy) {
-      //   window.open(goodie.etsy, "_blank");
-      // } else {
-      //   toast.error("Le lien Etsy n'est pas disponible pour ce produit.");
-      // }
+
+      const goodieData = JSON.stringify(goodies);
+      const message = generateCartDescription();
+      const messageData = JSON.stringify(message);
+
+      localStorage.setItem("goodiesData", goodieData);
+      localStorage.setItem("messageData", messageData);
+      router.push("/goodie/payement", { scroll: false });
+
+      // toast.error("Commande impossible en ce pays. Veuillez vous rendre à votre pays d'origine.");
     }
   };
-
 
   return (
     <Fragment>
@@ -424,7 +432,7 @@ const Checkout = () => {
         open={modalOpen}
         handleClose={() => setModalOpen(false)}
         message={() => generateCartDescription()}
-      // order={orderData}
+        // order={orderData}
       />
     </Fragment>
   );

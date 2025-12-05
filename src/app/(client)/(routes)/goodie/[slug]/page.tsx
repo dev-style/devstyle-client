@@ -45,7 +45,6 @@ import Image from "next/image";
 import Spinner from "@/app/(client)/components/spinner";
 import PayementContainer from "@/app/(client)/components/PayementContainer";
 import Link from "next/link";
-import { Number } from "mongoose";
 
 const Goodie = (props: any) => {
   const { cartDispatch } = useContext(CartContext);
@@ -76,6 +75,7 @@ const Goodie = (props: any) => {
   };
 
   const handleQuantityChange = (newQty: number) => {
+    console.log("here is the new quantity", newQty);
     if (newQty >= 0) {
       setGoodie({ ...goodie, quantity: newQty } as IGoodie);
     }
@@ -595,7 +595,7 @@ const Goodie = (props: any) => {
                       size="small"
                       type={"number"}
                       style={{
-                        width: "48px",
+                        width: "100px b ",
                         height: "48px",
                         textAlign: "center",
                       }}
