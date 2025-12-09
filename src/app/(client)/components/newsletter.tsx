@@ -24,20 +24,20 @@ const Newsletter = () => {
         <div style={{ color: "#fff" }}> Entrer une email valide</div>,
         {
           style: { textAlign: "center" },
-        }
+        },
       );
       setIsSubscribing(false);
     } else {
       analyticsEventTracker("CONTACT")("Newsletter");
       myAxios
-        .post("/newsletter/save", { email: email })
+        .post("/newletter/save", { email: email })
         .then((response) => {
           if (response.status === 200) {
             toast.success(
               <div style={{ color: "#fff" }}>Bienvenue à bord 🎉</div>,
               {
                 style: { textAlign: "center" },
-              }
+              },
             );
             console.log(response.data.message);
           } else {
@@ -47,7 +47,7 @@ const Newsletter = () => {
               </div>,
               {
                 style: { textAlign: "center" },
-              }
+              },
             );
             console.log(response.data.message);
           }
