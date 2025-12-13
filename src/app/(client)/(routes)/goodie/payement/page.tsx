@@ -1,6 +1,6 @@
 "use client";
 import { localservices } from "googleapis/build/src/apis/localservices";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Money } from "@mui/icons-material";
@@ -28,32 +28,35 @@ import { cityList } from "@/app/(client)/lib/cityList";
 import { useRouter } from "next/navigation";
 import SuccessPaymentModal from "@/app/(client)/components/SuccessPaymentModal";
 import Image from "next/image";
+import CartContext from "@/app/(client)/contexts/cart/cartContext";
 
-interface payementProps { }
-const Page = ({ }: payementProps) => {
+interface payementProps {}
+const Page = ({}: payementProps) => {
   const [goodies, setGoodies] = useState<
-    { name: string; image: { url: string }; price: number; quantity: number; total: number }[]
+    {
+      name: string;
+      image: { url: string };
+      price: number;
+      quantity: number;
+      total: number;
+    }[]
   >([]);
   const [message, setMessage] = useState<string>("");
   const [infoChecked, setInfoChecked] = useState<boolean>(false);
   const [locationChecked, setLocationChecked] = useState<boolean>(false);
   const [openSuccessModal, setOpenSuccessModal] = useState<boolean>(false);
-
-
+  const { cartDispatch, cartContent } = useContext(CartContext);
 
   const [isSending, setIsSending] = useState(false);
 
   const schema = z.object({
     name: z.string().min(1, { message: "Name is required" }),
-    phone: z
-      .string()
-      .refine((value) => !isNaN(Number(value)), {
-        message: "Invalid phone number",
-      }),
+    phone: z.string().refine((value) => !isNaN(Number(value)), {
+      message: "Invalid phone number",
+    }),
     email: z.string().email({ message: "Invalid email address" }),
     city: z.string().min(1, { message: "Add your city" }),
-    expeditionAdresse: z
-      .string().optional(),
+    expeditionAdresse: z.string().optional(),
     district: z.string().optional(),
   });
 
@@ -67,12 +70,14 @@ const Page = ({ }: payementProps) => {
     resolver: zodResolver(schema),
   });
 
+  // const match1000 = useMediaQuery()
+
   const contact = () => {
     const msg = message ? message : "";
     window
       .open(
         `https://api.whatsapp.com/send/?phone=237658732446&text=%0A%60%60%60%3C%20MA%20COMMANDE%20%2F%3E%60%60%60%F0%9F%9B%92%0A${msg}%5B%20%C3%A0%20ne%20pas%20supprimer%F0%9F%91%86%F0%9F%8F%BD%20%5D`,
-        "_blank"
+        "_blank",
       )!
       .focus();
   };
@@ -84,7 +89,7 @@ const Page = ({ }: payementProps) => {
     let localCity = window.localStorage.getItem("_devStyle-order-city");
     let localDistrict = window.localStorage.getItem("_devStyle-order-district");
     let localExpeditionAdresse = window.localStorage.getItem(
-      "_devStyle-order-expeditionAdresse"
+      "_devStyle-order-expeditionAdresse",
     );
     if (localNumber) {
       setValue("phone", localNumber);
@@ -128,38 +133,27 @@ const Page = ({ }: payementProps) => {
       .then((response: any) => {
         if (response.status === 200) {
           if (infoChecked) {
-            window.localStorage.removeItem(
-              "_devStyle-order-number"
-            );
-            window.localStorage.removeItem(
-              "_devStyle-order-name",
-            );
-            window.localStorage.removeItem(
-              "_devStyle-order-email",
-            );
+            window.localStorage.removeItem("_devStyle-order-number");
+            window.localStorage.removeItem("_devStyle-order-name");
+            window.localStorage.removeItem("_devStyle-order-email");
           }
 
           if (locationChecked) {
-            window.localStorage.removeItem(
-              "_devStyle-order-city",
-            );
-            window.localStorage.removeItem(
-              "_devStyle-order-district",
-            );
-            window.localStorage.removeItem(
-              "_devStyle-order-expeditionAdresse",
-            );
+            window.localStorage.removeItem("_devStyle-order-city");
+            window.localStorage.removeItem("_devStyle-order-district");
+            window.localStorage.removeItem("_devStyle-order-expeditionAdresse");
           }
 
-          setOpenSuccessModal(true)
+          setOpenSuccessModal(true);
 
           toast.success(
             <div style={{ color: "#fff" }}>Commande bien reçu</div>,
             {
               style: { textAlign: "center" },
               icon: "🎉",
-            }
+            },
           );
+          cartDispatch({ type: "CLEAR_CART", payload: null });
           // contact()
 
           // console.log(response.data.message);
@@ -168,7 +162,7 @@ const Page = ({ }: payementProps) => {
             <div style={{ color: "#fff" }}>Une erreur est survenu</div>,
             {
               style: { textAlign: "center" },
-            }
+            },
           );
           console.log(response.data.message);
         }
@@ -181,7 +175,7 @@ const Page = ({ }: payementProps) => {
           {
             style: { textAlign: "center" },
             icon: "😕",
-          }
+          },
         );
         console.log(error);
       })
@@ -214,7 +208,7 @@ const Page = ({ }: payementProps) => {
         }
         return goodie;
       });
-      console.log("here is the goodie", updatedGoodies)
+      console.log("here is the goodie", updatedGoodies);
       setGoodies(updatedGoodies);
     } else {
       setGoodies(storedGoodies);
@@ -250,7 +244,7 @@ const Page = ({ }: payementProps) => {
   };
 
   const handleChangePayementMethod = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setPayementMethod((event.target as HTMLInputElement).value);
   };
@@ -262,6 +256,9 @@ const Page = ({ }: payementProps) => {
   const selectedCityData = cityList.find((c) => c.name === selectedCity);
 
   const districts = selectedCityData ? selectedCityData.district : [];
+
+  const selectedDistrict =
+    watch("district") || (districts.length > 0 ? districts[0].name : "");
 
   return (
     <Box
@@ -305,9 +302,7 @@ const Page = ({ }: payementProps) => {
                       </div>
                       <div className="flex flex-col md:flex-row gap-x-2  flex-wrap lg:flex-nowrap">
                         <div className="w-full gap-3 flex mt-4 flex-col">
-                          <label htmlFor="tset">
-                            Numero de telephone ( Whatsapp )
-                          </label>
+                          <label htmlFor="tset">Numero Whatsapp</label>
                           <input
                             {...register("phone")}
                             type="number"
@@ -350,10 +345,11 @@ const Page = ({ }: payementProps) => {
                       </div>
                       <div>
                         <button
-                          className={`rounded-lg py-3 px-6 text-white ${!openLocationSection
-                            ? "bg-[#220f00]"
-                            : "bg-gray-500 cursor-not-allowed"
-                            }`}
+                          className={`rounded-lg py-3 px-6 text-white ${
+                            !openLocationSection
+                              ? "bg-[#220f00]"
+                              : "bg-gray-500 cursor-not-allowed"
+                          }`}
                           onClick={() => ChangeStep(1)}
                           disabled={openLocationSection}
                         >
@@ -441,11 +437,7 @@ const Page = ({ }: payementProps) => {
                               <Select
                                 labelId="district"
                                 id="district"
-                                value={
-                                  districts.length > 0
-                                    ? districts[0]?.name
-                                    : "Empty"
-                                }
+                                value={selectedDistrict}
                                 {...register("district")}
                                 onChange={(e) =>
                                   setValue("district", e.target.value)
@@ -495,10 +487,11 @@ const Page = ({ }: payementProps) => {
                       </div>
                       <div>
                         <button
-                          className={`rounded-lg py-3 px-6 text-white ${!openPayementSection
-                            ? "bg-[#220f00]"
-                            : "bg-gray-500 cursor-not-allowed"
-                            }`}
+                          className={`rounded-lg py-3 px-6 text-white ${
+                            !openPayementSection
+                              ? "bg-[#220f00]"
+                              : "bg-gray-500 cursor-not-allowed"
+                          }`}
                           onClick={() => ChangeStep(2)}
                           disabled={openPayementSection}
                         >
@@ -630,7 +623,13 @@ const Page = ({ }: payementProps) => {
                   </p>
                 </div>
               </div>
-              <div className="p-4 border-t-2 overflow-x-auto border-[#220f00]/3 overflow-x-auto w-full flex justify-start items-center gap-x-3 gap-y-1 flex-wrap:wrap  ">
+              <div
+                className={`p-4 border-t-2  border-[#220f00]/3   ${
+                  match700
+                    ? " flex justify-center items-center flex-col"
+                    : "flex justify-start flex-row flex-wrap"
+                } gap-x-3 gap-y-1 flex-wrap:wrap  `}
+              >
                 {goodies.map((goodie, key) => {
                   return (
                     <div
@@ -638,9 +637,13 @@ const Page = ({ }: payementProps) => {
                       className="border flex flex-col w-[200px] gap-y-1 border-px border-[#220f00]/3 rounded-sm p-2 relative  "
                     >
                       <div className="rounded-sm w-full ">
-
-                        <img src={goodie.image.url} alt="goodie image" className="w-full h-[50] rounded-sm" />
-
+                        <img
+                          src={
+                            goodie.image.url ? goodie.image.url : goodie.image
+                          }
+                          alt="goodie image"
+                          className="w-full h-[50] rounded-sm"
+                        />
                       </div>
                       <div className="border-b-px p-2 border-[#220f00] bg-[#220f00]">
                         <h1 className="text-white">
@@ -682,10 +685,7 @@ const Page = ({ }: payementProps) => {
         isOpen={isPolicyModalOpen}
         onClose={() => setIsPolicyModalOpen(false)}
       />
-      <SuccessPaymentModal
-        isOpen={openSuccessModal}
-
-      />
+      <SuccessPaymentModal isOpen={openSuccessModal} />
     </Box>
   );
 };
