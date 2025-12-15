@@ -11,6 +11,7 @@ import {
   MdExpandMore,
   MdExpandLess,
 } from "react-icons/md";
+import { Box } from "@mui/material";
 import Pagination from "@/app/admin/ui/dashboard/pagination/page";
 import { ObjectId } from "mongoose";
 import { useSearchParams } from "next/navigation";
@@ -22,7 +23,7 @@ type Order = {
   number?: number;
   status: "initiate" | "processing" | "completed" | "cancelled";
   initDate: string;
-  goodies: [{ name: string; price: number; quantity: number; total: number }];
+  goodies: [{ _id?: string; name: string; price: number; quantity: number; total: number, image?:string; url? : string, slug?: string, sizeName?: string, color?: string } ];
   city: string;
   district: string;
   expeditionAdresse:string;
@@ -42,8 +43,8 @@ const OrdersPageContent = () => {
         const q = searchParams?.get("q") || "";
         const page = parseInt(searchParams?.get("page") || "1", 10);
         const { count, orders: fetchedOrders } = await fetchOrders(q, page);
-        console.log("orders", orders);
-        const formattedOrders: Order[] = fetchedOrders.map((order) => ({
+        console.log("orders", fetchOrders);
+        const formattedOrders: Order[] = fetchedOrders.map((order:any) => ({
           id: (order._id as ObjectId).toString(),
           name: order.name,
           email: order.email,
@@ -60,6 +61,7 @@ const OrdersPageContent = () => {
           expeditionAdresse: order.expeditionAdresse,
           paymentMethod: order.paymentMethod,
         }));
+        console.log("Formatted Orders:", formattedOrders);
         setOrders(formattedOrders);
         setCount(count);
       } catch (error) {
@@ -80,7 +82,7 @@ const OrdersPageContent = () => {
       const page = parseInt(searchParams?.get("page") || "1", 10);
       const { count, orders: updatedOrders } = await fetchOrders(q, page);
 
-      const formattedOrders: Order[] = updatedOrders.map((order) => ({
+      const formattedOrders: Order[] = updatedOrders.map((order:any) => ({
         id: (order._id as ObjectId).toString(),
         name: order.name,
         email: order.email,
@@ -99,6 +101,7 @@ const OrdersPageContent = () => {
       }));
 
       setOrders(formattedOrders);
+      console.log("Updated Orders:", formattedOrders);
       setCount(count);
     } catch (error) {
       console.error("Failed to update order status:", error);
@@ -123,6 +126,9 @@ const OrdersPageContent = () => {
   const toggleOrderExpansion = (orderId: string) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
+
+
+  console.log("Rendering orders:", orders);
 
   return (
     <div className="bg-[var(--bgSoft)] p-5 rounded-lg mt-5">
@@ -239,12 +245,41 @@ const OrdersPageContent = () => {
                             key={index}
                             className="bg-primary p-4 rounded-lg shadow"
                           >
-                            <h3 className="font-bold text-lg mb-2">
+                            <div className="w-full h-40 mb-4 overflow-hidden flex items-center justify-center">
+                              {goodie.image ? (
+                                <img
+                                  src={goodie.image}
+                                  alt={goodie.name}
+                                  className="object-contain h-full"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                  No Image
+                                </div>
+                              )}
+                            </div>
+                            <h5 className="font-bold text-lg mb-2">
                               {goodie.name}
-                            </h3>
-                            <p>Price: {goodie.price} CFA</p>
-                            <p>Quantity: {goodie.quantity}</p>
-                            <p className="font-semibold mt-2">
+                            </h5>
+                            <p>Unit Price: {goodie.price} CFA</p>
+                            <p>Size: <span className="font-bold">{goodie.sizeName || "N/A"}</span></p>
+                            <p style={{display: "flex", alignItems: "center", gap: "4px"}}>
+                              Color: 
+                              <Box
+                              style={{
+                                backgroundColor: goodie.color || "#FFFFFF00",
+                                width: "24px",
+                                height: "24px",
+                                borderRadius: "50%",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                border:"2px solid #06C27033"
+                              }}
+                            />
+                            </p>
+                            <p>Quantity: <span className="font-bold">{goodie.quantity}</span></p>
+                            <p className="font-semibold mt-2" style={{fontSize: "18px"}}>
                               Total: {goodie.total} CFA
                             </p>
                           </div>

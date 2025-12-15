@@ -2,8 +2,10 @@
 
 import { connectToDB } from "../lib/utils";
 import OrderModel from "../models/order";
+import GoodieModel from "../models/goodie";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import SizeModel from "../models/size";
 export const fetchOrders = async (q: string, page: number) => {
   const regex = new RegExp(q, "i");
   const ITEM_PER_PAGE = 10;
@@ -27,7 +29,33 @@ export const fetchOrders = async (q: string, page: number) => {
       .limit(ITEM_PER_PAGE)
       .lean(); // Use lean() to return plain JavaScript objects instead of Mongoose documents
 
-    return { count, orders };
+    // fetch goodie details and sizes for each order's goodies
+    const detailedOrders = await Promise.all(
+      orders.map(async (order) => {
+        const detailedGoodies = await Promise.all(
+          order.goodies.map(async (goodie) => {
+            // Fetch goodie details from GoodieModel
+            // Assuming GoodieModel is imported and has the necessary schema
+            const goodieDetails = await GoodieModel.findById(goodie._id).lean();
+            const sizeDetails = await SizeModel.findById(goodie.size).lean();
+            return {
+              ...goodie,
+              slug: goodieDetails ? goodieDetails.slug : "",
+              sizeName: sizeDetails ? sizeDetails.size : "",
+              _id: goodie._id?.toString(),
+              size: goodie.size?.toString(),
+            };
+          })
+        );
+        return {
+          ...order,
+          goodies: detailedGoodies,
+        };
+      })
+    );
+    
+    // console.log("Fetched orders:", detailedOrders[0].goodies);
+    return { count, orders: detailedOrders };
   } catch (error) {
     console.error("Error fetching orders:", error);
     throw error;

@@ -39,6 +39,10 @@ const Page = ({}: payementProps) => {
       price: number;
       quantity: number;
       total: number;
+      _id: string;
+      sizeName?: string;
+      size?: string;
+      color?: string;
     }[]
   >([]);
   const [message, setMessage] = useState<string>("");
@@ -609,7 +613,7 @@ const Page = ({}: payementProps) => {
                 <div className="flex flex-row justify-between">
                   <h1>Sous total</h1>
                   <p>
-                    {goodies.reduce((total, goodie) => total + goodie.total, 0)}
+                    {goodies.reduce((total, goodie) => total + goodie.total, 0)} Fcfa
                   </p>
                 </div>
                 <div className="flex flex-row justify-between">
@@ -619,7 +623,7 @@ const Page = ({}: payementProps) => {
                 <div className="flex flex-row justify-between">
                   <h1>Total : </h1>
                   <p className="font-bold text-lg ">
-                    {goodies.reduce((total, goodie) => total + goodie.total, 0)}
+                    {goodies.reduce((total, goodie) => total + goodie.total, 0)} Fcfa
                   </p>
                 </div>
               </div>
@@ -645,20 +649,41 @@ const Page = ({}: payementProps) => {
                           className="w-full h-[50] rounded-sm"
                         />
                       </div>
-                      <div className="border-b-px p-2 border-[#220f00] bg-[#220f00]">
+                      <div className="border-b-px px-2 border-[#220f00] bg-[#220f00]">
                         <h1 className="text-white">
-                          <span className="">Name : </span>
                           {goodie.name}
                         </h1>
                       </div>
 
                       <p>
-                        <span>Price :</span> {goodie.price} Fcfa
+                        <span>Prix :</span> {goodie.price} Fcfa
                       </p>
                       <p>
-                        <span>Qnt :</span>
-                        {goodie.quantity} Items
+                        <span>Quantité : </span>
+                        {goodie.quantity}
                       </p>
+                      {goodie.sizeName && (
+                      <p>
+                          <span>Taille :</span> {goodie.sizeName}
+                      </p>
+                      )}
+                      {goodie.color && (
+                      <p style={{ display: "flex", alignItems: "center", gap: "4px"}}>
+                          <span>Couleur :</span>
+                          <Box
+                            style={{
+                              backgroundColor: goodie.color,
+                              width: "24px",
+                              height: "24px",
+                              borderRadius: "50%",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              border:"2px solid #06C27033"
+                            }}
+                          />
+                      </p>
+                      )}
                       <p>
                         <span>Total :</span> {goodie.total} Fcfa
                       </p>

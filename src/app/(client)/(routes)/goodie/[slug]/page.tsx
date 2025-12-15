@@ -794,13 +794,7 @@ const Goodie = (props: any) => {
                           disabled={isLoadingGoodie}
                           onClick={handleOrderClick}
                         >
-                          Commander maintenant
-                          <Image
-                            src={"/assets/icons/whatsapp-green.png"}
-                            alt="whatsapp devstyle"
-                            width={18}
-                            height={18}
-                          />
+                          Commander maintenant()
                         </Button>
                       ) : (
                         <Button
@@ -808,13 +802,7 @@ const Goodie = (props: any) => {
                           disabled={isLoadingGoodie}
                           onClick={handleOrderClick}
                         >
-                          Commander maintenant
-                          <Image
-                            src={"/assets/icons/whatsapp-green.png"}
-                            alt="whatsapp devstyle"
-                            width={18}
-                            height={18}
-                          />
+                          Commander maintenant()
                         </Button>
                         // <>
                         //   {goodie && goodie.etsy ? (

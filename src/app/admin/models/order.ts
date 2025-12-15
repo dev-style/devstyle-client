@@ -10,20 +10,34 @@ const orderSchema: Schema<IOrder> = new mongoose.Schema(
     },
     goodies: [
       {
-        name: {
-          type: String,
-          required: true,
-        },
-        price: {
-          type: Number,
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Goodie",
           required: true,
         },
         quantity: {
           type: Number,
           required: true,
         },
+        size: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Size",
+          required: false,
+        },
+        color: {
+          type: String,
+          required: false,
+        },
+        price: {
+          type: Number,
+          required: true,
+        },
         total: {
           type: Number,
+          required: true,
+        },
+        image: {
+          type: String,
           required: true,
         },
       },

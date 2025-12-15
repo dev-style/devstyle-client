@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useEffect, useState, useContext } from "react";
+import React, { Fragment, useEffect, useState, useContext, Children } from "react";
 import {
   Typography,
   Table,
@@ -233,6 +233,9 @@ const Checkout = () => {
     "total",
     "image",
     "_id",
+    "size",
+    "sizeName",
+    "color",
   ];
   console.log("here is the cartContent", cartContent);
   const goodies = Object.values(cartContent).map(
@@ -244,6 +247,12 @@ const Checkout = () => {
       propertiesToSelect.forEach((property) => {
         selectedProperty["total"] = total;
         selectedProperty["image"] = child.mainImage.url;
+        var selectedSize = child.sizes.find(({size: sizeName}: {size: string}) => sizeName === child.selectedSize);
+        var selectedColor = child.availableColors.find((color: string) => color === child.selectedColor);
+        selectedProperty["size"] = selectedSize ? selectedSize._id : null;
+        selectedProperty["sizeName"] = selectedSize ? selectedSize.size : null;
+        selectedProperty["color"] = selectedColor!=""? selectedColor : null;
+
         if (child.hasOwnProperty(property)) {
           selectedProperty[property] = child[property];
         }
@@ -319,7 +328,7 @@ const Checkout = () => {
                     align="left"
                     style={{ fontWeight: "normal", fontFamily: "Poppins" }}
                   >
-                    Goodie
+                    Goodies
                   </TableCell>
                   <TableCell
                     align="center"
@@ -401,14 +410,7 @@ const Checkout = () => {
           // }
           onClick={handleOrderClick}
         >
-          Commander(
-          <Image
-            src={"/assets/icons/whatsapp-green.png"}
-            alt="whatsapp"
-            width={18}
-            height={18}
-          />
-          )
+          Commander()
         </Button>
 
         <Box
