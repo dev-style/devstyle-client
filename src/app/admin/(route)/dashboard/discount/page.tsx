@@ -34,7 +34,7 @@ const DiscountPage = ({ searchParams }: any) => {
     //     const fetchData = async () => {
 
     //         const { count, discounts } = await fetchDiscounts(q, page)
-    //         console.log("discounts", discounts);
+    //         // console.log("discounts", discounts);
     //         setDiscounts(discounts);
     //         setCountDiscount(count);
 
@@ -44,7 +44,7 @@ const DiscountPage = ({ searchParams }: any) => {
     // }, [])
     const fetchDiscountData = useCallback(async () => {
         const { count, discounts } = await fetchDiscounts(q, page)
-        console.log("discounts", discounts);
+        // console.log("discounts", discounts);
         setDiscounts(discounts);
         setCountDiscount(count);
     }, [q, page])

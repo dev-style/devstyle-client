@@ -19,7 +19,7 @@ export const ListPartners = () => {
         if (response.status === 200) {
           setPartners(response.data.message);
         } else {
-          console.log(response.data.message);
+          // console.log(response.data.message);
           setPartners([]);
         }
       })
@@ -28,7 +28,7 @@ export const ListPartners = () => {
           icon: "🌐",
           style: { textAlign: "center" },
         });
-        console.log(error);
+        // console.log(error);
       })
       .finally(() => setIsLoadingPartners(false));
   }, []);

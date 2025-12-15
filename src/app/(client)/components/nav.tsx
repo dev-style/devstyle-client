@@ -63,10 +63,14 @@ const Nav = () => {
         if (response.status === 200) {
           setAnnounce(response.data.message);
         } else {
-          console.log(response.data.message);
+          // console.log(response.data.message);
         }
       })
-      .catch((error: any) => console.log(error));
+      .catch((error: any) => 
+        {
+          // console.log(error)
+
+        });
   }, []);
 
   useEffect(() => {
@@ -78,12 +82,12 @@ const Nav = () => {
         setGoodies(response.data.message)
        
       } else {
-        console.log(response.data.message);
+        // console.log(response.data.message);
       }
     })
     .catch((error) => {
     
-      console.log(error);
+      // console.log(error);
     });
   }, []);
 
@@ -96,7 +100,7 @@ const Nav = () => {
         cartDispatch({ type: "SET_CART", payload: cartFromLocalStorage });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }, [cartDispatch]);
   return (
@@ -188,11 +192,20 @@ const Nav = () => {
                       ?.scrollIntoView(true);
                   }
                 } catch (error) {
-                  console.log(error);
+                  // console.log(error);
                 }
               }}
             >
               Nos Collections
+            </Link>
+            <Link
+              href={"/collection/all-goodies"}
+              style={{
+                padding: `0px ${theme.spacing(2)}`,
+                color: theme.palette.common.black,
+              }}
+            >
+              Tous nos Goodies
             </Link>
             {/* <Link
               href={"/our-ambassadors"}
@@ -203,6 +216,7 @@ const Nav = () => {
             >
               Nos Ambassadeurs
             </Link> */}
+            
             <Link
               href={"/about-us"}
               style={{
@@ -232,7 +246,7 @@ const Nav = () => {
                         ?.scrollIntoView(true);
                     }
                   } catch (error) {
-                    console.log(error);
+                    // console.log(error);
                   }
                 }}
               >
@@ -325,7 +339,7 @@ const Nav = () => {
                     ?.scrollIntoView(true);
                 }
               } catch (error) {
-                console.log(error);
+                // console.log(error);
               }
             }}
             style={{
@@ -368,7 +382,7 @@ const Nav = () => {
                 document.querySelector("#custom-section")?.scrollIntoView(true);
               }
             } catch (error) {
-              console.log(error);
+              // console.log(error);
             }
           }}
         >

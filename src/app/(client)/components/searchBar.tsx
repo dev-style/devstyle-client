@@ -29,7 +29,7 @@ const SearchBar = ({ goodies }: any) => {
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log("here is the goodies", goodies)
+    // console.log("here is the goodies", goodies)
     if (inputValue) {
 
 

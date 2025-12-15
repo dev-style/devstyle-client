@@ -32,14 +32,14 @@ const Collection = (props: any) => {
         .get("/collection/goodies/" + props.slug)
         .then((response) => {
           if (response.status === 200) {
-            console.log("response.data.message", response.data.message);
+            // console.log("response.data.message", response.data.message);
             setCollection({
               collection: response.data.message?.collection,
               goodies: response.data.message?.goodies,
             });
             setIsLoadingCollection(false);
           } else {
-            console.log(response.data.message);
+            // console.log(response.data.message);
             setIsLoadingCollection(false);
           }
         })
@@ -49,7 +49,7 @@ const Collection = (props: any) => {
             icon: "🌐",
             style: { textAlign: "center" },
           });
-          console.log(error);
+          // console.log(error);
         });
     } else {
       myAxios
@@ -71,7 +71,7 @@ const Collection = (props: any) => {
             });
             setIsLoadingCollection(false);
           } else {
-            console.log(response.data.message);
+            // console.log(response.data.message);
             setIsLoadingCollection(false);
           }
         })
@@ -80,7 +80,7 @@ const Collection = (props: any) => {
             icon: "🌐",
             style: { textAlign: "center" },
           });
-          console.log(error);
+          // console.log(error);
         });
     }
   }, [props.slug, onAllGoodies]);
@@ -91,15 +91,17 @@ const Collection = (props: any) => {
         .put("/collection/update/views/" + props.slug)
         .then((response) => {
           if (response.status === 200) {
-            console.log(response.data.message);
+            // console.log(response.data.message);
           } else {
-            console.log(response.data.message);
+            // console.log(response.data.message);
           }
         })
-        .catch((error) => console.log(error));
+        .catch((error) =>{ 
+          // console.log(error)
+        });
     }
   }, [props.slug, onAllGoodies]);
-  console.log(collection);
+  // console.log(collection);
   return (
     <Box className="collection-wrapper">
       <ScrollToTop />

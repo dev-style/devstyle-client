@@ -185,12 +185,12 @@ const AddGoodiePage = () => {
     const fetchData = async () => {
       try {
         const { collections } = await fetchCollections();
-        console.log("my collections", collections);
+        // console.log("my collections", collections);
         setCollections(collections);
 
         const { sizes } = await fetchSizes();
         setAvailableSizes(sizes);
-        console.log("my sizes", sizes);
+        // console.log("my sizes", sizes);
       } catch (err) {
         toast.error("Failed to load collections or sizes.");
         console.error("Fetch error:", err);
@@ -201,7 +201,7 @@ const AddGoodiePage = () => {
 
   const onSubmit = async (data: GoodieFormData) => {
     setIsLoading(true);
-    console.log("Raw form data before parsing:", data); // Les images sont encore des chaînes JSON ici
+    // console.log("Raw form data before parsing:", data); // Les images sont encore des chaînes JSON ici
 
     try {
       // Parse les chaînes JSON des images en objets JavaScript
@@ -213,7 +213,7 @@ const AddGoodiePage = () => {
         images: (data.images || []).map((imgStr) => JSON.parse(imgStr)),
       };
 
-      console.log("Data to send to addGoodie after parsing:", parsedData);
+      // console.log("Data to send to addGoodie after parsing:", parsedData);
 
       await addGoodie(parsedData); // Appelle la Server Action principale avec les objets image
       toast.success("Goodie ajouté avec succès !");

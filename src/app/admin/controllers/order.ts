@@ -54,7 +54,7 @@ export const fetchOrders = async (q: string, page: number) => {
       })
     );
     
-    // console.log("Fetched orders:", detailedOrders[0].goodies);
+    // // console.log("Fetched orders:", detailedOrders[0].goodies);
     return { count, orders: detailedOrders };
   } catch (error) {
     console.error("Error fetching orders:", error);
@@ -80,7 +80,7 @@ export const fetchRecentOrders = async () => {
 
 export const updateOrderStatus = async (formData: any) => {
   const { orderId, newStatus } = formData;
-  console.log("valeur a changer", orderId, newStatus);
+  // console.log("valeur a changer", orderId, newStatus);
   try {
     await connectToDB();
 
@@ -94,7 +94,7 @@ export const updateOrderStatus = async (formData: any) => {
       throw new Error("Order not found");
     }
 
-    console.log("Order updated successfully:", updatedOrder);
+    // console.log("Order updated successfully:", updatedOrder);
   } catch (err) {
     console.error("Error updating order:", err);
     throw new Error("Failed to update order!");

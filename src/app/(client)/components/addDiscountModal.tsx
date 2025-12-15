@@ -68,7 +68,7 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess, onFailure }: AddDiscount
     });
 
     const onSubmit = async (data: DiscountFormData) => {
-        console.log("data", data);
+        // console.log("data", data);
 
         if (selectedGoodies.length >= 1) {
 
@@ -96,7 +96,7 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess, onFailure }: AddDiscount
             // Vous pouvez ajouter la logique pour envoyer les données au backend ici.
 
         } else {
-            console.log('Please select at least one ')
+            // console.log('Please select at least one ')
             toast.error("Please select at least one goodie.");
 
         }
@@ -109,7 +109,7 @@ const AddDiscountModal = ({ isOpen, onClose, onSuccess, onFailure }: AddDiscount
         const fetchData = async () => {
 
             const { goodies } = await getGoodiesWithoutDiscount();
-            console.log("Fetched goodies", goodies);
+            // console.log("Fetched goodies", goodies);
             setGoodies(goodies);
         }
 

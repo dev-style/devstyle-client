@@ -97,9 +97,9 @@ const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       const { goodie } = await fetchGoodie(id);
-      console.log("single goodie", goodie);
+      // console.log("single goodie", goodie);
       const { collections } = await fetchCollections();
-      console.log("the collections i have", collections);
+      // console.log("the collections i have", collections);
       setCollections(collections);
 
       const { sizes } = await fetchSizes();
@@ -136,7 +136,7 @@ const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
           reader.onloadend = () => resolve(reader.result as string);
           reader.readAsDataURL(blob);
         });
-        console.log("base64String", base64String);
+        // console.log("base64String", base64String);
         return base64String;
       };
 
@@ -153,7 +153,7 @@ const SingleGoodiePage = ({ params }: { params: { id: string } }) => {
   }, []);
 
   const onSubmit = async (data: GoodieFormData) => {
-    console.log("all the data i wanna update", data);
+    // console.log("all the data i wanna update", data);
     setIsLoading(true);
     try {
       await updateGoodie(id, data);

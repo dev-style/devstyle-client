@@ -119,7 +119,7 @@ const AddComboPage = () => {
   };
 
   const onSubmit = async (data: ComboFormData) => {
-    console.log("data", data);
+    // console.log("data", data);
     await addCombo(data as ICombo);
   };
 

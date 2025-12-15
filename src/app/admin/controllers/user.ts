@@ -10,7 +10,7 @@ import bcrypt from "bcrypt";
 import { signIn } from "next-auth/react";
 
 export const fetchUsers = async (q: string, page: number) => {
-  console.log(q);
+  // console.log(q);
   const regex = new RegExp(q, "i");
   const ITEM_PER_PAGE = 10;
   try {
@@ -22,10 +22,10 @@ export const fetchUsers = async (q: string, page: number) => {
     const users = await UserModel.find({ username: { $regex: regex } })
       .limit(ITEM_PER_PAGE)
       .skip(ITEM_PER_PAGE * (page - 1));
-    console.log("list of users", users);
+    // console.log("list of users", users);
     return { count, users };
   } catch (err) {
-    console.log("Error fetching users:", err);
+    // console.log("Error fetching users:", err);
     throw new Error("Failed to fetch users!");
   }
 };
@@ -34,7 +34,7 @@ export const addUser = async (user: IUser) => {
   const { username, email, password, avatar, role, isActive, phone, address } =
     user;
 
-  console.log(
+  // console.log(
     "username , email , password , avatar , role , isActive , phone , address",
     username,
     email,
@@ -75,7 +75,7 @@ export const addUser = async (user: IUser) => {
 
     await newUser.save();
   } catch (err) {
-    console.log("err", err);
+    // console.log("err", err);
     throw new Error("Failed to create user");
   }
 
@@ -86,7 +86,7 @@ export const addUser = async (user: IUser) => {
 // export const authentificate = async (formData:FormData) => {
 //   const { username, password } = Object.fromEntries(formData);
 
-//   console.log("username , password", username, password);
+//   // console.log("username , password", username, password);
 
 //   try {
 //     await signIn("credentials", { username, password ,redirect:false});

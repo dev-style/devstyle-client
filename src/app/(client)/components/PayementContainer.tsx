@@ -45,7 +45,7 @@ const PayementContainer = ({ goodie, message }: PayementContainerProps) => {
     const onSubmit: SubmitHandler<z.infer<typeof schema>> = (data) => {
         setIsSending(true);
 
-        // console.log(data)
+        // // console.log(data)
         const orderData: any = {
             goodies: goodie,
             status: "initiate",
@@ -55,7 +55,7 @@ const PayementContainer = ({ goodie, message }: PayementContainerProps) => {
             location: data.location,
 
         }
-        console.log("here is the order data", orderData)
+        // console.log("here is the order data", orderData)
 
         myAxios
             .post("/order/create", orderData)
@@ -80,7 +80,7 @@ const PayementContainer = ({ goodie, message }: PayementContainerProps) => {
                     );
                     contact()
 
-                    // console.log(response.data.message);
+                    // // console.log(response.data.message);
                 } else {
                     toast.error(
                         <div style={{ color: "#fff" }}>Une erreur est survenu</div>,
@@ -88,7 +88,7 @@ const PayementContainer = ({ goodie, message }: PayementContainerProps) => {
                             style: { textAlign: "center" },
                         }
                     );
-                    console.log(response.data.message);
+                    // console.log(response.data.message);
                 }
             })
             .catch((error: any) => {
@@ -101,7 +101,7 @@ const PayementContainer = ({ goodie, message }: PayementContainerProps) => {
                         icon: "😕",
                     }
                 );
-                console.log(error);
+                // console.log(error);
             })
             .finally(() => {
                 setIsSending(false);
