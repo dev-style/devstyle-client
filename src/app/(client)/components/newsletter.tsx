@@ -39,7 +39,7 @@ const Newsletter = () => {
                 style: { textAlign: "center" },
               },
             );
-            console.log(response.data.message);
+            // console.log(response.data.message);
           } else {
             toast.info(
               <div style={{ color: "#fff" }}>
@@ -49,17 +49,17 @@ const Newsletter = () => {
                 style: { textAlign: "center" },
               },
             );
-            console.log(response.data.message);
+            // console.log(response.data.message);
           }
         })
         .catch((error) => {
           if (error.status === 500) {
-            console.log("hello checked");
+            // console.log("hello checked");
           }
           toast.error(<div style={{ color: "#fff" }}>{error.message}</div>, {
             style: { textAlign: "center" },
           });
-          console.log(error);
+          // console.log(error);
         })
         .finally(() => {
           setEmail("");

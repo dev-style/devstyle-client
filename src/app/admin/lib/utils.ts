@@ -13,17 +13,17 @@ export const connectToDB = async () => {
 
     // Check if mongoose is already connected
     if (mongoose.connection.readyState === 1) {
-      console.log("MongoDB is already connected");
+      // console.log("MongoDB is already connected");
       connection.isConnected = mongoose.connection.readyState;
       return;
     }
 
     // If not connected, establish a new connection
     const db = await mongoose.connect(process.env.MONGO_URI as string);
-    console.log("New MongoDB connection established");
+    // console.log("New MongoDB connection established");
     connection.isConnected = db.connections[0].readyState;
   } catch (error) {
-    console.log("connect error", error);
+    // console.log("connect error", error);
     throw new Error(error instanceof Error ? error.message : String(error));
   }
 };

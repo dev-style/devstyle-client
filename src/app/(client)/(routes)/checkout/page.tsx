@@ -237,7 +237,7 @@ const Checkout = () => {
     "sizeName",
     "color",
   ];
-  console.log("here is the cartContent", cartContent);
+  // // console.log("here is the cartContent", cartContent);
   const goodies = Object.values(cartContent).map(
     (child: Record<string, any>) => {
       const selectedProperty: Record<string, string | number> = {};
@@ -260,7 +260,7 @@ const Checkout = () => {
       return selectedProperty;
     },
   );
-  console.log("list of goodies in checkout page", goodies);
+  // console.log("list of goodies in checkout page", goodies);
 
   useEffect(() => {
     // Fetch user's country
@@ -269,7 +269,7 @@ const Checkout = () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("country location", data);
+        // console.log("country location", data);
         setUserCountry(data.country_name);
       })
       .catch((error) => {

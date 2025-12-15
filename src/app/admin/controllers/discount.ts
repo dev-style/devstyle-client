@@ -7,7 +7,7 @@ import DiscountModel from "../models/discount";
 import GoodieModel from "../models/goodie";
 
 export const fetchDiscounts = async (q: string, page: number) => {
-  console.log("Query:", q);
+  // console.log("Query:", q);
   const regex = new RegExp(q, "i");
 
   const ITEM_PER_PAGE = 15;
@@ -27,11 +27,11 @@ export const fetchDiscounts = async (q: string, page: number) => {
 
       .lean();
 
-    console.log("Number of discount found:", count);
-    console.log("First discount:", discounts[0]);
+    // console.log("Number of discount found:", count);
+    // console.log("First discount:", discounts[0]);
 
     if (!discounts || discounts.length === 0) {
-      console.log("No discount found");
+      // console.log("No discount found");
       return { count: 0, discounts: [] };
     }
 
@@ -52,7 +52,7 @@ export async function createDiscount(formData: {
   limit: number;
   goodies: Array<string>;
 }) {
-  console.log("form", formData);
+  // console.log("form", formData);
   try {
     await connectToDB();
 
@@ -60,7 +60,7 @@ export async function createDiscount(formData: {
       goodies: { $in: formData.goodies },
     });
 
-    console.log("hasDiscount", hasDiscount);
+    // console.log("hasDiscount", hasDiscount);
 
     if (hasDiscount.length > 0){
       throw new Error("Error in creation of the discount");
@@ -72,7 +72,7 @@ export async function createDiscount(formData: {
         isActive: true,
         goodies: formData.goodies,
       });
-      console.log("new discount", newDiscount);
+      // console.log("new discount", newDiscount);
       await newDiscount.save();
       return { status: 200 };
     }

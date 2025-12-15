@@ -25,8 +25,8 @@ const Chart = (props: Props) => {
       const propertyId = "465712653";
       const analyticsData = await getWeeklyVisits(propertyId);
       const pageData = await getPageData(propertyId);
-      console.log("pageData", pageData);
-      console.log("analyticsData", analyticsData);
+      // console.log("pageData", pageData);
+      // console.log("analyticsData", analyticsData);
     };
 
     fetchData();

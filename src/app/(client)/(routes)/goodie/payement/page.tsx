@@ -130,7 +130,7 @@ const Page = ({}: payementProps) => {
       expeditionAdresse: data.expeditionAdresse,
       paymentMethod: payementMethod,
     };
-    console.log("here is the order data", orderData);
+    // console.log("here is the order data", orderData);
 
     myAxios
       .post("/order/create", orderData)
@@ -168,7 +168,7 @@ const Page = ({}: payementProps) => {
               style: { textAlign: "center" },
             },
           );
-          console.log(response.data.message);
+          // console.log(response.data.message);
         }
       })
       .catch((error: any) => {
@@ -181,7 +181,7 @@ const Page = ({}: payementProps) => {
             icon: "😕",
           },
         );
-        console.log(error);
+        // console.log(error);
       })
       .finally(() => {
         setIsSending(false);
@@ -201,18 +201,18 @@ const Page = ({}: payementProps) => {
       ? JSON.parse(localStorage.getItem("goodieWithDiscount")!!)
       : null;
 
-    console.log("storedGoodie", storedGoodies);
-    console.log("goodieWithDiscount", goodieWithDiscount);
+    // console.log("storedGoodie", storedGoodies);
+    // console.log("goodieWithDiscount", goodieWithDiscount);
     if (storedGoodies && goodieWithDiscount) {
       const updatedGoodies = storedGoodies.map((goodie: any) => {
         if (goodie._id == goodieWithDiscount._id) {
-          console.log("test", goodieWithDiscount.price);
+          // console.log("test", goodieWithDiscount.price);
 
           return { ...goodie, price: goodieWithDiscount.price };
         }
         return goodie;
       });
-      console.log("here is the goodie", updatedGoodies);
+      // console.log("here is the goodie", updatedGoodies);
       setGoodies(updatedGoodies);
     } else {
       setGoodies(storedGoodies);

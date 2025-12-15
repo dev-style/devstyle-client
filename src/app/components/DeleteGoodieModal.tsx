@@ -47,7 +47,7 @@ export const DeleteGoodieModal = ({
 
   const handleDelete = async() => {
     // mutate(goodieId);
-    console.log("test");
+    // console.log("test");
 
     try{
         await deleteGoodie(goodieId)

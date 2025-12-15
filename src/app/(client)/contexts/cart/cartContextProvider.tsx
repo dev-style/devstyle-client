@@ -32,12 +32,10 @@ const cartReducer = (state: State, action: Action) => {
       }
 
       localStorage.setItem("devStyle_cart", JSON.stringify(copyCart));
-      console.log(
-        toast.info(<div style={{ color: "#fff" }}> Dans le panier</div>, {
-          icon: "🗑️",
-          style: { textAlign: "center" },
-        })
-      );
+      toast.info(<div style={{ color: "#fff" }}> Dans le panier</div>, {
+        icon: "🗑️",
+        style: { textAlign: "center" },
+      })
 
       return { cartContent: copyCart, cartDispatch: state.cartDispatch };
     }

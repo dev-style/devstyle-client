@@ -42,11 +42,11 @@ const TransactionsDashboard: React.FC = () => {
         const salesVsOrders = await fetchSalesVsOrders();
         const topSellingGoodies = await fetchTopSellingGoodies();
         const goodiesByCollection = await fetchGoodiesByCollection();
-        console.log("monthlySales", monthlySales);
-        console.log("monthlyOrderStats", monthlyOrderStats);
-        console.log("salesVsOrders", salesVsOrders);
-        console.log("topSellingGoodies", topSellingGoodies);
-        console.log("goodiesByCollection", goodiesByCollection);
+        // console.log("monthlySales", monthlySales);
+        // console.log("monthlyOrderStats", monthlyOrderStats);
+        // console.log("salesVsOrders", salesVsOrders);
+        // console.log("topSellingGoodies", topSellingGoodies);
+        // console.log("goodiesByCollection", goodiesByCollection);
         setSalesData(monthlySales as any);
         setOrderData(monthlyOrderStats as any);
         setSalesVsOrdersData(salesVsOrders as any);

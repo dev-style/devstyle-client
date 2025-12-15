@@ -43,7 +43,7 @@ const OrdersPageContent = () => {
         const q = searchParams?.get("q") || "";
         const page = parseInt(searchParams?.get("page") || "1", 10);
         const { count, orders: fetchedOrders } = await fetchOrders(q, page);
-        console.log("orders", fetchOrders);
+        // console.log("orders", fetchOrders);
         const formattedOrders: Order[] = fetchedOrders.map((order:any) => ({
           id: (order._id as ObjectId).toString(),
           name: order.name,
@@ -61,7 +61,7 @@ const OrdersPageContent = () => {
           expeditionAdresse: order.expeditionAdresse,
           paymentMethod: order.paymentMethod,
         }));
-        console.log("Formatted Orders:", formattedOrders);
+        // console.log("Formatted Orders:", formattedOrders);
         setOrders(formattedOrders);
         setCount(count);
       } catch (error) {
@@ -101,7 +101,7 @@ const OrdersPageContent = () => {
       }));
 
       setOrders(formattedOrders);
-      console.log("Updated Orders:", formattedOrders);
+      // console.log("Updated Orders:", formattedOrders);
       setCount(count);
     } catch (error) {
       console.error("Failed to update order status:", error);
@@ -128,7 +128,7 @@ const OrdersPageContent = () => {
   };
 
 
-  console.log("Rendering orders:", orders);
+  // console.log("Rendering orders:", orders);
 
   return (
     <div className="bg-[var(--bgSoft)] p-5 rounded-lg mt-5">

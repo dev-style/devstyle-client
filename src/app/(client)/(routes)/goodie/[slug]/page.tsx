@@ -76,7 +76,7 @@ const Goodie = (props: any) => {
   };
 
   const handleQuantityChange = (newQty: number) => {
-    console.log("here is the new quantity", newQty);
+    // console.log("here is the new quantity", newQty);
     if (newQty >= 0) {
       setGoodie({ ...goodie, quantity: newQty } as IGoodie);
     }
@@ -106,7 +106,7 @@ const Goodie = (props: any) => {
     myAxios
       .get("/goodie/" + props.slug)
       .then((response) => {
-        console.log("Le goodieee", response.data);
+        // console.log("Le goodieee", response.data);
         if (response.status === 200) {
           const goodieWithDiscount = localStorage.getItem("goodieWithDiscount")
             ? JSON.parse(localStorage.getItem("goodieWithDiscount")!!)
@@ -115,7 +115,7 @@ const Goodie = (props: any) => {
             goodieWithDiscount &&
             goodieWithDiscount._id == response.data.message._id
           ) {
-            console.log("goodie with discount", goodieWithDiscount);
+            // console.log("goodie with discount", goodieWithDiscount);
             setGoodie(goodieWithDiscount);
           } else {
             const sizes = response.data.message.sizes ?? [];
@@ -155,14 +155,16 @@ const Goodie = (props: any) => {
             .get(`/discount/${response.data.message._id}`)
             .then((response) => {
               if (response.status === 200) {
-                console.log("discount response", response.data.message);
-                console.log("goodies", goodie);
+                // console.log("discount response", response.data.message);
+                // console.log("goodies", goodie);
                 setDiscounts(response.data.message);
               } else {
-                // console.log(response.data.message);
+                // // console.log(response.data.message);
               }
             })
-            .catch((error) => console.log("error", error));
+            .catch((error) => {
+              // console.log("error", error)
+              });
 
           myAxios
             .get(
@@ -173,14 +175,16 @@ const Goodie = (props: any) => {
                 setSomeCollectionGoodies([...response.data.message]);
                 setIsLoadingSomeCollectionGoodies(false);
               } else {
-                // console.log(response.data.message);
+                // // console.log(response.data.message);
                 setSomeCollectionGoodies([]);
                 setIsLoadingSomeCollectionGoodies(false);
               }
             })
-            .catch((error) => console.log("error", error));
+            .catch((error) => {
+              // console.log("error", error)
+            });
         } else {
-          console.log(response.data.message);
+          // console.log(response.data.message);
           setIsLoadingGoodie(false);
         }
       })
@@ -189,7 +193,7 @@ const Goodie = (props: any) => {
           icon: "🌐",
           style: { textAlign: "center" },
         });
-        console.log(error);
+        // console.log(error);
       });
 
     // Fetch user's country
@@ -198,7 +202,7 @@ const Goodie = (props: any) => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("country location", data);
+        // console.log("country location", data);
         setUserCountry(data.country_name);
       })
       .catch((error) => {
@@ -212,12 +216,14 @@ const Goodie = (props: any) => {
       .put("/goodie/update/views/" + props.slug)
       .then((response) => {
         if (response.status === 200) {
-          // console.log(response.data.message);
+          // // console.log(response.data.message);
         } else {
-          // console.log(response.data.message);
+          // // console.log(response.data.message);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        // console.log(error)
+      });
   }, [props.slug]);
 
   const generateCartDescription = () => {
@@ -240,7 +246,7 @@ const Goodie = (props: any) => {
 *PromoPercent:* ${goodie?.inPromo ? goodie?.promoPercentage : "none"} ;    
 `;
 
-      console.log("test message", text);
+      // console.log("test message", text);
 
       return encodeURIComponent(text);
     }
@@ -278,14 +284,14 @@ const Goodie = (props: any) => {
       .put("/goodie/update/likes/" + props.slug)
       .then((response) => {
         if (response.status === 200) {
-          // console.log(response.data.message);
+          // // console.log(response.data.message);
           setIsLiking(false);
           setHasLiked(true);
           setGoodie((g) => ({ ...g, likes: (g?.likes ?? 0) + 1 } as IGoodie));
         } else {
           setIsLiking(false);
           setHasLiked(false);
-          // console.log(response.data.message);
+          // // console.log(response.data.message);
         }
       })
       .catch((error) => {
@@ -293,7 +299,7 @@ const Goodie = (props: any) => {
           icon: "🌐",
           style: { textAlign: "center" },
         });
-        console.log(error);
+        // console.log(error);
       });
   };
 
@@ -330,7 +336,7 @@ const Goodie = (props: any) => {
     },
   ];
 
-  console.log(goodies);
+  // console.log(goodies);
 
   const handleOrderClick = () => {
     // setModalOpen(true);
@@ -344,7 +350,7 @@ const Goodie = (props: any) => {
   };
 
   const changeDiscountValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("discount data i pass", e.target.value);
+    // console.log("discount data i pass", e.target.value);
     const discount = Number(e.target.value);
     setDiscountValue(discount);
   };
@@ -355,7 +361,7 @@ const Goodie = (props: any) => {
         data: { discountValue: discountValue, goodieId: goodie?._id },
       })
       .then((response) => {
-        console.log("response data", response);
+        // console.log("response data", response);
         if (response.status === 200) {
           // setIsLoadingGoodie(true)
 
@@ -363,7 +369,7 @@ const Goodie = (props: any) => {
           const discountPrice =
             Number(goodie?.price) -
             (Number(goodie?.price) * discount.percent) / 100;
-          console.log("response message discount", goodie);
+          // console.log("response message discount", goodie);
           setGoodie({ ...goodie, price: discountPrice } as IGoodie);
           const newGoodie = { ...goodie, price: discountPrice };
 
@@ -390,7 +396,7 @@ const Goodie = (props: any) => {
           },
         );
 
-        console.log(error);
+        // console.log(error);
       });
   };
 

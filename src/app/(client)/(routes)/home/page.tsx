@@ -25,7 +25,7 @@ import "./style.scss";
 // import { analyticsEventTracker } from "../app";
 
 const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
-  console.log("searchParam", searchParams?.affiliate);
+  // console.log("searchParam", searchParams?.affiliate);
 
   // const [updateClickCount, { isLoading, isSuccess, error }] =
   //   useUpdateClickCountMutation();
@@ -38,7 +38,7 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
   //     } else {
   //       localStorage.setItem("affiliate", searchParams.affiliate);
 
-  //       console.log("testes");
+  //       // console.log("testes");
   //       const fetchUpdateClickCount = async () => {
   //         await updateClickCount({ affiliate: searchParams?.affiliate });
   //       };
@@ -126,7 +126,7 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
         document?.querySelector(hash)?.scrollIntoView(true);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }, []);
 
@@ -135,15 +135,17 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
       .get("/collection/all")
       .then((response) => {
         if (response.status === 200) {
-          console.log("response.data.message", response.data.message);
+          // console.log("response.data.message", response.data.message);
 
           setCollections(response.data.message);
         } else {
-          console.log(response.data.message);
+          // console.log(response.data.message);
           setCollections([]);
         }
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        // console.log(error)
+    })
       .finally(() => setIsLoadingCollections(false));
   }, []);
 
@@ -152,14 +154,16 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
       .get("/goodies/hot-goodies")
       .then((response) => {
         if (response.status === 200) {
-          console.log("response.data.message", response.data.message);
+          // console.log("response.data.message", response.data.message);
 
           setTrendingGoodies(response.data.message);
         } else {
           setTrendingGoodies([]);
         }
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        // console.log(error)
+    })
       .finally(() => setIsLoadingTrendingGoodies(false));
   }, []);
 
@@ -168,16 +172,18 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
       .get("/goodies/new-goodies")
       .then((response) => {
         if (response.status === 200) {
-          console.log("response.data.message", response.data.message);
+          // console.log("response.data.message", response.data.message);
 
           setNewGoodies(response.data.message);
-          console.log("Voici les nouveaux goodie", response.data.message);
+          // console.log("Voici les nouveaux goodie", response.data.message);
         } else {
-          console.log("Voici les nouveaux goodie", response.data.message);
+          // console.log("Voici les nouveaux goodie", response.data.message);
           setNewGoodies([]);
         }
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        // console.log(error)
+      })
       .finally(() => setIsLoadingNewGoodies(false));
   }, []);
 
@@ -190,13 +196,15 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
             ...prevState,
             ...response.data.message,
           ]);
-          console.log("hero",response.data.message);
+          // console.log("hero",response.data.message);
         } else {
-          console.log("hero",response.data.message);
+          // console.log("hero",response.data.message);
           setHeroSection((prevState) => [...prevState]);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        // console.log(error)
+        });
     // .finally(() => setIsLoadingHeroSection(false));
   }, []);
 
@@ -223,7 +231,7 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
         scrollToTop();
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }, []);
 

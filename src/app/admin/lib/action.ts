@@ -14,7 +14,7 @@ export const addCollection = async (formData: FormData) => {
   const { title, slug, colors, show, views, image, etsy } =
     Object.fromEntries(formData);
 
-  console.log(
+  // console.log(
     "title,slug,colors,show,views,image,etsy",
     title,
     slug,

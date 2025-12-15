@@ -38,12 +38,13 @@ const Footer = () => {
                 //         ?.scrollIntoView(true);
                 //     }
                 //   } catch (error) {
-                //     console.log(error);
+                //     // console.log(error);
                 //   }
                 // }}
                 >
                   Nos Collections
                 </Link>
+                <Link href="/collection/all-goodies">Tous nos Goodies</Link>
                 <Link href="/about-us">Qui sommes-Nous ??</Link>
                 {/* <Link href="/our-ambassadors">Nos Ambassadeurs</Link> */}
               </Box>

@@ -16,8 +16,8 @@ const LoginForm = () => {
     const password = formData.get("password") as string;
 
     try {
-      console.log("username",username)
-      console.log("password",password)
+      // console.log("username",username)
+      // console.log("password",password)
       const result = await signIn("credentials", {
         username,
         password,

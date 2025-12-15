@@ -23,11 +23,13 @@ function AmbassadorsListing() {
         if (response.status === 200) {
           setAmbassadors(response.data.message);
         } else {
-          console.log(response.data.message);
+          // console.log(response.data.message);
           setAmbassadors([]);
         }
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        // console.log(error)
+      })
       .finally(() => setIsLoadingAmbassadors(false));
   }, []);
   return (

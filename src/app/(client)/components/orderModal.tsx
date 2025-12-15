@@ -53,7 +53,7 @@ const OrderModal = ({
 
   const match500 = useMediaQuery("(max-width:500px)");
 
-  // console.log("L'order data dans orderModal", orderData);
+  // // console.log("L'order data dans orderModal", orderData);
 
   const contact = () => {
     const msg = message ? message() : "";
@@ -97,7 +97,7 @@ const OrderModal = ({
 
   const onSubmit: SubmitHandler<IOrderFormSchema> = (data) => {
     setIsSending(true);
-    console.log("message description", message && message());
+    // console.log("message description", message && message());
     
     const orderData: IOrderData | null = {
       goodies: goodie,
@@ -129,7 +129,7 @@ const OrderModal = ({
           );
           contact()
 
-          // console.log(response.data.message);
+          // // console.log(response.data.message);
         } else {
           toast.error(
             <div style={{ color: "#fff" }}>Une erreur est survenu</div>,
@@ -137,7 +137,7 @@ const OrderModal = ({
               style: { textAlign: "center" },
             }
           );
-          console.log(response.data.message);
+          // console.log(response.data.message);
         }
       })
       .catch((error: any) => {
@@ -150,14 +150,14 @@ const OrderModal = ({
             icon: "😕",
           }
         );
-        console.log(error);
+        // console.log(error);
       })
       .finally(() => {
         setIsSending(false);
         handleClose();
       });
 
-    // console.log("Voici les donnees de la commande ", orderData);
+    // // console.log("Voici les donnees de la commande ", orderData);
   };
 
   return (

@@ -61,7 +61,7 @@ export const uploadToCloudinary = (
 
 export const deleteImageFromCloudinary = (public_id: string) => {
   return new Promise((resolve, reject) => {
-    console.log("publicId", public_id);
+    // console.log("publicId", public_id);
     cloudinary.v2.uploader.destroy(public_id, (error, result) => {
       if (error) {
         reject(error);

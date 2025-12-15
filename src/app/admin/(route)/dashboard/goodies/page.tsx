@@ -28,13 +28,13 @@ const GoodiesPage = ({ searchParams }: any) => {
       const { count, goodies } = await fetchGoodies(q, page);
       setGoodies(goodies);
       setCount(count);
-      console.log("all goodies", goodies);
+      // console.log("all goodies", goodies);
     };
     fetchGoodiesFeature();
   }, []);
 
   const handleDeleteGoodie = (goodieId: string) => {
-    console.log("goodieId", goodieId);
+    // console.log("goodieId", goodieId);
     setModal(true);
     setGoodieId(goodieId);
   };

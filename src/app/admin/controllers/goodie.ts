@@ -46,10 +46,10 @@ export const fetchGoodie = async (id: string) => {
       })
       .lean();
     if (!goodie) {
-      console.log("Goodie not found");
+      // console.log("Goodie not found");
       return null;
     }
-    // console.log("Goodie found:", goodie);
+    // // console.log("Goodie found:", goodie);
     return { goodie };
   } catch (error) {
     console.error("Error fetching goodie:", error);
@@ -58,7 +58,7 @@ export const fetchGoodie = async (id: string) => {
 };
 
 export const fetchGoodies = async (q: string, page: number) => {
-  console.log("Query:", q);
+  // console.log("Query:", q);
   const regex = new RegExp(q, "i");
 
   const ITEM_PER_PAGE = 15;
@@ -84,11 +84,11 @@ export const fetchGoodies = async (q: string, page: number) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    console.log("Number of goodies found:", count);
-    console.log("First goodie:", goodies[0]);
+    // console.log("Number of goodies found:", count);
+    // console.log("First goodie:", goodies[0]);
 
     if (!goodies || goodies.length === 0) {
-      console.log("No goodies found");
+      // console.log("No goodies found");
       return { count: 0, goodies: [] };
     }
 
@@ -104,7 +104,7 @@ export const fetchGoodies = async (q: string, page: number) => {
 };
 
 export const updateGoodie = async (id: string, data: any) => {
-  console.log("goodie data to be updated", id, data);
+  // console.log("goodie data to be updated", id, data);
 
   try {
     await connectToDB();
@@ -130,7 +130,7 @@ export const updateGoodie = async (id: string, data: any) => {
 
     const uploadedImages: { public_id: string; url: string }[] = [];
     if (data.images) {
-      console.log("images exist:", data.images);
+      // console.log("images exist:", data.images);
       uploadPromises.push(
         ...data.images.map((image: any) => {
           if (typeof image === "string" && image.startsWith("data:image")) {
@@ -149,8 +149,8 @@ export const updateGoodie = async (id: string, data: any) => {
     // Wait for all uploads to complete
     await Promise.all(uploadPromises);
 
-    console.log("mainImageResult", uploadedMainImage);
-    console.log("uploadedImages", uploadedImages);
+    // console.log("mainImageResult", uploadedMainImage);
+    // console.log("uploadedImages", uploadedImages);
 
     // Generate unique slug
     // const collection = await CollectionModel.findById(data.fromCollection);
@@ -181,7 +181,7 @@ export const updateGoodie = async (id: string, data: any) => {
         : {}),
     });
 
-    console.log("Goodie updated successfully:", updateGoodie);
+    // console.log("Goodie updated successfully:", updateGoodie);
   } catch (err) {
     if (err instanceof Error) {
       throw new Error(`Failed to edit goodies: ${err.message}`);
@@ -217,7 +217,7 @@ export const addGoodie = async (data: GoodieDataForDB) => {
     etsy,
   } = data;
 
-  console.log(
+  // console.log(
     "Données du goodie à envoyer (avec objets image déjà uploadés):",
     {
       name,
@@ -298,7 +298,7 @@ export const deleteGoodie = async (id: string) => {
     // const { mainImage, images } = deletedGoodie;
     // const deletionPromises = [mainImage, ...images].map(async (image) => {
     //   const public_id = image.url.split("/").pop().split(".")[0];
-    //   // console.log("publicId", public_id);
+    //   // // console.log("publicId", public_id);
     //   await deleteFromCloudinary(public_id);
     // });
 
@@ -337,10 +337,10 @@ export async function getGoodiesWithoutDiscount() {
       .sort({ createdAt: -1 })
       .lean();
 
-    console.log(" all goodeis:", goodies);
+    // console.log(" all goodeis:", goodies);
 
     if (!goodies || goodies.length === 0) {
-      console.log("No goodies found");
+      // console.log("No goodies found");
       return { count: 0, goodies: [] };
     }
 
