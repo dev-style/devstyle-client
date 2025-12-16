@@ -51,7 +51,7 @@ export const fetchGoodie = async (id: string) => {
     }
     // // console.log("Goodie found:", goodie);
     return { goodie };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching goodie:", error);
     throw new Error(`Failed to fetch goodie: ${error.message}`);
   }
@@ -218,25 +218,25 @@ export const addGoodie = async (data: GoodieDataForDB) => {
   } = data;
 
   // console.log(
-    "Données du goodie à envoyer (avec objets image déjà uploadés):",
-    {
-      name,
-      description,
-      fromCollection,
-      price,
-      inPromo,
-      promoPercentage,
-      sizes,
-      availableColors,
-      backgroundColors,
-      show,
-      views,
-      likes,
-      etsy,
-      mainImage,
-      images, // Ces logs montreront maintenant les objets image
-    },
-  );
+  //   "Données du goodie à envoyer (avec objets image déjà uploadés):",
+  //   {
+  //     name,
+  //     description,
+  //     fromCollection,
+  //     price,
+  //     inPromo,
+  //     promoPercentage,
+  //     sizes,
+  //     availableColors,
+  //     backgroundColors,
+  //     show,
+  //     views,
+  //     likes,
+  //     etsy,
+  //     mainImage,
+  //     images, // Ces logs montreront maintenant les objets image
+  //   },
+  // );
 
   try {
     await connectToDB();
