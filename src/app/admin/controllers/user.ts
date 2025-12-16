@@ -5,7 +5,7 @@ import { IUser } from "../lib/interfaces";
 import { connectToDB } from "../lib/utils";
 import UserModel from "../models/user";
 import { redirect } from "next/navigation";
-import uploadToCloudinary from "../lib/cloudinaryConfig";
+import {uploadToCloudinary} from "../lib/cloudinaryConfig";
 import bcrypt from "bcrypt";
 import { signIn } from "next-auth/react";
 
@@ -35,16 +35,16 @@ export const addUser = async (user: IUser) => {
     user;
 
   // console.log(
-    "username , email , password , avatar , role , isActive , phone , address",
-    username,
-    email,
-    password,
-    avatar,
-    role,
-    isActive,
-    phone,
-    address
-  );
+  //   "username , email , password , avatar , role , isActive , phone , address",
+  //   username,
+  //   email,
+  //   password,
+  //   avatar,
+  //   role,
+  //   isActive,
+  //   phone,
+  //   address
+  // );
 
   try {
     await connectToDB();
@@ -55,7 +55,7 @@ export const addUser = async (user: IUser) => {
 
     let uploadedImage = { public_id: "", url: "" };
     if (avatar) {
-      const imageResult = await uploadToCloudinary(avatar, "DevStyle/Avatar");
+      const imageResult: any = await uploadToCloudinary(avatar, "DevStyle/Avatar");
       uploadedImage = {
         public_id: imageResult.public_id,
         url: imageResult.secure_url,

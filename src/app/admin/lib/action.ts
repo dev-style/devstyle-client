@@ -6,7 +6,7 @@ import { connectToDB } from "./utils";
 import GoodieModel from "../models/goodie";
 import CollectionModel from "../models/collection";
 import { ICloudinaryUploadResponse } from "./interfaces";
-import uploadToCloudinary from "./cloudinaryConfig";
+import {uploadToCloudinary} from "./cloudinaryConfig";
 import OrderModel from "../models/order";
 
 
@@ -15,22 +15,22 @@ export const addCollection = async (formData: FormData) => {
     Object.fromEntries(formData);
 
   // console.log(
-    "title,slug,colors,show,views,image,etsy",
-    title,
-    slug,
-    colors,
-    show,
-    views,
-    image,
-    etsy
-  );
+  //   "title,slug,colors,show,views,image,etsy",
+  //   title,
+  //   slug,
+  //   colors,
+  //   show,
+  //   views,
+  //   image,
+  //   etsy
+  // );
 
   try {
     await connectToDB();
 
     let uploadedImage = { public_id: "", url: "" };
     if (image) {
-      const imageResult = await uploadToCloudinary(
+      const imageResult: any = await uploadToCloudinary(
         image,
         "DevStyle/Collections"
       );
