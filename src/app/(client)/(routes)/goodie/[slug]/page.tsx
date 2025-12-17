@@ -323,16 +323,17 @@ const Goodie = (props: any) => {
     }
   }, [isCopied]);
 
-  const propertiesToSelect = ["name", "price", "quantity", "total"];
-
   const goodies = [
     {
       name: goodie?.name,
       price: goodie?.price,
       quantity: goodie?.quantity,
       total: goodie?.inPromo? calculatePromoPrice(goodie?.price, goodie?.promoPercentage) * goodie?.quantity : (goodie?.price || 0) * (goodie?.quantity || 0),
-      image: goodie?.mainImage,
+      image: goodie?.mainImage.url,
       _id: goodie?._id,
+      size: goodie?.sizes.find(({size}: {size: string}) => size === goodie?.selectedSize)?._id,
+      sizeName: goodie?.selectedSize,
+      color: goodie?.selectedColor,
       inPromo: goodie?.inPromo,
       promoPercentage: goodie?.promoPercentage,
     },
