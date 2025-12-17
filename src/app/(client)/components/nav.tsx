@@ -78,7 +78,7 @@ const Nav = () => {
     .get("/goodie/all")
     .then((response) => {
       if (response.status === 200) {
-        
+        console.log(response.data.message)
         setGoodies(response.data.message)
        
       } else {
@@ -275,7 +275,7 @@ const Nav = () => {
             }}
           >
             <Typography className="notif" component={"span"}>
-              {match400 && <Box className="title">Annonce</Box>}
+              {match400 && <Box className="title">🚨EXCLUSIF</Box>}
               <Typography className="text">{announce.text}</Typography>
               {announce.link && (
                 <Box className="icon">
@@ -347,9 +347,19 @@ const Nav = () => {
               color: theme.palette.common.black,
             }}
           >
-            Shop
+            Nos Collections
           </Link>
           <Link
+            href={"/collection/all-goodies"}
+            onClick={() => handleDownNav()}
+            style={{
+              padding: `0px ${theme.spacing(2)}`,
+              color: theme.palette.common.black,
+            }}
+          >
+            Tous nos Goodies
+          </Link>
+          {/* <Link
             href={"/our-ambassadors"}
             onClick={() => handleDownNav()}
             style={{
@@ -358,7 +368,7 @@ const Nav = () => {
             }}
           >
             Nos Ambassadeurs
-          </Link>
+          </Link> */}
           <Link
             href={"/about-us"}
             onClick={() => handleDownNav()}

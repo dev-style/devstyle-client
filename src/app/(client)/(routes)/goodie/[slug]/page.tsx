@@ -330,9 +330,11 @@ const Goodie = (props: any) => {
       name: goodie?.name,
       price: goodie?.price,
       quantity: goodie?.quantity,
-      total: goodie ? (goodie.price || 0) * (goodie?.quantity || 0) : 0,
+      total: goodie?.inPromo? calculatePromoPrice(goodie?.price, goodie?.promoPercentage) * goodie?.quantity : (goodie?.price || 0) * (goodie?.quantity || 0),
       image: goodie?.mainImage,
       _id: goodie?._id,
+      inPromo: goodie?.inPromo,
+      promoPercentage: goodie?.promoPercentage,
     },
   ];
 
@@ -612,9 +614,12 @@ const Goodie = (props: any) => {
                       size="small"
                       type={"number"}
                       style={{
-                        width: "100px b ",
+                        width: "64px",
                         height: "48px",
                         textAlign: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                       value={goodie?.quantity}
                       onChange={(e) =>

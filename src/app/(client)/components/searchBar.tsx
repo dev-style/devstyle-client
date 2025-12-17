@@ -47,7 +47,7 @@ const SearchBar = ({ goodies }: any) => {
 
           }
           )
-          .map((goodie: IGoodie) => goodie.name) || [];
+          .map((goodie: IGoodie & { slug: string }) => [<p>{goodie.name}  <span style={{ color: "#777" }}> — {goodie.slug.split("-")[0].toUpperCase()}</span></p>, goodie.name]) || [];
 
 
 
@@ -180,9 +180,9 @@ const SearchBar = ({ goodies }: any) => {
                   <ListItem
                     key={index}
                     button
-                    onClick={() => handleSuggestionClick(suggestion)}
+                    onClick={() => handleSuggestionClick(suggestion[1])}
                   >
-                    <ListItemText primary={suggestion} />
+                    <ListItemText primary={suggestion[0]} />
                   </ListItem>
                 ))}
               </List>
