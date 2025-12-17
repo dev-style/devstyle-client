@@ -78,7 +78,6 @@ const Nav = () => {
     .get("/goodie/all")
     .then((response) => {
       if (response.status === 200) {
-        console.log(response.data.message)
         setGoodies(response.data.message)
        
       } else {
