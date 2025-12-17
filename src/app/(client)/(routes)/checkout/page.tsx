@@ -236,13 +236,18 @@ const Checkout = () => {
     "size",
     "sizeName",
     "color",
+    "inPromo",
+    "promoPercentage",
   ];
   // // console.log("here is the cartContent", cartContent);
   const goodies = Object.values(cartContent).map(
     (child: Record<string, any>) => {
       const selectedProperty: Record<string, string | number> = {};
 
-      const total = child.price * child.quantity;
+      const total = child.inPromo
+        ? calculatePromoPrice(child.price, child.promoPercentage) *
+          child.quantity
+        : child.price * child.quantity;
 
       propertiesToSelect.forEach((property) => {
         selectedProperty["total"] = total;

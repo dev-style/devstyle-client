@@ -29,6 +29,9 @@ import { useRouter } from "next/navigation";
 import SuccessPaymentModal from "@/app/(client)/components/SuccessPaymentModal";
 import Image from "next/image";
 import CartContext from "@/app/(client)/contexts/cart/cartContext";
+import {
+  calculatePromoPrice,
+} from "@/app/(client)/lib/utils-script";
 
 interface payementProps {}
 const Page = ({}: payementProps) => {
@@ -43,6 +46,8 @@ const Page = ({}: payementProps) => {
       sizeName?: string;
       size?: string;
       color?: string;
+      inPromo?: boolean;
+      promoPercentage?: number;
     }[]
   >([]);
   const [message, setMessage] = useState<string>("");
@@ -50,6 +55,7 @@ const Page = ({}: payementProps) => {
   const [locationChecked, setLocationChecked] = useState<boolean>(false);
   const [openSuccessModal, setOpenSuccessModal] = useState<boolean>(false);
   const { cartDispatch, cartContent } = useContext(CartContext);
+  const match700 = useMediaQuery("(max-width:700px)");
 
   const [isSending, setIsSending] = useState(false);
 
@@ -74,7 +80,6 @@ const Page = ({}: payementProps) => {
     resolver: zodResolver(schema),
   });
 
-  // const match1000 = useMediaQuery()
 
   const contact = () => {
     const msg = message ? message : "";
@@ -189,8 +194,6 @@ const Page = ({}: payementProps) => {
       });
   };
 
-  const match700 = useMediaQuery("max-width:700px");
-
   useEffect(() => {
     const storedGoodies = localStorage.getItem("goodiesData")
       ? JSON.parse(localStorage.getItem("goodiesData")!!)
@@ -215,7 +218,14 @@ const Page = ({}: payementProps) => {
       // console.log("here is the goodie", updatedGoodies);
       setGoodies(updatedGoodies);
     } else {
-      setGoodies(storedGoodies);
+      const updatedGoodies = storedGoodies.map((goodie: any) => {
+        if (goodie.inPromo) {
+          return { ...goodie, price: calculatePromoPrice(goodie.price, goodie.promoPercentage) };
+        } else {
+          return goodie;
+        }
+      });
+      setGoodies(updatedGoodies);
     }
     if (storedMessage) {
       setMessage(JSON.parse(storedMessage));
@@ -558,7 +568,8 @@ const Page = ({}: payementProps) => {
                               </h1>
                               <span className="text-base font-normal ">
                                 Paiement uniquement a la livraison de votre
-                                commande ( non valable dans certaines villes )
+                                commande 
+                                {/* ( non valable dans certaines villes ) */}
                               </span>
                             </div>
                           </div>
@@ -692,7 +703,9 @@ const Page = ({}: payementProps) => {
                 })}
               </div>
 
-              <div className=" p-4 flex justify-center items-center  text-base border-t-2 border-[#220f00]/3">
+              <div className=" p-4 text-center text-base border-t-2 border-[#220f00]/3">
+              <span className="text-gray-400" style={{fontSize: "12px"}}>Certaines commandes peuvent nécessiter un prépaiement. Veuillez consulter notre</span>
+              <br/>
                 <button
                   type="button"
                   onClick={() => setIsPolicyModalOpen(true)}

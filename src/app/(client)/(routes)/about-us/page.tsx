@@ -248,13 +248,13 @@ const About = () => {
               </q>
               <br />
               <br />
-              📌 Ensuite, DevStyle vise à construire{" "}
+              Ensuite, DevStyle vise à construire{" "}
               <b>
                 une communauté Techx solidaire, dynamique et fun partageant la
                 même passion pour la technologie que vous, et par-dessus tout,
-                nous visons à établir un écosystème dynamique pour les Techx
+                nous visons à établir un écosystème dynamique pour les Techx. (Our North Star📌)
               </b>
-              , en mettant en œuvre les objectifs suivants:
+              {/* , en mettant en œuvre les objectifs suivants:
               <br />
               <br />
               <span
@@ -301,6 +301,8 @@ const About = () => {
               Prix prestigieux et, bien sûr, tout en s'amusant😉. En bonus,
               attendez de voir notre concept " Scavenger Hunt "👾 !
               <br />
+              <br /> */}
+              <br />
               <br />
               <span
                 style={{
@@ -309,7 +311,7 @@ const About = () => {
                   padding: "10px",
                 }}
               >
-                Bien plus à venir…⌛
+                Vous decouvrirez nos differents concepts à venir très bientôt...⌛
               </span>
               <br />
               <br />
@@ -430,7 +432,7 @@ const About = () => {
               </Grid>
             </Grid>
             <br />
-            <br />
+            {/* <br />
             Rejoignez notre communauté{" "}
             <a
               href="https://discord.gg/Hgq6UZH5"
@@ -442,11 +444,14 @@ const About = () => {
             >
               Discord DevStyle
             </a>{" "}
-            et échangez avec l'équipe et de nombreuses autres personnes qui
-            partagent la même passion à un niveau personnel. Et surtout,
+            et échangez avec l'équipe et de nombreuses autres personnes qui 
+            partagent la même passion à un niveau personnel.*/} Pour ne rien rater de nos actualités,
             n'oubliez pas de suivre nos comptes{" "}
             <a
               target="_blank"
+              style ={{
+                color: "#0070b6ff",
+              }}
               //   onClick={() => {
               //     // analyticsEventTracker("SOCIAL")("twitter");
               //   }}
@@ -458,6 +463,9 @@ const About = () => {
             ,{" "}
             <a
               target="_blank"
+              style ={{
+                color: "#0070b6ff",
+              }}
               //   onClick={() => {
               //     // analyticsEventTracker("SOCIAL")("linkedin");
               //   }}
@@ -469,6 +477,9 @@ const About = () => {
             ,{" "}
             <a
               target="_blank"
+              style ={{
+                color: "#0070b6ff",
+              }}
               rel="noopener noreferrer"
               // onClick = {() => {
               //   // analyticsEventTracker("SOCIAL")("tiktok");
@@ -480,6 +491,9 @@ const About = () => {
             ,{" "}
             <a
               target="_blank"
+              style ={{
+                color: "#0070b6ff",
+              }}
               //   onClick={() => {
               //     // analyticsEventTracker("SOCIAL")("instagram");
               //   }}
@@ -491,6 +505,9 @@ const About = () => {
             et{" "}
             <a
               target="_blank"
+              style ={{
+                color: "#0070b6ff",
+              }}
               //   onClick={() => {
               //     // analyticsEventTracker("SOCIAL")("facebook");
               //   }}
