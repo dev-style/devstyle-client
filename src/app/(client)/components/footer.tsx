@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ListPartners } from "./componentActions";
 
 import "./footer.scss";
-// import { analyticsEventTracker } from "../app";
+import { analyticsEventTracker } from "@/app/(client)/lib/google-analytics";
 
 const Footer = () => {
   return (
@@ -59,9 +59,9 @@ const Footer = () => {
                 <Box marginBottom={2} display={"flex"}>
                   <a
                     target="_blank"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("SOCIAL")("twitter");
-                    // }}
+                    onClick={() => {
+                      analyticsEventTracker("SOCIAL")("twitter");
+                    }}
                     rel="noopener noreferrer"
                     href="https://twitter.com/_devstyle"
                   >
@@ -75,9 +75,9 @@ const Footer = () => {
                   &nbsp; &nbsp;
                   <a
                     target="_blank"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("SOCIAL")("twitter");
-                    // }}
+                    onClick={() => {
+                      analyticsEventTracker("SOCIAL")("linkedin");
+                    }}
                     rel="noopener noreferrer"
                     href="https://www.linkedin.com/company/devstyle"
                   >
@@ -91,9 +91,9 @@ const Footer = () => {
                   &nbsp; &nbsp;
                   <a
                     target="_blank"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("SOCIAL")("whatsapp");
-                    // }}
+                    onClick={() => {
+                      analyticsEventTracker("SOCIAL")("whatsapp");
+                    }}
                     rel="noopener noreferrer"
                     href="https://api.whatsapp.com/send/?phone=237654017521&text=Hello _DevStyle"
                   >
@@ -107,9 +107,9 @@ const Footer = () => {
                   &nbsp; &nbsp;
                   <a
                     target="_blank"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("SOCIAL")("facebook");
-                    // }}
+                    onClick={() => {
+                      analyticsEventTracker("SOCIAL")("facebook");
+                    }}
                     rel="noopener noreferrer"
                     href="https://www.facebook.com/devstyl"
                   >
@@ -123,9 +123,9 @@ const Footer = () => {
                   &nbsp; &nbsp;
                   <a
                     target="_blank"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("SOCIAL")("instagram");
-                    // }}
+                    onClick={() => {
+                      analyticsEventTracker("SOCIAL")("instagram");
+                    }}
                     rel="noopener noreferrer"
                     href="https://www.instagram.com/_devstyle/"
                   >
@@ -139,9 +139,9 @@ const Footer = () => {
                   &nbsp; &nbsp;
                   <a
                     target="_blank"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("SOCIAL")("tiktok");
-                    // }}
+                    onClick={() => {
+                      analyticsEventTracker("SOCIAL")("tiktok");
+                    }}
                     rel="noopener noreferrer"
                     href="https://www.tiktok.com/@_devstyle"
                   >
@@ -169,16 +169,16 @@ const Footer = () => {
                   <Box>
                     <a
                       href="tel:+237654017521"
-                    // onClick={() => {
-                    //   // analyticsEventTracker("CONTACT")("Orange Number");
-                    // }}
+                    onClick={() => {
+                      analyticsEventTracker("CONTACT")("MTN Number");
+                    }}
                     >
                       (+237) 654 017 521
                     </a>
                     {/* <a
                       href="tel:+237654456264"
                     // onClick={() => {
-                    //   // analyticsEventTracker("CONTACT")("Mtn Number");
+                    //   // analyticsEventTracker("CONTACT")("Orange Number");
                     // }}
                     >
                       {" "}
@@ -201,9 +201,9 @@ const Footer = () => {
                   &nbsp;&nbsp;
                   <a
                     href="mailto:contact.devstyle@gmail.com"
-                  // onClick={() => {
-                  //   // analyticsEventTracker("CONTACT")("Email");
-                  // }}
+                  onClick={() => {
+                    analyticsEventTracker("CONTACT")("Email");
+                  }}
                   >
                     contact.devstyle@gmail.com
                   </a>

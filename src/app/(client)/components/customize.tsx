@@ -5,13 +5,12 @@ import { Grid, Button, Typography, useMediaQuery, Box } from "@mui/material";
 import Image from "next/image";
 
 import "./customize.scss";
-// import { analyticsEventTracker } from "../app";
-
+import { analyticsEventTracker } from "../lib/google-analytics";
 const Customize = () => {
   const match900 = useMediaQuery("(max-width:900px)");
 
   const contactForCustomGoodie = () => {
-    // analyticsEventTracker("CONTACT")("contact for custom goodie");
+    analyticsEventTracker("CONTACT")("contact for custom goodie");
     window
       .open(
         `https://api.whatsapp.com/send/?phone=237654017521&text=${encodeURIComponent(`*#CustomGoodie*📌
@@ -25,7 +24,7 @@ const Customize = () => {
   };
 
   const contactForPartnership = () => {
-    // analyticsEventTracker("CONTACT")("contact for partnership");
+    analyticsEventTracker("CONTACT")("contact for partnership");
     window
       .open(
         `https://api.whatsapp.com/send/?phone=237654017521&text=${encodeURIComponent(`*#Partnership*📌

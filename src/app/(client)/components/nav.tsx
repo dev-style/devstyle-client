@@ -22,7 +22,7 @@ import {
 import CartContext from "../contexts/cart/cartContext";
 import myAxios from "@/app/(client)/lib/axios.config";
 import "./nav.scss";
-// import { analyticsEventTracker } from "../app";
+import { analyticsEventTracker } from "@/app/(client)/lib/google-analytics";
 import {
   getCartCount,
   getTotalPrice,
@@ -236,9 +236,9 @@ const Nav = () => {
                 className="custom-goodies-buttom"
                 onClick={() => {
                   try {
-                    // analyticsEventTracker("CUSTOM GOODIE")(
-                    //   "go to custom goodie section"
-                    // );
+                    analyticsEventTracker("CUSTOM GOODIE")(
+                      "go to custom goodie section"
+                    );
                     if (document.querySelector("#custom-section")) {
                       document
                         .querySelector("#custom-section")
@@ -270,7 +270,7 @@ const Nav = () => {
             href={announce.link}
             style={{ width: "auto", textDecoration: "none" }}
             onClick={() => {
-              // analyticsEventTracker("ANNOUNCEMENT")("click announcement");
+              analyticsEventTracker("ANNOUNCEMENT")("click announcement");
             }}
           >
             <Typography className="notif" component={"span"}>
@@ -382,9 +382,9 @@ const Nav = () => {
         <Button
           className="custom-goodies-buttom"
           onClick={() => {
-            // analyticsEventTracker("CUSTOM GOODIE")(
-            //   "go to custom goodie section"
-            // );
+            analyticsEventTracker("CUSTOM GOODIE")(
+              "go to custom goodie section"
+            );
             try {
               if (document.querySelector("#custom-section")) {
                 handleDownNav();

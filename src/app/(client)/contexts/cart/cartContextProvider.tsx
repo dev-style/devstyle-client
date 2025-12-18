@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducer, useContext, useEffect } from "react";
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import CartContext from "./cartContext";
 
 import {
@@ -95,11 +95,11 @@ function CartContextProvider({
     cartDispatch,
   };
 
-  ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID as string);
+  ReactGA.initialize(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID as string);
   const pathname = usePathname();
 
   useEffect(() => {
-    ReactGA.pageview(pathname);
+    ReactGA.send({ hitType: 'pageview', page: pathname});
   }, [pathname]);
 
   useEffect(() => {
