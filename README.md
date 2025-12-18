@@ -150,7 +150,7 @@ Just follow these steps :
   </a>
   &nbsp;
   &nbsp;
-  <a href="https://api.whatsapp.com/send/?phone=237692650993&text=Hello%20_DevStyle">
+  <a href="https://api.whatsapp.com/send/?phone=237654017521&text=Hello%20_DevStyle">
     <img height="20" src="./public/assets/icons/whatsapp-white.png" />
   </a>
   &nbsp;

@@ -56,7 +56,7 @@ const Footer = () => {
             <Grid item xs={12} lg={4}>
               <Typography className="footer-title">Suivez nous</Typography>
               <Box className="footer-links-wrapper">
-                <Box marginBottom={5} display={"flex"}>
+                <Box marginBottom={2} display={"flex"}>
                   <a
                     target="_blank"
                     // onClick={() => {
@@ -95,7 +95,7 @@ const Footer = () => {
                     //   // analyticsEventTracker("SOCIAL")("whatsapp");
                     // }}
                     rel="noopener noreferrer"
-                    href="https://api.whatsapp.com/send/?phone=237692650993&text=Hello _DevStyle"
+                    href="https://api.whatsapp.com/send/?phone=237654017521&text=Hello _DevStyle"
                   >
                     <Image
                       src={"/assets/icons/whatsapp-white.png"}
@@ -168,14 +168,14 @@ const Footer = () => {
                   &nbsp;&nbsp;
                   <Box>
                     <a
-                      href="tel:+237692650993"
+                      href="tel:+237654017521"
                     // onClick={() => {
                     //   // analyticsEventTracker("CONTACT")("Orange Number");
                     // }}
                     >
-                      (+237) 692 650 993
+                      (+237) 654 017 521
                     </a>
-                    <a
+                    {/* <a
                       href="tel:+237654456264"
                     // onClick={() => {
                     //   // analyticsEventTracker("CONTACT")("Mtn Number");
@@ -183,7 +183,7 @@ const Footer = () => {
                     >
                       {" "}
                       / 654 456 264
-                    </a>
+                    </a> */}
                   </Box>
                 </Box>
                 <Box
