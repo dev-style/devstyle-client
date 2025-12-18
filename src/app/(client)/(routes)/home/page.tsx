@@ -348,7 +348,7 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
                   // analyticsEventTracker("SOCIAL")("whatsapp");
                 }}
                 rel="noopener noreferrer"
-                href="https://api.whatsapp.com/send/?phone=237692650993&text=Hello _DevStyle"
+                href="https://api.whatsapp.com/send/?phone=237654017521&text=Hello _DevStyle"
               >
                 <Box
                   position={"relative"}

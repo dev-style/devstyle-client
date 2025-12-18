@@ -185,7 +185,7 @@ const About = () => {
                   <a
                     target="_blank"
                     rel="noreferrer"
-                    href="https://wa.me/675863040"
+                    href="https://www.instagram.com/thze_gab/"
                   >
                     - Gabriel Wandja🎨
                   </a>
