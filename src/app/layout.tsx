@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }:{children:React.ReactNode}) {
-  const GA_MEASUREMENT_ID = 'G-56ZB7XCQHC'; // Remplacez par votre ID de mesure
+  const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
     <html lang="en">

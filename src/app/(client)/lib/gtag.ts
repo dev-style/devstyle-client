@@ -1,17 +1,29 @@
-export const GA_MEASUREMENT_ID = 'G-56ZB7XCQHC' // Remplacez par votre ID de mesure
+export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
-// Fonction pour envoyer des pages vues
-export const pageview = (url) => {
+// Log pageviews
+export const pageview = (url: string) => {
+  if (!GA_MEASUREMENT_ID || typeof window === 'undefined' || !window.gtag) return;
   window.gtag('config', GA_MEASUREMENT_ID, {
     page_path: url,
-  })
-}
+  });
+};
 
-// Fonction pour envoyer des événements
-export const event = ({ action, category, label, value }) => {
+// Log events
+export const event = ({
+  action,
+  category,
+  label,
+  value,
+}: {
+  action: string;
+  category?: string;
+  label?: string;
+  value?: number;
+}) => {
+  if (typeof window === 'undefined' || !window.gtag) return;
   window.gtag('event', action, {
     event_category: category,
     event_label: label,
-    value: value,
-  })
-}
+    value,
+  });
+};

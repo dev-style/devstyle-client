@@ -22,7 +22,7 @@ import { importAll, scrollToTop } from "@/app/(client)/lib/utils-script";
 import myAxios from "@/app/(client)/lib/axios.config";
 import "./style.scss";
 // import { useUpdateClickCountMutation } from "@/app/admin/redux/features/affiliation/affiliationsApi";
-// import { analyticsEventTracker } from "../app";
+import { analyticsEventTracker } from "@/app/(client)/lib/google-analytics";
 
 const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
   // console.log("searchParam", searchParams?.affiliate);
@@ -305,7 +305,7 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
               <a
                 target="_blank"
                 onClick={() => {
-                  // analyticsEventTracker("SOCIAL")("twitter");
+                  analyticsEventTracker("SOCIAL")("twitter");
                 }}
                 rel="noopener noreferrer"
                 href="https://twitter.com/_devstyle"
@@ -325,7 +325,7 @@ const Home = ({ searchParams }: { searchParams: { affiliate: string } }) => {
               <a
                 target="_blank"
                 onClick={() => {
-                  // analyticsEventTracker("SOCIAL")("twitter");
+                  analyticsEventTracker("SOCIAL")("twitter");
                 }}
                 rel="noopener noreferrer"
                 href="https://www.linkedin.com/company/devstyle"

@@ -9,7 +9,7 @@ import "./styles.scss";
 const ScrollToTop = dynamic(() => import("@/app/(client)/lib/scrollToTop"), {
   ssr: false,
 });
-// import { analyticsEventTracker } from "../app";
+import { analyticsEventTracker } from "@/app/(client)/lib/google-analytics";
 export const metadata: Metadata = {
   title:
     "À propos de _DevStyle | La premiere boutique dedié aux amoureux de la Tech #TT237 Cameroun",
@@ -452,9 +452,9 @@ const About = () => {
               style ={{
                 color: "#0070b6ff",
               }}
-              //   onClick={() => {
-              //     // analyticsEventTracker("SOCIAL")("twitter");
-              //   }}
+                onClick={() => {
+                  analyticsEventTracker("SOCIAL")("twitter");
+                }}
               rel="noopener noreferrer"
               href="https://twitter.com/_devstyle"
             >
@@ -466,9 +466,9 @@ const About = () => {
               style ={{
                 color: "#0070b6ff",
               }}
-              //   onClick={() => {
-              //     // analyticsEventTracker("SOCIAL")("linkedin");
-              //   }}
+                onClick={() => {
+                  analyticsEventTracker("SOCIAL")("linkedin");
+                }}
               rel="noopener noreferrer"
               href="https://www.linkedin.com/company/devstyle/"
             >
@@ -481,9 +481,9 @@ const About = () => {
                 color: "#0070b6ff",
               }}
               rel="noopener noreferrer"
-              // onClick = {() => {
-              //   // analyticsEventTracker("SOCIAL")("tiktok");
-              // }}
+              onClick = {() => {
+                analyticsEventTracker("SOCIAL")("tiktok");
+              }}
               href="https://www.tiktok.com/@_devstyle"
             >
               TikTok
@@ -494,9 +494,9 @@ const About = () => {
               style ={{
                 color: "#0070b6ff",
               }}
-              //   onClick={() => {
-              //     // analyticsEventTracker("SOCIAL")("instagram");
-              //   }}
+                onClick={() => {
+                  analyticsEventTracker("SOCIAL")("instagram");
+                }}
               rel="noopener noreferrer"
               href="https://www.instagram.com/_devstyle/"
             >
@@ -508,9 +508,9 @@ const About = () => {
               style ={{
                 color: "#0070b6ff",
               }}
-              //   onClick={() => {
-              //     // analyticsEventTracker("SOCIAL")("facebook");
-              //   }}
+                onClick={() => {
+                  analyticsEventTracker("SOCIAL")("facebook");
+                }}
               rel="noopener noreferrer"
               href="https://www.facebook.com/devstyl"
             >
