@@ -53,12 +53,23 @@ const Newsletter = () => {
           }
         })
         .catch((error) => {
+          console.log("error in newsletter client", error);
           if (error.status === 500) {
             // console.log("hello checked");
+            toast.error(
+              <div style={{ color: "#fff" }}>
+                {error.response.data.message}
+              </div>,
+              {
+                style: { textAlign: "center" },
+              },
+            );
+          } else {
+            toast.error(<div style={{ color: "#fff" }}>{error.message}</div>, {
+              style: { textAlign: "center" },
+            });
           }
-          toast.error(<div style={{ color: "#fff" }}>{error.message}</div>, {
-            style: { textAlign: "center" },
-          });
+
           // console.log(error);
         })
         .finally(() => {
