@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
+"use client";
 import { Box, Typography, Grid } from "@mui/material";
 import Image from "next/image";
 import dynamic from "next/dynamic";

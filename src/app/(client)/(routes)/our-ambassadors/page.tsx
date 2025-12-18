@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import dynamic from "next/dynamic";
@@ -7,7 +8,7 @@ import { Metadata } from "next";
 import AmbassadorsListing from "./ambassadorsListing";
 
 import "./styles.scss";
-// import { analyticsEventTracker } from "../app";
+// import { analyticsEventTracker } from "@/app/(client)/lib/google-analytics";
 const ScrollToTop = dynamic(() => import("@/app/(client)/lib/scrollToTop"), {
   ssr: false,
 });
