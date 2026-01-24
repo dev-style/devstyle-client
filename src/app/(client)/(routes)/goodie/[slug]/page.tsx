@@ -60,6 +60,11 @@ const Goodie = (props: any) => {
   const [someCollectionGoodies, setSomeCollectionGoodies] = useState<IGoodie[]>(
     [],
   );
+
+  const [isLoadingAllGoodies, setIsLoadingAllGoodies] = useState(true)
+  const [allGoodies, setAllGoodies] = useState<IGoodie[]>([])
+
+
   const [isLiking, setIsLiking] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
   const [goodie, setGoodie] = useState<IGoodie>();
@@ -103,6 +108,33 @@ const Goodie = (props: any) => {
   };
 
   useEffect(() => {
+
+
+
+    myAxios
+      .get("/goodie/all")
+      .then((response) => {
+        if (response.status === 200) {
+          setAllGoodies(
+            response.data.message,
+          );
+          setIsLoadingAllGoodies(false);
+        } else {
+          // console.log(response.data.message);
+          setIsLoadingAllGoodies(false);
+        }
+      })
+      .catch((error) => {
+        toast.error(<div style={{ color: "#fff" }}>{error.message}</div>, {
+          icon: "🌐",
+          style: { textAlign: "center" },
+        });
+        // console.log(error);
+      });
+
+
+
+
     myAxios
       .get("/goodie/" + props.slug)
       .then((response) => {
@@ -115,7 +147,7 @@ const Goodie = (props: any) => {
             goodieWithDiscount &&
             goodieWithDiscount._id == response.data.message._id
           ) {
-            // console.log("goodie with discount", goodieWithDiscount);
+            console.log("goodie with discount", goodieWithDiscount);
             setGoodie(goodieWithDiscount);
           } else {
             const sizes = response.data.message.sizes ?? [];
@@ -132,6 +164,8 @@ const Goodie = (props: any) => {
               }
               return aKey.localeCompare(bKey);
             });
+
+            console.log("goodie response message", response.data.message)
 
             setGoodie({
               ...response.data.message,
@@ -164,7 +198,7 @@ const Goodie = (props: any) => {
             })
             .catch((error) => {
               // console.log("error", error)
-              });
+            });
 
           myAxios
             .get(
@@ -238,11 +272,10 @@ const Goodie = (props: any) => {
 *Size:* ${goodie?.selectedSize} ;
 *Quantity:* ${goodie?.quantity} ;
 *Price:* ${goodie?.price} ;
-*PromoPrice:* ${
-        goodie?.inPromo
+*PromoPrice:* ${goodie?.inPromo
           ? calculatePromoPrice(goodie?.price, goodie?.promoPercentage)
           : "none"
-      } ;
+        } ;
 *PromoPercent:* ${goodie?.inPromo ? goodie?.promoPercentage : "none"} ;    
 `;
 
@@ -254,13 +287,11 @@ const Goodie = (props: any) => {
   };
 
   const getCartID = () => {
-    let text = ` ${goodie?._id}-${goodie?.name}-${
-      goodie?.fromCollection.title
-    }-${goodie?.selectedColor}-${goodie?.selectedSize}-${goodie?.price}-${
-      goodie?.inPromo
+    let text = ` ${goodie?._id}-${goodie?.name}-${goodie?.fromCollection.title
+      }-${goodie?.selectedColor}-${goodie?.selectedSize}-${goodie?.price}-${goodie?.inPromo
         ? calculatePromoPrice(goodie?.price, goodie?.promoPercentage)
         : "none"
-    }`;
+      }`;
     return text;
   };
 
@@ -328,10 +359,10 @@ const Goodie = (props: any) => {
       name: goodie?.name,
       price: goodie?.price,
       quantity: goodie?.quantity,
-      total: goodie?.inPromo? calculatePromoPrice(goodie?.price, goodie?.promoPercentage) * goodie?.quantity : (goodie?.price || 0) * (goodie?.quantity || 0),
+      total: goodie?.inPromo ? calculatePromoPrice(goodie?.price, goodie?.promoPercentage) * goodie?.quantity : (goodie?.price || 0) * (goodie?.quantity || 0),
       image: goodie?.mainImage.url,
       _id: goodie?._id,
-      size: goodie?.sizes.find(({size}: {size: string}) => size === goodie?.selectedSize)?._id,
+      size: goodie?.sizes.find(({ size }: { size: string }) => size === goodie?.selectedSize)?._id,
       sizeName: goodie?.selectedSize,
       color: goodie?.selectedColor,
       inPromo: goodie?.inPromo,
@@ -484,34 +515,34 @@ const Goodie = (props: any) => {
                     style={
                       match700
                         ? {
-                            ...(goodie?.mainImage.url.endsWith(".png")
-                              ? {
-                                  backgroundColor:
-                                    goodie?.backgroundColors[
-                                      goodie?.images.findIndex(
-                                        (image) =>
-                                          image.url === goodie?.mainImage.url,
-                                      )
-                                    ],
-                                }
-                              : {}),
-                            width: "100%",
-                            margin: "0",
-                          }
+                          ...(goodie?.mainImage.url.endsWith(".png")
+                            ? {
+                              backgroundColor:
+                                goodie?.backgroundColors[
+                                goodie?.images.findIndex(
+                                  (image) =>
+                                    image.url === goodie?.mainImage.url,
+                                )
+                                ],
+                            }
+                            : {}),
+                          width: "100%",
+                          margin: "0",
+                        }
                         : {
-                            ...(goodie?.mainImage.url.endsWith(".png")
-                              ? {
-                                  backgroundColor:
-                                    goodie?.backgroundColors[
-                                      goodie?.images.findIndex(
-                                        (image) =>
-                                          image.url === goodie?.mainImage.url,
-                                      )
-                                    ],
-                                }
-                              : {}),
-                            position: "relative",
-                          }
+                          ...(goodie?.mainImage.url.endsWith(".png")
+                            ? {
+                              backgroundColor:
+                                goodie?.backgroundColors[
+                                goodie?.images.findIndex(
+                                  (image) =>
+                                    image.url === goodie?.mainImage.url,
+                                )
+                                ],
+                            }
+                            : {}),
+                          position: "relative",
+                        }
                     }
                   >
                     {goodie?.inPromo && (
@@ -630,60 +661,60 @@ const Goodie = (props: any) => {
                   </Box>
                   {(isLoadingGoodie ||
                     (goodie?.availableColors.length ?? 0) > 0) && (
-                    <Box className="colors">
-                      <Typography className="label">
-                        Disponible en couleur
-                      </Typography>
-                      <Box className="colors-wrapper">
-                        {isLoadingGoodie ? (
-                          <Skeleton
-                            animation="wave"
-                            variant="circular"
-                            height={40}
-                            width={40}
-                          />
-                        ) : (
-                          goodie?.availableColors.map((color, i) =>
-                            color != "" ? (
-                              <ButtonBase
-                                key={"color-" + color + "-" + i}
-                                className="color"
-                                style={{
-                                  boxShadow:
-                                    goodie?.selectedColor === color
-                                      ? "0px 4px 10px #06C27033"
-                                      : "0px 4px 10px rgba(0, 0, 0, 0.15)",
-                                }}
-                                onClick={() => handleSelectedColorChange(color)}
-                              >
-                                <Box
+                      <Box className="colors">
+                        <Typography className="label">
+                          Disponible en couleur
+                        </Typography>
+                        <Box className="colors-wrapper">
+                          {isLoadingGoodie ? (
+                            <Skeleton
+                              animation="wave"
+                              variant="circular"
+                              height={40}
+                              width={40}
+                            />
+                          ) : (
+                            goodie?.availableColors.map((color, i) =>
+                              color != "" ? (
+                                <ButtonBase
+                                  key={"color-" + color + "-" + i}
+                                  className="color"
                                   style={{
-                                    backgroundColor: color,
-                                    width: "100%",
-                                    height: "100%",
-                                    borderRadius: "50%",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    border:
+                                    boxShadow:
                                       goodie?.selectedColor === color
-                                        ? "2px solid #06C27033"
-                                        : "",
+                                        ? "0px 4px 10px #06C27033"
+                                        : "0px 4px 10px rgba(0, 0, 0, 0.15)",
                                   }}
+                                  onClick={() => handleSelectedColorChange(color)}
                                 >
-                                  {goodie?.selectedColor === color && (
-                                    <Check color="success" />
-                                  )}
-                                </Box>
-                              </ButtonBase>
-                            ) : (
-                              <></>
-                            ),
-                          )
-                        )}
+                                  <Box
+                                    style={{
+                                      backgroundColor: color,
+                                      width: "100%",
+                                      height: "100%",
+                                      borderRadius: "50%",
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      border:
+                                        goodie?.selectedColor === color
+                                          ? "2px solid #06C27033"
+                                          : "",
+                                    }}
+                                  >
+                                    {goodie?.selectedColor === color && (
+                                      <Check color="success" />
+                                    )}
+                                  </Box>
+                                </ButtonBase>
+                              ) : (
+                                <></>
+                              ),
+                            )
+                          )}
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    )}
 
                   {discounts.length > 0 && (
                     <>
@@ -759,9 +790,9 @@ const Goodie = (props: any) => {
                                 style={
                                   goodie?.selectedSize === size.size
                                     ? {
-                                        color: "#06C270",
-                                        borderColor: "#06C270",
-                                      }
+                                      color: "#06C270",
+                                      borderColor: "#06C270",
+                                    }
                                     : {}
                                 }
                                 className="button"
@@ -789,7 +820,7 @@ const Goodie = (props: any) => {
                         dangerouslySetInnerHTML={{
                           __html: goodie?.description || "",
                         }}
-                        style={{fontSize: '18px'}}
+                        style={{ fontSize: '18px' }}
                       />
                     </Box>
                   )}
@@ -1063,6 +1094,95 @@ const Goodie = (props: any) => {
                     ))
                 )}
               </Grid>
+
+              <Box
+                className="title-container"
+                style={
+                  match700
+                    ? { paddingTop: "75px", justifyContent: "center" }
+                    : { paddingTop: "100px" }
+                }
+              >
+                <Typography
+                  className="title"
+                  style={{ fontSize: match900 ? "30px" : "36px" }}
+                  component={"span"}
+                >
+                  Similaire a 
+                </Typography>
+                &nbsp; &nbsp;
+                <Box position={"relative"}>
+                  <Typography
+                    className="title"
+                    style={{ fontSize: "30px" }}
+                    component={"span"}
+                  >
+                    {goodie?.name}
+                  </Typography>
+                  <hr
+                    style={{
+                      height: "6px",
+                      width: "100%",
+                      borderWidth: "0",
+                      color: "#05A660",
+                      backgroundColor: "#05A660",
+                      borderRadius: "20px",
+                      position: "absolute",
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              <Grid container spacing={5}>
+                {isLoadingAllGoodies ? (
+                  <>
+                    <Grid item xs={12} md={6} lg={4} xl={3}>
+                      <GoodieCardSkeleton />
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={4} xl={3}>
+                      <GoodieCardSkeleton />
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={4} xl={3}>
+                      <GoodieCardSkeleton />
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={4} xl={3}>
+                      <GoodieCardSkeleton />
+                    </Grid>
+                  </>
+                ) : (
+                  allGoodies
+                    .filter((_goodie) => {
+                      if (_goodie?._id === goodie?._id) return false;
+                      const currentName = goodie?.name.toLowerCase() || "";
+                      const otherName = _goodie?.name.toLowerCase() || "";
+
+                      // Check for exact inclusion
+                      if (otherName.includes(currentName)) return true;
+
+                      // Check for shared significant words
+                      const words = currentName.split(" ").filter(w => w.length > 2);
+                      return words.some(w => otherName.includes(w));
+                    })
+                    .map((goodie, i) => (
+                      <Grid
+                        key={i + " " + goodie?._id}
+                        item
+                        xs={12}
+                        md={6}
+                        lg={4}
+                        xl={3}
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <GoodieCard {...goodie} />
+                      </Grid>
+                    )))}
+              </Grid>
+
+
             </Box>
           </Box>
         </Box>
