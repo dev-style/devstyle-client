@@ -68,10 +68,10 @@ export interface IOrder extends mongoose.Document {
   email: string;
   number?: number;
   initDate: Date;
-  city:string;
-  district:string;
-  expeditionAdresse:string;
-  paymentMethod:string;
+  city: string;
+  district: string;
+  expeditionAdresse: string;
+  paymentMethod: string;
 }
 export interface IUser extends mongoose.Document {
   username: string;
@@ -96,16 +96,17 @@ export interface ICombo extends mongoose.Document {
   items: string[]; // Array of Goodie IDs
   mainImage: string;
   images: string[];
-  availableColors: string[];
-  backgroundColors: string[];
+  // availableColors: string[];
+  // backgroundColors: string[];
+  show: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
-export interface IDiscount extends mongoose.Document{
-  code:string;
-  percent:number;
-  isActive:boolean;
-  limit:number;
-  uses:number;
-  goodies:any
+export interface IDiscount extends mongoose.Document {
+  code: string;
+  percent: number;
+  isActive: boolean;
+  limit: number;
+  uses: number;
+  goodies: any
 }

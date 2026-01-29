@@ -1,6 +1,8 @@
+"use client"
+
 import Search from "@/app/admin/ui/dashboard/search/page";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Pagination from "@/app/admin/ui/dashboard/pagination/page";
 import { fetchCombos } from "@/app/admin/controllers/combo";
@@ -8,10 +10,32 @@ import { ICombo } from "@/app/admin/lib/interfaces";
 
 type Props = {};
 
-const CombosPage = async ({ searchParams }: any) => {
+const CombosPage = ({ searchParams }: any) => {
   const q = searchParams?.q || "";
   const page = searchParams?.page || 1;
-  const { count, combos } = await fetchCombos(q, page);
+
+  const [combos, setCombos] = useState<ICombo[]>([])
+  const [comboId, setComboId] = useState<string>("")
+  const [count, setCount] = useState<any>()
+  const [modal, setModal] = useState<boolean>(false);
+
+  // const { count, combos } = await fetchCombos(q, page);
+
+  useEffect(() => {
+    const fetchCombosFeature = async () => {
+      const { count, combos } = await fetchCombos(q, page);
+      console.log("combos list", combos)
+      setCombos(combos);
+      setCount(count);
+    }
+    fetchCombosFeature()
+  }, [])
+
+  const handleDeleteCombo = (comboId: string) => {
+    // console.log("comboId", comboId);
+    setModal(true);
+    setComboId(comboId);
+  };
 
   return (
     <div className="bg-[var(--bgSoft)] p-5 rounded-lg mt-5">
@@ -33,7 +57,7 @@ const CombosPage = async ({ searchParams }: any) => {
               <td className="p-2.5">Price</td>
               <td className="p-2.5">Promo</td>
               <td className="p-2.5">Items</td>
-              <td className="p-2.5">Colors</td>
+              {/* <td className="p-2.5">Colors</td> */}
             </tr>
           </thead>
           <tbody>
@@ -59,15 +83,9 @@ const CombosPage = async ({ searchParams }: any) => {
                 <td className="p-2.5">{combo.items.length}</td>
                 <td className="p-2.5">
                   <span
-                    title={`Available: ${combo.availableColors.join(", ")}`}
+                    title={`Available: ${combo.items.join(", ")}`}
                   >
-                    {combo.availableColors.length}
-                  </span>
-                  {" / "}
-                  <span
-                    title={`Background: ${combo.backgroundColors.join(", ")}`}
-                  >
-                    {combo.backgroundColors.length}
+                    {combo.items.length}
                   </span>
                 </td>
               </tr>
@@ -76,6 +94,14 @@ const CombosPage = async ({ searchParams }: any) => {
         </table>
         <Pagination count={count} />
       </div>
+      {modal && (
+        // <DeleteComboModal
+        //   modal={modal}
+        //   setModal={setModal}
+        //   comboId={comboId}
+        // />
+        <div>delete combo</div>
+      )}
     </div>
   );
 };

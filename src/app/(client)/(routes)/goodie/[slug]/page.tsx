@@ -1095,43 +1095,58 @@ const Goodie = (props: any) => {
                 )}
               </Grid>
 
-              <Box
-                className="title-container"
-                style={
-                  match700
-                    ? { paddingTop: "75px", justifyContent: "center" }
-                    : { paddingTop: "100px" }
-                }
-              >
-                <Typography
-                  className="title"
-                  style={{ fontSize: match900 ? "30px" : "36px" }}
-                  component={"span"}
+              {allGoodies
+                .filter((_goodie) => {
+                  if (_goodie?._id === goodie?._id) return false;
+                  const currentName = goodie?.name.toLowerCase() || "";
+                  const otherName = _goodie?.name.toLowerCase() || "";
+
+                  // Check for exact inclusion
+                  if (otherName.includes(currentName)) return true;
+
+                  // Check for shared significant words
+                  const words = currentName.split(" ").filter(w => w.length > 2);
+                  return words.some(w => otherName.includes(w));
+                }).length > 0 && (<Box
+                  className="title-container"
+                  style={
+                    match700
+                      ? { paddingTop: "75px", justifyContent: "center" }
+                      : { paddingTop: "100px" }
+                  }
                 >
-                  Similaire a 
-                </Typography>
-                &nbsp; &nbsp;
-                <Box position={"relative"}>
                   <Typography
                     className="title"
-                    style={{ fontSize: "30px" }}
+                    style={{ fontSize: match900 ? "30px" : "36px" }}
                     component={"span"}
                   >
-                    {goodie?.name}
+                    Similaire a
                   </Typography>
-                  <hr
-                    style={{
-                      height: "6px",
-                      width: "100%",
-                      borderWidth: "0",
-                      color: "#05A660",
-                      backgroundColor: "#05A660",
-                      borderRadius: "20px",
-                      position: "absolute",
-                    }}
-                  />
-                </Box>
-              </Box>
+                  &nbsp; &nbsp;
+                  <Box position={"relative"}>
+                    <Typography
+                      className="title"
+                      style={{ fontSize: "30px" }}
+                      component={"span"}
+                    >
+                      {goodie?.name}
+                    </Typography>
+                    <hr
+                      style={{
+                        height: "6px",
+                        width: "100%",
+                        borderWidth: "0",
+                        color: "#05A660",
+                        backgroundColor: "#05A660",
+                        borderRadius: "20px",
+                        position: "absolute",
+                      }}
+                    />
+                  </Box>
+                </Box>)
+
+              }
+
 
               <Grid container spacing={5}>
                 {isLoadingAllGoodies ? (

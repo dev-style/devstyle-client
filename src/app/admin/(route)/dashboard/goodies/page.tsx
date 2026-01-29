@@ -103,7 +103,7 @@ const GoodiesPage = ({ searchParams }: any) => {
                 </td>
                 <td className="p-2.5">{goodie.views}</td>
                 <td className="p-2.5">
-                  {goodie.sizes.map((s) => s.size).join(", ")}
+                  {goodie.sizes.map((s:any) => s.size).join(", ")}
                 </td>
                 <td className="p-2.5">
                   <span

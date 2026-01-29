@@ -11,10 +11,30 @@ const ComboSchema = new Schema<ICombo>(
     inPromo: { type: Boolean, default: false },
     promoPercentage: { type: Number },
     items: [{ type: Schema.Types.ObjectId, ref: "Goodie", required: true }],
-    mainImage: { type: String, required: true },
-    images: [{ type: String }],
-    availableColors: [{ type: String }],
-    backgroundColors: [{ type: String }],
+    // mainImage: { type: String, required: true },
+    // images: [{ type: String }],
+
+
+    images: [
+      {
+        public_id: {
+          type: String,
+        },
+        url: {
+          type: String,
+        },
+      },
+    ],
+    mainImage: {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
+    },
+
+    show: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
