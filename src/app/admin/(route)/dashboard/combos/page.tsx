@@ -66,7 +66,7 @@ const CombosPage = ({ searchParams }: any) => {
                 <td className="p-2.5">
                   <div className="flex items-center gap-2.5">
                     <Image
-                      src={combo.mainImage || "/nocombo.jpg"}
+                      src={combo.mainImage.url || "/nocombo.jpg"}
                       alt=""
                       width={40}
                       height={40}
@@ -103,6 +103,7 @@ const CombosPage = ({ searchParams }: any) => {
         <div>delete combo</div>
       )}
     </div>
+
   );
 };
 

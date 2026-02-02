@@ -94,7 +94,7 @@ export interface ICombo extends mongoose.Document {
   inPromo: boolean;
   promoPercentage?: number;
   items: string[]; // Array of Goodie IDs
-  mainImage: string;
+  mainImage: { url: string };
   images: string[];
   // availableColors: string[];
   // backgroundColors: string[];

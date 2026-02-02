@@ -29,11 +29,11 @@ export const fetchCombos = async (q: string, page: number) => {
   try {
     await connectToDB();
     const count = await ComboModel.find({
-      name: { $regex: regex },
+      title: { $regex: regex },
     }).countDocuments();
     const combos = await ComboModel.find({ title: { $regex: regex } })
       .limit(ITEM_PER_PAGE)
-      .skip(ITEM_PER_PAGE * (page - 1));
+      .skip(ITEM_PER_PAGE * (page - 1)).lean();
     console.log("list of combos", combos);
     return { count, combos };
   } catch (err) {
